@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Vela Quantum Nexus — v1.6.0</title>
+<title>Vela Quantum Nexus — v1.7.0</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1861,6 +1861,22 @@
         </div>
       </div>
 
+      <div class="m-section-title">백엔드 연결<span class="meta">PC 노트북</span></div>
+      <div class="m-settings-group">
+        <div class="m-settings-row" onclick="window.nexusConfigBackend && window.nexusConfigBackend()">
+          <div class="key">백엔드 URL</div>
+          <div><span class="val muted" id="cfg-backend-url">설정 필요 →</span><span class="arrow">›</span></div>
+        </div>
+        <div class="m-settings-row">
+          <div class="key">연결 상태</div>
+          <div><span class="val muted" id="cfg-backend-state">mock 모드</span></div>
+        </div>
+        <div class="m-settings-row">
+          <div class="key">마지막 동기화</div>
+          <div><span class="val muted" id="cfg-backend-sync">—</span></div>
+        </div>
+      </div>
+
       <div class="m-section-title">리포트</div>
       <div class="m-settings-group">
         <div class="m-settings-row">
@@ -1960,7 +1976,7 @@
       <div class="item"><span class="dot"></span>라이브</div>
       <div class="item">페이퍼</div>
       <div class="item"><span class="mode">밸런스</span></div>
-      <div class="item ver">v1.6.0</div>
+      <div class="item ver">v1.7.0</div>
     </div>
   </header>
 
@@ -2256,6 +2272,180 @@
 </div>
 
 <script>
+  // ============================================================
+  // BACKEND CONNECTION — PC Tailscale Backend (Workstream #11)
+  // ============================================================
+  // 백엔드: Windows 11 노트북 (24/7 가동) → Tailscale tailnet → 폰
+  //
+  // 동작:
+  //  1) localStorage에 nexus_backend_url 있으면 → 실시간 fetch
+  //  2) 없으면 → 현재 mock 데이터 그대로 표시 (디자인 demo 모드)
+  //  3) fetch 실패 → mock fallback + 상단에 빨간 배너
+  //
+  // 설정 방법 (Z 플립7):
+  //   설정 탭 → "백엔드 URL" 항목 → http://<TAILSCALE_IP>:8443 입력
+  //   (또는 브라우저 콘솔에서:
+  //    localStorage.setItem('nexus_backend_url', 'http://100.x.y.z:8443'))
+  // ============================================================
+  (function() {
+    var BACKEND_KEY = 'nexus_backend_url';
+    var STATE_KEY = 'nexus_backend_state';
+    var REFRESH_MS = 30000;  // 30초마다 갱신
+
+    var backend = {
+      url: null,
+      connected: false,
+      lastSync: null,
+      lastError: null,
+      data: null,
+    };
+
+    function getStoredUrl() {
+      try { return localStorage.getItem(BACKEND_KEY) || ''; } catch (e) { return ''; }
+    }
+    function setStoredUrl(url) {
+      try { localStorage.setItem(BACKEND_KEY, url); } catch (e) {}
+    }
+
+    function showBanner(msg, level) {
+      var existing = document.getElementById('nexus-banner');
+      if (existing) existing.remove();
+      if (!msg) return;
+      var b = document.createElement('div');
+      b.id = 'nexus-banner';
+      b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:200;' +
+        'background:' + (level === 'error' ? 'rgba(185,28,28,0.95)' : 'rgba(13,148,136,0.95)') + ';' +
+        'color:#fff;font-family:var(--sans);font-size:12px;font-weight:600;' +
+        'padding:8px 16px;text-align:center;backdrop-filter:blur(8px);' +
+        'border-bottom:1px solid rgba(255,255,255,0.2);';
+      b.textContent = msg;
+      document.body.appendChild(b);
+      if (level !== 'error') {
+        setTimeout(function() { b.remove(); }, 3000);
+      }
+    }
+
+    async function fetchBackend(path) {
+      if (!backend.url) return null;
+      try {
+        var ctrl = new AbortController();
+        var timeout = setTimeout(function() { ctrl.abort(); }, 5000);
+        var res = await fetch(backend.url + path, { signal: ctrl.signal });
+        clearTimeout(timeout);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.json();
+      } catch (e) {
+        backend.lastError = e.message;
+        return null;
+      }
+    }
+
+    function applyDashboard(data) {
+      if (!data) return;
+      // NAV 큰 숫자 (cover + mobile home)
+      var navTxt = '₩' + data.nav.value_krw.toLocaleString('ko-KR');
+      document.querySelectorAll('.cover-nav-value, .m-nav-big').forEach(function(el) {
+        el.textContent = navTxt;
+      });
+      // Phase / 모드
+      document.querySelectorAll('.cover-meta').forEach(function(el) {
+        el.textContent = data.system.phase + ' · ' + data.system.mode + ' 모드 · 라이브';
+      });
+      // 활성 운용진 수
+      var teamStatus = '활성 ' + data.team.filter(function(t){return t.active;}).length + '/5';
+      document.querySelectorAll('[data-bind="team-active"]').forEach(function(el) {
+        el.textContent = teamStatus;
+      });
+      // 마지막 갱신
+      backend.lastSync = new Date();
+      backend.data = data;
+      updateSettingsUI();
+    }
+
+    function updateSettingsUI() {
+      var urlEl = document.getElementById('cfg-backend-url');
+      var stateEl = document.getElementById('cfg-backend-state');
+      var syncEl = document.getElementById('cfg-backend-sync');
+      if (urlEl) {
+        urlEl.textContent = backend.url || '설정 필요 →';
+        urlEl.className = backend.url ? 'val' : 'val muted';
+      }
+      if (stateEl) {
+        if (!backend.url) {
+          stateEl.textContent = 'mock 모드';
+          stateEl.className = 'val muted';
+        } else if (backend.connected) {
+          stateEl.textContent = '✓ 라이브';
+          stateEl.className = 'val';
+          stateEl.style.color = 'var(--accent)';
+        } else {
+          stateEl.textContent = '✗ 연결 실패';
+          stateEl.className = 'val';
+          stateEl.style.color = 'var(--negative)';
+        }
+      }
+      if (syncEl) {
+        syncEl.textContent = backend.lastSync
+          ? backend.lastSync.toLocaleTimeString('ko-KR')
+          : '—';
+      }
+    }
+
+    async function refresh() {
+      if (!backend.url) {
+        updateSettingsUI();
+        return;
+      }
+      var dashboard = await fetchBackend('/dashboard/');
+      if (dashboard) {
+        backend.connected = true;
+        applyDashboard(dashboard);
+      } else {
+        backend.connected = false;
+        updateSettingsUI();
+        showBanner('⚠ 백엔드 연결 실패 — mock 데이터 표시 중. 설정 탭에서 URL 확인.', 'error');
+      }
+    }
+
+    // 백엔드 URL 설정 모달 (설정 탭에서 호출)
+    window.nexusConfigBackend = function() {
+      var current = backend.url || getStoredUrl() || '';
+      var input = prompt(
+        'Nexus 백엔드 URL 입력\n\n' +
+        '예: http://100.118.139.76:8443\n' +
+        '(Tailscale IP, 노트북에서 tailscale ip -4 로 확인)\n\n' +
+        '비우면 mock 데이터 모드',
+        current
+      );
+      if (input === null) return;  // 취소
+      input = input.trim().replace(/\/$/, '');  // 끝 / 제거
+      setStoredUrl(input);
+      backend.url = input || null;
+      backend.connected = false;
+      backend.lastSync = null;
+      updateSettingsUI();
+      if (backend.url) {
+        showBanner('백엔드 연결 시도: ' + backend.url, 'ok');
+        refresh();
+      } else {
+        showBanner('백엔드 URL 제거됨 — mock 모드', 'ok');
+      }
+    };
+
+    // 초기화
+    backend.url = getStoredUrl() || null;
+    if (backend.url) {
+      refresh();
+      setInterval(refresh, REFRESH_MS);
+    }
+    // 초기 settings UI 동기화 (DOM 로드 후)
+    document.addEventListener('DOMContentLoaded', updateSettingsUI);
+    if (document.readyState !== 'loading') updateSettingsUI();
+
+    // 외부 노출 (디버깅용)
+    window.nexusBackend = backend;
+  })();
+
   // Mobile tab switching
   (function() {
     var btns = document.querySelectorAll('.m-tabbtn');

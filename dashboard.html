@@ -1399,6 +1399,78 @@
   .m-health-cell .light.armed { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
   .m-health-cell .detail { font-family: var(--mono); font-size: 10px; color: var(--fg-muted); }
 
+  /* ============= DEV LOG (개발 로그 카드) ============= */
+  .dev-log-wrap {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+  }
+  .dev-log-proj { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+  .dev-log-proj:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+  .dev-log-head {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .dev-log-name {
+    font-size: 13px; font-weight: 700; color: var(--fg);
+  }
+  .dev-log-badge {
+    font-size: 10px; padding: 2px 8px; border-radius: 999px;
+    font-family: var(--sans); font-weight: 700; letter-spacing: 0.02em;
+  }
+  .dev-log-badge.active { background: rgba(13,148,136,0.18); color: var(--accent); }
+  .dev-log-badge.done { background: rgba(255,255,255,0.06); color: var(--fg-muted); }
+  .dev-log-range {
+    font-family: var(--mono); font-size: 11px; color: var(--fg-muted);
+    margin-left: auto;
+  }
+  .dev-log-totals {
+    font-family: var(--mono); font-size: 11px; color: var(--fg-muted);
+    margin-bottom: 4px;
+  }
+  .dev-log-totals b { color: var(--fg); font-weight: 600; }
+  .dev-log-pre {
+    font-size: 10px; color: var(--fg-dim); font-style: italic;
+    margin-bottom: 8px;
+  }
+  .dev-log-entries {
+    border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px;
+  }
+  .dev-log-entry {
+    margin-bottom: 8px; padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(255,255,255,0.04);
+  }
+  .dev-log-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .dev-log-entry-head {
+    display: flex; gap: 8px; align-items: baseline; cursor: pointer;
+  }
+  .dev-log-entry-date {
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    font-weight: 700; flex-shrink: 0;
+  }
+  .dev-log-entry-sum {
+    font-size: 12px; color: var(--fg); line-height: 1.45;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .dev-log-entry-meta {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-muted);
+    margin-top: 3px; padding-left: 0;
+  }
+  .dev-log-items {
+    display: none; list-style: none; padding: 6px 0 0 12px; margin: 6px 0 0 0;
+  }
+  .dev-log-entry.open .dev-log-items { display: block; }
+  .dev-log-items li {
+    font-size: 11px; color: var(--fg-muted); line-height: 1.6;
+    padding-left: 10px; position: relative;
+  }
+  .dev-log-items li::before {
+    content: "·"; color: var(--accent);
+    position: absolute; left: 0; top: 0;
+  }
+  .dev-log-empty {
+    font-size: 12px; color: var(--fg-muted); padding: 6px 0;
+  }
+
   /* ============= TAB BAR ============= */
   .m-tabbar {
     position: fixed; bottom: 0; left: 0; right: 0;
@@ -3564,6 +3636,11 @@
         <div class="m-settings-row"><div class="key">개시</div><div><span class="val muted">2026.03.18</span></div></div>
         <div class="m-settings-row"><div class="key">제작</div><div><span class="val muted">Juns</span></div></div>
       </div>
+
+      <div class="m-section-title">개발 로그<span class="meta">프로젝트 누적</span></div>
+      <div class="dev-log-wrap" id="m-dev-log">
+        <div class="dev-log-empty">불러오는 중...</div>
+      </div>
     </section>
 
   </main>
@@ -4408,6 +4485,14 @@
           <div class="d-settings-row">
             <div class="k">SW 캐시</div>
             <div class="v muted">nexus-cache-v5 · 자동 갱신</div>
+          </div>
+        </div>
+
+        <!-- 개발 로그 (Phase 2.x — 표시 전용, 매매 무관) -->
+        <div class="d-settings-card" style="grid-column: 1 / -1;">
+          <div class="h">개발 로그</div>
+          <div class="dev-log-wrap" id="d-dev-log" style="background:transparent;border:none;padding:0;margin:0;">
+            <div class="dev-log-empty">불러오는 중...</div>
           </div>
         </div>
 
@@ -6917,6 +7002,79 @@
       }
     }
 
+    // =========================================================
+    // 개발 로그 (표시 전용, 매매 무관) — /dev-log fetch + render
+    // =========================================================
+    function _escapeHtml(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function _devLogProjectHtml(proj) {
+      var status = proj.status === 'done' ? 'done' : 'active';
+      var statusLabel = status === 'done' ? '완료' : '진행중';
+      var started = proj.started ? _escapeHtml(proj.started) : '—';
+      var ended = proj.ended ? _escapeHtml(proj.ended) : '~';
+      var totals = proj.totals || {};
+      var totalsLine =
+        '<b>' + (totals.sessions || 0) + '</b>세션 · ' +
+        '<b>' + (totals.minutes || 0) + '</b>분 · ' +
+        '<b>' + (totals.files || 0) + '</b>파일' +
+        (totals.tokens ? ' · 토큰 <b>' + _escapeHtml(totals.tokens) + '</b>' : '');
+      var preNote = proj.pre_log_note
+        ? '<div class="dev-log-pre">' + _escapeHtml(proj.pre_log_note) + '</div>' : '';
+      var entries = (proj.entries || []).slice().reverse();
+      var entriesHtml = entries.length
+        ? entries.map(function(e) {
+            var items = (e.items || []).map(function(it) {
+              return '<li>' + _escapeHtml(it) + '</li>';
+            }).join('');
+            var meta = [
+              e.minutes ? (e.minutes + '분') : null,
+              e.files ? (e.files + '파일') : null,
+              e.tokens ? ('토큰 ' + e.tokens) : null,
+            ].filter(Boolean).map(_escapeHtml).join(' · ');
+            return (
+              '<div class="dev-log-entry" onclick="this.classList.toggle(\'open\')">' +
+                '<div class="dev-log-entry-head">' +
+                  '<span class="dev-log-entry-date">' + _escapeHtml(e.date || '—') + '</span>' +
+                  '<span class="dev-log-entry-sum">' + _escapeHtml(e.summary || '') + '</span>' +
+                '</div>' +
+                (meta ? '<div class="dev-log-entry-meta">' + meta + '</div>' : '') +
+                (items ? '<ul class="dev-log-items">' + items + '</ul>' : '') +
+              '</div>'
+            );
+          }).join('')
+        : '<div class="dev-log-empty">기록 없음</div>';
+      return (
+        '<div class="dev-log-proj">' +
+          '<div class="dev-log-head">' +
+            '<span class="dev-log-name">' + _escapeHtml(proj.name || '—') + '</span>' +
+            '<span class="dev-log-badge ' + status + '">' + statusLabel + '</span>' +
+            '<span class="dev-log-range">' + started + ' ~ ' + ended + '</span>' +
+          '</div>' +
+          '<div class="dev-log-totals">' + totalsLine + '</div>' +
+          preNote +
+          '<div class="dev-log-entries">' + entriesHtml + '</div>' +
+        '</div>'
+      );
+    }
+    function _renderDevLog(doc) {
+      var projects = (doc && doc.projects) || [];
+      var html = projects.length
+        ? projects.map(_devLogProjectHtml).join('')
+        : '<div class="dev-log-empty">프로젝트 없음</div>';
+      ['m-dev-log', 'd-dev-log'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+      });
+    }
+    async function fetchAndRenderDevLog() {
+      if (!backend.url) return;
+      var doc = await fetchBackend('/dev-log');
+      if (doc) _renderDevLog(doc);
+    }
+
     async function refresh() {
       if (!backend.url) {
         updateSettingsUI();
@@ -6931,6 +7089,7 @@
         _clearMirrorBanner();
         applyDashboard(dashboard);
         updateSettingsUI();
+        fetchAndRenderDevLog();
         return;
       }
       // 직결 실패 — Firestore mirror 폴백 시도

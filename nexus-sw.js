@@ -40,7 +40,8 @@
 // v11.0 — Phase A: GitHub Pages 분리 빌드. 셸 자산 경로 /dashboard/ → /nexus/.
 //          PC 백엔드 직결 + Firestore 폴백 로직은 무손 (이미 양쪽 와이어드).
 // v10.3 — Phase 2.13: Firestore mirror 폴백 + 오프라인 배너 (dashboard.html)
-const CACHE_VERSION = 'v11.1';
+// v11.2 — 설정 탭 "개발 로그" 카드 + /dev-log API (표시 전용, 매매 무관)
+const CACHE_VERSION = 'v11.2';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.
@@ -74,6 +75,7 @@ function isApiRequest(url) {
   if (p.indexOf('/telegram') === 0) return true;
   if (p.indexOf('/kill_switch') === 0) return true;
   if (p.indexOf('/audit') === 0) return true;
+  if (p.indexOf('/dev-log') === 0) return true;
   return false;
 }
 

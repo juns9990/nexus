@@ -3149,9 +3149,32 @@
   }
   .nx-chart-empty {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 180px; color: var(--fg-muted); font-size: 12px; text-align: center; gap: 4px;
+    height: 180px; color: #b0b6bb; font-size: 12px; text-align: center; gap: 4px;
   }
-  .nx-chart-empty .big { font-size: 16px; color: var(--chart-white); }
+  .nx-chart-empty .big { font-size: 16px; color: var(--chart-white); font-weight: 700; }
+
+  /* ===== 커스텀 차트 범례 ===== */
+  .nx-chart-legend {
+    margin-top: 10px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .nx-legend-row {
+    display: grid; grid-template-columns: 14px 1fr auto;
+    align-items: center; gap: 10px;
+    font-size: 13px; color: var(--chart-white);
+    font-family: var(--sans); font-weight: 600;
+    padding: 2px 0;
+  }
+  .nx-legend-sw {
+    width: 12px; height: 12px; border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .nx-legend-name { color: var(--chart-white); }
+  .nx-legend-pct {
+    color: var(--chart-white); font-family: var(--mono);
+    font-weight: 700; font-size: 13px;
+  }
+  .hold-empty { color: #b0b6bb !important; }
 
   .sig-bar-wrap { margin-top: 6px; }
   .sig-bar-row {
@@ -3242,31 +3265,41 @@
   }
   .ev-cal-wkrow .wk.sun { color: #ef4444; }
   .ev-cal-wkrow .wk.sat { color: #60a5fa; }
-  .ev-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .ev-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
   .ev-cal-day {
-    aspect-ratio: 1; min-height: 44px;
+    min-height: 34px;
     background: rgba(255,255,255,0.025);
-    border: 1px solid transparent; border-radius: 6px;
-    padding: 4px 5px; font-family: var(--mono); font-size: 11px;
+    border: 1px solid transparent; border-radius: 5px;
+    padding: 3px 4px; font-family: var(--mono); font-size: 11px;
     color: var(--fg-dim); cursor: default; position: relative;
-    display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;
+  }
+  @media (min-width: 1025px) {
+    .ev-cal-day { min-height: 44px; padding: 4px 6px; }
   }
   .ev-cal-day.in-month { color: var(--chart-white); background: rgba(255,255,255,0.05); cursor: pointer; }
   .ev-cal-day.in-month:hover { background: rgba(255,255,255,0.10); }
   .ev-cal-day.today { border-color: var(--chart-strong); background: rgba(94,234,212,0.12); }
   .ev-cal-day.selected { border-color: var(--chart-white); background: rgba(255,255,255,0.15); }
   .ev-cal-day.blank { background: transparent; }
-  .ev-cal-day .dnum { font-weight: 600; font-size: 12px; line-height: 1; }
-  .ev-cal-day .dots { display: flex; gap: 2px; margin-top: auto; flex-wrap: wrap; align-self: flex-start; }
-  .ev-cal-day .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .ev-cal-day .dnum { font-weight: 700; font-size: 11px; line-height: 1; }
+  @media (min-width: 1025px) {
+    .ev-cal-day .dnum { font-size: 12px; }
+  }
+  .ev-cal-day .dots { display: flex; gap: 2px; flex-wrap: wrap; align-self: flex-start; margin-top: 2px; }
+  .ev-cal-day .dot { width: 5px; height: 5px; border-radius: 50%; }
   .ev-cal-day .dot.high   { background: #ef4444; }
   .ev-cal-day .dot.medium { background: #facc15; }
   .ev-cal-day .dot.low    { background: #88a8d0; }
   .ev-cal-day .fomc-badge {
-    position: absolute; top: 2px; right: 3px;
-    font-size: 9px; font-weight: 800; line-height: 1;
+    position: absolute; top: 1px; right: 2px;
+    font-size: 8px; font-weight: 800; line-height: 1;
     color: #0a0a0a; background: var(--chart-strong);
-    padding: 1px 4px; border-radius: 3px;
+    padding: 1px 3px; border-radius: 2px;
+  }
+  .ev-cal-summary {
+    font-size: 11px; color: var(--fg-muted); font-family: var(--mono);
+    margin: 8px 0 4px;
   }
   .ev-cal-legend {
     display: flex; gap: 12px; margin-top: 10px;
@@ -3281,25 +3314,44 @@
     font-size: 9px; font-weight: 800; color: #0a0a0a;
     background: var(--chart-strong); padding: 1px 4px; border-radius: 3px;
   }
-  .ev-cal-detail { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
-  .ev-cal-detail-empty { font-size: 12px; color: var(--fg-muted); padding: 4px 0; }
+  .ev-cal-detail { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px; }
+  .ev-cal-detail-empty { font-size: 12px; color: #b0b6bb; padding: 4px 0; }
   .ev-cal-detail-date {
-    font-size: 13px; font-weight: 700; color: var(--chart-white);
-    margin-bottom: 6px; font-family: var(--mono);
+    font-size: 14px; font-weight: 700; color: var(--chart-white);
+    margin-bottom: 8px; font-family: var(--mono);
   }
-  .ev-cal-detail-row {
-    display: flex; gap: 10px; padding: 6px 0; align-items: flex-start;
-    border-bottom: 1px dashed rgba(255,255,255,0.04);
+  .ev-cal-detail-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
   }
-  .ev-cal-detail-row:last-child { border-bottom: none; }
-  .ev-cal-detail-row .imp-dot {
-    width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;
+  .ev-cal-detail-card:last-child { margin-bottom: 0; }
+  .ev-cal-detail-card.high   { border-left: 3px solid #ef4444; }
+  .ev-cal-detail-card.medium { border-left: 3px solid #facc15; }
+  .ev-cal-detail-card.low    { border-left: 3px solid #88a8d0; }
+  .ev-cal-detail-card.fomc   { border-left-color: var(--chart-strong); }
+  .ev-cal-detail-head {
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    margin-bottom: 6px; font-family: var(--mono); font-size: 11px;
   }
-  .ev-cal-detail-row .imp-dot.high { background: #ef4444; }
-  .ev-cal-detail-row .imp-dot.medium { background: #facc15; }
-  .ev-cal-detail-row .imp-dot.low { background: #88a8d0; }
-  .ev-cal-detail-row .name { font-size: 13px; color: var(--chart-white); font-weight: 600; }
-  .ev-cal-detail-row .meta { font-size: 11px; color: var(--fg-muted); font-family: var(--mono); margin-top: 2px; }
+  .ev-cal-tag {
+    padding: 2px 8px; border-radius: 999px; font-weight: 700;
+    background: rgba(255,255,255,0.08); color: var(--chart-white);
+  }
+  .ev-cal-tag.fomc      { background: rgba(94,234,212,0.20); color: var(--chart-strong); }
+  .ev-cal-tag.indicator { background: rgba(250,204,21,0.15); color: #facc15; }
+  .ev-cal-tag.earnings  { background: rgba(94,234,212,0.15); color: var(--chart-strong); }
+  .ev-cal-tag-imp.high   { background: rgba(239,68,68,0.18); color: #ef4444; }
+  .ev-cal-tag-imp.medium { background: rgba(250,204,21,0.15); color: #facc15; }
+  .ev-cal-tag-imp.low    { background: rgba(136,168,208,0.18); color: #88a8d0; }
+  .ev-cal-tag-dday { background: rgba(255,255,255,0.10); color: var(--chart-white); }
+  .ev-cal-detail-name {
+    font-size: 14px; color: var(--chart-white); font-weight: 700;
+    line-height: 1.4; margin-bottom: 4px;
+  }
+  .ev-cal-detail-desc {
+    font-size: 12px; color: #d4d8dc; line-height: 1.5;
+  }
 
 </style>
 </head>
@@ -3483,29 +3535,9 @@
         <div class="nx-journal-empty">결재 이력 없음</div>
       </div>
 
-      <!-- 이벤트 캘린더 (월별 그리드) -->
+      <!-- 이벤트 달력 (D-day 리스트 대체) -->
       <div class="m-section-title" style="margin-top: 20px;">이벤트 달력<span class="meta">FOMC·지표·실적</span></div>
       <div class="ev-cal" id="ev-cal-mobile"></div>
-
-      <!-- 기존 D-day 리스트 (보조) -->
-      <div class="m-section-title" style="margin-top: 16px;">다가오는 이벤트<span class="meta">D-day 정렬</span></div>
-      <div class="events-card" id="events-card-mobile">
-        <div class="ev-head">
-          <span class="ev-title">D-day</span>
-          <span class="help-tip tip-right" tabindex="0" data-tip="다가오는 시장 영향 이벤트. FOMC=금리 결정, CPI/NFP=물가·고용 지표, 실적=보유 종목 발표" aria-label="이벤트 캘린더 도움말">?</span>
-          <span class="ev-meta" data-bind="ev-meta">—</span>
-        </div>
-        <div class="ev-hero dim" data-bind="ev-hero" style="display:none;">
-          <div class="ev-hero-dday" data-bind="ev-hero-dday">—</div>
-          <div class="ev-hero-meta">
-            <span class="ev-hero-name" data-bind="ev-hero-name">—</span>
-            <span class="ev-hero-sub" data-bind="ev-hero-sub">—</span>
-          </div>
-        </div>
-        <div class="ev-list" data-bind="ev-list">
-          <div class="ev-empty">데이터 수집 중…</div>
-        </div>
-      </div>
     </section>
 
     <!-- ===== POSITIONS TAB ===== -->
@@ -3526,12 +3558,13 @@
         <div class="hold-split" data-bind="hold-split">투자 — · 캐시 —</div>
       </div>
 
-      <!-- PM 자본배분 — 도넛 + 바 (홈에서 이동, Chart.js) -->
+      <!-- PM 자본배분 — 도넛 + 커스텀 범례 + 바 -->
       <div class="hold-pm-card">
         <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
         <div class="nx-chart-host" id="nx-pm-donut-host">
           <canvas id="nx-pm-donut" class="nx-chart-canvas" aria-label="PM 자본배분 도넛"></canvas>
         </div>
+        <div class="nx-chart-legend" id="nx-pm-donut-legend"></div>
         <div class="hold-pm-list" data-bind="hold-pm-list">
           <div class="hold-empty">데이터 수집 중…</div>
         </div>
@@ -4427,6 +4460,7 @@
           <div class="nx-chart-host" id="nx-pm-donut-host-pc">
             <canvas id="nx-pm-donut-pc" class="nx-chart-canvas" aria-label="PM 자본배분 도넛 (PC)"></canvas>
           </div>
+          <div class="nx-chart-legend" id="nx-pm-donut-legend-pc"></div>
           <div class="hold-pm-list" data-bind="hold-pm-list">
             <div class="hold-empty">데이터 수집 중…</div>
           </div>
@@ -4597,30 +4631,12 @@
         <div class="nx-journal-empty">결재 이력 없음</div>
       </div>
 
-      <!-- 이벤트 달력 -->
+      <!-- 이벤트 달력 (D-day 리스트 대체) -->
       <div class="d-tab-section-title">
         이벤트 달력
         <span class="d-tab-section-meta">FOMC·지표·실적</span>
       </div>
       <div class="ev-cal" id="ev-cal-pc"></div>
-
-      <!-- 기존 D-day 리스트 (보조) -->
-      <div class="d-tab-section-title">
-        다가오는 이벤트
-        <span class="d-tab-section-meta" data-bind="ev-meta">—</span>
-      </div>
-      <div class="events-card" id="events-card-pc">
-        <div class="ev-hero dim" data-bind="ev-hero" style="display:none;">
-          <div class="ev-hero-dday" data-bind="ev-hero-dday">—</div>
-          <div class="ev-hero-meta">
-            <span class="ev-hero-name" data-bind="ev-hero-name">—</span>
-            <span class="ev-hero-sub" data-bind="ev-hero-sub">—</span>
-          </div>
-        </div>
-        <div class="ev-list" data-bind="ev-list">
-          <div class="ev-empty">데이터 수집 중…</div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -8448,6 +8464,9 @@
     var data = pm.map(function(p){ return Number(p.target_pct || 0); }).concat([cashFloor]);
     var bg = pm.map(function(p){ return COLORS.pm[_pmKey(p)] || COLORS.muted; }).concat([COLORS.pm.cash]);
 
+    // HTML 범례 (Chart.js 내장 대신)
+    _renderPmLegend(canvasId, labels, data, bg);
+
     if (pmDonuts[canvasId]) {
       pmDonuts[canvasId].data.labels = labels;
       pmDonuts[canvasId].data.datasets[0].data = data;
@@ -8462,17 +8481,7 @@
         options: {
           responsive: true, maintainAspectRatio: false, cutout: '62%',
           plugins: {
-            legend: { position: 'right',
-              labels: { color: COLORS.white, font: { size: 11 }, boxWidth: 10, padding: 6,
-                generateLabels: function(chart) {
-                  var d = chart.data;
-                  return d.labels.map(function(l, i) {
-                    return { text: l + '  ' + d.datasets[0].data[i].toFixed(0) + '%',
-                             fillStyle: d.datasets[0].backgroundColor[i],
-                             strokeStyle: d.datasets[0].backgroundColor[i],
-                             hidden: false, index: i };
-                  });
-                } } },
+            legend: { display: false },
             tooltip: { backgroundColor: 'rgba(20,20,20,0.95)', titleColor: COLORS.white, bodyColor: COLORS.white,
               callbacks: { label: function(c){ return c.label + ': ' + c.parsed.toFixed(1) + '%'; } } },
           },
@@ -8481,6 +8490,25 @@
     } catch (e) {
       console.warn('[NexusCharts] PM donut 실패:', e && e.message);
     }
+  }
+  function _renderPmLegend(canvasId, labels, data, bg) {
+    var legendId = canvasId + '-legend';
+    var el = document.getElementById(legendId);
+    if (!el) {
+      var host = document.getElementById(canvasId === 'nx-pm-donut' ? 'nx-pm-donut-host' : 'nx-pm-donut-host-pc');
+      if (!host) return;
+      el = document.createElement('div');
+      el.id = legendId;
+      el.className = 'nx-chart-legend';
+      host.parentNode.insertBefore(el, host.nextSibling);
+    }
+    el.innerHTML = labels.map(function(l, i) {
+      return '<div class="nx-legend-row">' +
+        '<span class="nx-legend-sw" style="background:' + bg[i] + '"></span>' +
+        '<span class="nx-legend-name">' + _escapeHtmlNC(l) + '</span>' +
+        '<span class="nx-legend-pct">' + Number(data[i]).toFixed(0) + '%</span>' +
+      '</div>';
+    }).join('');
   }
 
   function destroyChart(canvasId) {
@@ -8577,6 +8605,23 @@
 
   // ---- 이벤트 캘린더 ----
   var EV_TYPE_LABEL = { fomc: 'FOMC', indicator: '경제지표', earnings: '실적 발표' };
+  var EV_IMP_LABEL = { high: '중요', medium: '보통', low: '참고' };
+  var EV_WEEKDAY_KO = ['일','월','화','수','목','금','토'];
+  var EV_DESC = {
+    CPI:    '소비자물가지수 — 인플레이션 핵심 지표. Fed 의 금리 경로에 직접 영향.',
+    PCE:    '개인소비지출 물가 — Fed 가 선호하는 인플레이션 지표. 코어 PCE 주시.',
+    NFP:    '비농업 신규 일자리 + 실업률. 노동시장 강도 → 금리/위험자산에 영향.',
+    PPI:    '도매 물가 지수. CPI 선행지표 성격, 기업 비용 트렌드 가늠.',
+    RETAIL: '소매판매 — 소비 강도 측정. 강하면 경기 견고, 약하면 침체 우려.',
+    GDP:    '국내총생산 속보치 — 경제 성장률. 큰 시장 반응 가능.',
+  };
+  function _evDescription(e) {
+    if (!e) return '';
+    if (e.type === 'fomc') return 'FED 금리 결정 — 정책금리 + 점도표 + 파월 발언. 최대 변동성 이벤트.';
+    if (e.type === 'earnings') return '보유 종목 실적 발표 — EPS / 매출 / 가이던스. 갭 가능성.';
+    var code = String(e.detail || '').toUpperCase();
+    return EV_DESC[code] || '경제지표 발표 — 시장 변동성 주의.';
+  }
   var calState = { ym: null, selDay: null };
   function _padN(n) { return n < 10 ? '0' + n : '' + n; }
   function _ymToday() { var d = new Date(); return d.getFullYear() + '-' + _padN(d.getMonth()+1); }
@@ -8587,18 +8632,47 @@
     var d = new Date(p.year, p.month + delta, 1);
     return d.getFullYear() + '-' + _padN(d.getMonth()+1);
   }
+  function _weekdayKo(ymd) {
+    var d = new Date(ymd + 'T00:00:00');
+    return EV_WEEKDAY_KO[d.getDay()];
+  }
+  function _ddayFromYmd(ymd) {
+    var t = new Date(_ymdToday() + 'T00:00:00');
+    var e = new Date(ymd + 'T00:00:00');
+    return Math.round((e - t) / 86400000);
+  }
+  function _ddayLabel(n) {
+    if (n === 0) return 'D-Day';
+    if (n > 0) return 'D-' + n;
+    return 'D+' + (-n);
+  }
   function _renderDayDetail(byDate, ymd) {
-    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트가 보입니다.</div></div>';
+    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트 상세가 보입니다.</div></div>';
     var evs = byDate[ymd] || [];
-    if (!evs.length) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + ymd + '</div><div class="ev-cal-detail-empty">이날엔 이벤트 없음</div></div>';
-    var rowsHtml = evs.map(function(e) {
+    var wd = _weekdayKo(ymd);
+    var dateHead = ymd + ' (' + wd + ')';
+    if (!evs.length) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + '</div><div class="ev-cal-detail-empty">이날엔 이벤트 없음</div></div>';
+    var cardsHtml = evs.map(function(e) {
       var imp = e.importance || 'low';
-      var meta = (EV_TYPE_LABEL[e.type] || e.type || '') + (e.detail ? ' · ' + e.detail : '');
-      return '<div class="ev-cal-detail-row"><span class="imp-dot ' + imp + '"></span>' +
-        '<div><div class="name">' + _escapeHtmlNC(e.name || '?') + '</div>' +
-        '<div class="meta">' + _escapeHtmlNC(meta) + '</div></div></div>';
+      var type = e.type || 'indicator';
+      var typeLabel = EV_TYPE_LABEL[type] || type;
+      var impLabel = EV_IMP_LABEL[imp] || imp;
+      var dd = _ddayFromYmd(ymd);
+      var desc = _evDescription(e);
+      var nameHtml = _escapeHtmlNC(e.name || '?');
+      if (e.detail && type !== 'fomc') nameHtml += ' <span style="color:#a8b0b6;font-weight:500;">(' + _escapeHtmlNC(e.detail) + ')</span>';
+      var cardCls = 'ev-cal-detail-card ' + imp + (type === 'fomc' ? ' fomc' : '');
+      return '<div class="' + cardCls + '">' +
+        '<div class="ev-cal-detail-head">' +
+          '<span class="ev-cal-tag ' + type + '">' + typeLabel + '</span>' +
+          '<span class="ev-cal-tag ev-cal-tag-imp ' + imp + '">' + impLabel + '</span>' +
+          '<span class="ev-cal-tag ev-cal-tag-dday">' + _ddayLabel(dd) + '</span>' +
+        '</div>' +
+        '<div class="ev-cal-detail-name">' + nameHtml + '</div>' +
+        '<div class="ev-cal-detail-desc">' + _escapeHtmlNC(desc) + '</div>' +
+      '</div>';
     }).join('');
-    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + ymd + '</div>' + rowsHtml + '</div>';
+    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + ' · ' + evs.length + '건</div>' + cardsHtml + '</div>';
   }
   function renderCalendar(eventsData) {
     if (!calState.ym) calState.ym = _ymToday();
@@ -8654,8 +8728,13 @@
       '<span class="lg-item"><span class="dot low"></span>참고</span>' +
       '<span class="lg-item"><span class="f">F</span>FOMC</span>' +
     '</div>';
+    var monthCount = 0;
+    Object.keys(byDate).forEach(function(dt) {
+      if (dt.indexOf(p.year + '-' + _padN(p.month + 1)) === 0) monthCount += byDate[dt].length;
+    });
+    var summaryHtml = '<div class="ev-cal-summary">이 달 ' + monthCount + '건 · 다가오는 이벤트 ' + events.length + '건</div>';
     var detailHtml = _renderDayDetail(byDate, calState.selDay);
-    var html = headHtml + wkHtml + gridHtml + legendHtml + detailHtml;
+    var html = headHtml + wkHtml + gridHtml + legendHtml + summaryHtml + detailHtml;
     ['ev-cal-mobile', 'ev-cal-pc'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.innerHTML = html;

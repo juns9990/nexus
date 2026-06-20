@@ -41,7 +41,8 @@
 //          PC 백엔드 직결 + Firestore 폴백 로직은 무손 (이미 양쪽 와이어드).
 // v10.3 — Phase 2.13: Firestore mirror 폴백 + 오프라인 배너 (dashboard.html)
 // v11.2 — 설정 탭 "개발 로그" 카드 + /dev-log API (표시 전용, 매매 무관)
-const CACHE_VERSION = 'v11.2';
+// v11.3 — dev_log entry tokens_detail 구조 + 카드 "추정" 명시 렌더
+const CACHE_VERSION = 'v11.3';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

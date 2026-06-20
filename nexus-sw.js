@@ -46,7 +46,8 @@
 // v11.5 — Chart.js 도입: NAV 라인 + PM 도넛 + 리스크 게이지 + 색·글씨 통일
 // v11.6 — 캘린더 그리드 + 게이지 SVG 텍스트 정중앙 + 게이지 색 분리 + PM 한국 이름·색 통일
 // v11.7 — PC 도넛 범례 HTML 화 (흰색) + 달력 컴팩트 + 상세 풍부 + D-day 리스트 제거
-const CACHE_VERSION = 'v11.7';
+// v11.8 — 개발 로그 자동 토큰 집계 (PC 백엔드 /dev-log 에서 enrich)
+const CACHE_VERSION = 'v11.8';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

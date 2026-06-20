@@ -1474,6 +1474,38 @@
     font-size: 12px; color: var(--fg-muted); padding: 6px 0;
   }
 
+  /* ----- 자동 토큰 집계 표시 ----- */
+  .dl-tag {
+    display: inline-block; font-size: 9px; font-weight: 800;
+    padding: 1px 6px; border-radius: 999px;
+    letter-spacing: 0.02em; font-family: var(--sans);
+    background: rgba(94,234,212,0.18); color: var(--accent);
+    margin-right: 4px;
+  }
+  .dl-tag.auto { background: rgba(94,234,212,0.18); color: var(--accent); }
+  .dl-est { color: #d4d8dc; font-family: var(--mono); font-size: 10px; margin-left: 4px; }
+  .dev-log-actual {
+    font-family: var(--mono); font-size: 10.5px;
+    color: #d4d8dc; margin-top: 4px; line-height: 1.5;
+  }
+  .dev-log-actual b { color: #f4f6f7; font-weight: 700; }
+  .dev-log-actual-sum {
+    margin-top: 8px; padding: 8px 10px;
+    background: rgba(94,234,212,0.06); border: 1px solid rgba(94,234,212,0.18);
+    border-radius: 6px;
+    font-family: var(--mono); font-size: 11px; color: #d4d8dc;
+  }
+  .dev-log-actual-sum b { color: #f4f6f7; font-weight: 700; }
+  .dl-note {
+    margin-top: 4px; font-size: 10px; color: #b0b6bb;
+    font-family: var(--sans); font-style: italic;
+  }
+  .dev-log-scan-meta {
+    margin-top: 10px; font-size: 10px; color: #b0b6bb;
+    font-family: var(--mono); text-align: right;
+  }
+  .dev-log-scan-meta.error { color: #ef4444; }
+
   /* ============= TAB BAR ============= */
   .m-tabbar {
     position: fixed; bottom: 0; left: 0; right: 0;
@@ -7306,7 +7338,6 @@
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
     function _formatTokensFromDetail(td) {
-      // tokens_detail 우선 — "약 $1~3 (추정) · 주 3% · 세션 8%"
       if (!td) return '';
       var parts = [];
       if (td.estimate_usd) parts.push('약 ' + td.estimate_usd);
@@ -7316,11 +7347,49 @@
       return parts.join(' · ');
     }
     function _entryTokensText(e) {
-      // tokens_detail 있으면 구조화 포맷, 없으면 자유 문자열 tokens
       if (!e) return '';
       var det = _formatTokensFromDetail(e.tokens_detail);
       if (det) return det;
       return e.tokens ? String(e.tokens) : '';
+    }
+    function _formatN(n) {
+      n = Number(n || 0);
+      if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return String(n);
+    }
+    function _formatUsdEst(v) {
+      v = Number(v || 0);
+      if (v >= 100) return '약 $' + v.toFixed(0);
+      if (v >= 1) return '약 $' + v.toFixed(2);
+      return '약 $' + v.toFixed(3);
+    }
+    function _entryActualLine(e) {
+      var a = e && e.tokens_actual;
+      if (!a || !a.total) return '';
+      return (
+        '<div class="dev-log-actual">' +
+          '<span class="dl-tag auto">자동 집계</span> ' +
+          '입력 <b>' + _formatN(a.input) + '</b> · ' +
+          '출력 <b>' + _formatN(a.output) + '</b> · ' +
+          '캐시 <b>' + _formatN(a.cache_read + a.cache_creation) + '</b> · ' +
+          '합 <b>' + _formatN(a.total) + '</b>' +
+          ' <span class="dl-est">' + _formatUsdEst(a.estimated_usd) + ' (추정)</span>' +
+        '</div>'
+      );
+    }
+    function _projectActualSummary(proj) {
+      var t = proj && proj.tokens_actual_totals;
+      if (!t || !t.total) return '';
+      return (
+        '<div class="dev-log-actual-sum">' +
+          '<span class="dl-tag auto">자동 누적</span> ' +
+          '총 <b>' + _formatN(t.total) + '</b> tokens · ' +
+          _formatUsdEst(t.estimated_usd) + ' (추정) · ' +
+          (t.sessions || 0) + '세션' +
+          '<div class="dl-note">Max 정액제 — 표시 비용은 API 단가 기준 추정값 (실제 청구 아님)</div>' +
+        '</div>'
+      );
     }
     function _devLogProjectHtml(proj) {
       var status = proj.status === 'done' ? 'done' : 'active';
@@ -7328,7 +7397,6 @@
       var started = proj.started ? _escapeHtml(proj.started) : '—';
       var ended = proj.ended ? _escapeHtml(proj.ended) : '~';
       var totals = proj.totals || {};
-      // totals tokens — 우선 가장 최근 entry 의 tokens_detail 포맷, 없으면 totals.tokens 문자열
       var entriesAll = proj.entries || [];
       var lastEntry = entriesAll.length ? entriesAll[entriesAll.length - 1] : null;
       var lastTokensFmt = lastEntry ? _entryTokensText(lastEntry) : '';
@@ -7359,6 +7427,7 @@
                   '<span class="dev-log-entry-sum">' + _escapeHtml(e.summary || '') + '</span>' +
                 '</div>' +
                 (meta ? '<div class="dev-log-entry-meta">' + meta + '</div>' : '') +
+                _entryActualLine(e) +
                 (items ? '<ul class="dev-log-items">' + items + '</ul>' : '') +
               '</div>'
             );
@@ -7372,6 +7441,7 @@
             '<span class="dev-log-range">' + started + ' ~ ' + ended + '</span>' +
           '</div>' +
           '<div class="dev-log-totals">' + totalsLine + '</div>' +
+          _projectActualSummary(proj) +
           preNote +
           '<div class="dev-log-entries">' + entriesHtml + '</div>' +
         '</div>'
@@ -7379,9 +7449,17 @@
     }
     function _renderDevLog(doc) {
       var projects = (doc && doc.projects) || [];
+      var scanMeta = (doc && doc.usage_scan) || null;
       var html = projects.length
         ? projects.map(_devLogProjectHtml).join('')
         : '<div class="dev-log-empty">프로젝트 없음</div>';
+      if (scanMeta && scanMeta.scanned_files) {
+        var stamp = scanMeta.scanned_at ? scanMeta.scanned_at.slice(0,16).replace('T',' ') + 'Z' : '—';
+        html += '<div class="dev-log-scan-meta">자동 집계 : ' + scanMeta.scanned_files +
+                ' 세션 파일 스캔 · ' + _escapeHtml(stamp) + '</div>';
+      } else if (scanMeta && scanMeta.error) {
+        html += '<div class="dev-log-scan-meta error">자동 집계 실패: ' + _escapeHtml(scanMeta.error) + '</div>';
+      }
       ['m-dev-log', 'd-dev-log'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.innerHTML = html;

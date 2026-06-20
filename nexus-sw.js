@@ -35,10 +35,12 @@
 //         네트워크 실패로 분류하여 캐시 셸 폴백으로 빠지게 수정.
 //         (Tailscale serve 가 PC 백엔드 다운 시 502 반환 → 기존엔 fetch promise 가
 //          resolve 되어 .catch 미실행 → 폰에 502 그대로 노출되던 버그)
+// v11.1 — 설정 탭에 백엔드 URL 입력칸 카드 추가 (모바일/PC 양쪽).
+//          기존 nexus_backend_url localStorage 메커니즘 재사용. 새 빌드 캐시 무효화.
 // v11.0 — Phase A: GitHub Pages 분리 빌드. 셸 자산 경로 /dashboard/ → /nexus/.
 //          PC 백엔드 직결 + Firestore 폴백 로직은 무손 (이미 양쪽 와이어드).
 // v10.3 — Phase 2.13: Firestore mirror 폴백 + 오프라인 배너 (dashboard.html)
-const CACHE_VERSION = 'v11.0';
+const CACHE_VERSION = 'v11.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

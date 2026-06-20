@@ -3471,9 +3471,23 @@
 
       <div class="m-section-title">백엔드 연결<span class="meta">PC 노트북</span></div>
       <div class="m-settings-group">
-        <div class="m-settings-row" onclick="window.nexusConfigBackend && window.nexusConfigBackend()">
+        <div class="m-settings-row" style="flex-direction:column;align-items:stretch;gap:8px;">
           <div class="key">백엔드 URL</div>
-          <div><span class="val muted" id="cfg-backend-url">설정 필요 →</span><span class="arrow">›</span></div>
+          <input id="cfg-backend-input" type="url" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false"
+                 placeholder="https://msdn.tail63441d.ts.net"
+                 style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--fg);font-family:var(--mono);font-size:13px;outline:none;box-sizing:border-box;">
+          <button type="button" onclick="window.nexusSaveBackendUrl && window.nexusSaveBackendUrl()"
+                  style="padding:10px;background:var(--accent);color:#000;font-family:var(--sans);font-weight:700;font-size:13px;border:none;border-radius:6px;cursor:pointer;">
+            저장 후 새로고침
+          </button>
+          <div style="font-size:11px;color:var(--fg-muted);line-height:1.4;">
+            예) <code>https://msdn.tail63441d.ts.net</code> · <code>http://100.x.y.z:8443</code><br>
+            저장 시 localStorage 에 보관 → 다음 진입부터 자동 사용.
+          </div>
+        </div>
+        <div class="m-settings-row">
+          <div class="key">현재 저장 URL</div>
+          <div><span class="val muted" id="cfg-backend-url" style="font-family:var(--mono);font-size:12px;word-break:break-all;text-align:right;">설정 필요</span></div>
         </div>
         <div class="m-settings-row">
           <div class="key">연결 상태</div>
@@ -4394,6 +4408,31 @@
           <div class="d-settings-row">
             <div class="k">SW 캐시</div>
             <div class="v muted">nexus-cache-v5 · 자동 갱신</div>
+          </div>
+        </div>
+
+        <!-- 백엔드 연결 (Phase B: GitHub Pages 분리 셸 대응) -->
+        <div class="d-settings-card">
+          <div class="h">백엔드 연결</div>
+          <div class="d-settings-row">
+            <div class="k">현재 저장 URL</div>
+            <div class="v muted" id="cfg-backend-url-d" style="font-family:var(--mono);font-size:11px;word-break:break-all;text-align:right;">설정 필요</div>
+          </div>
+          <div class="d-settings-row">
+            <div class="k">연결 상태</div>
+            <div class="v muted" id="cfg-backend-state-d">mock 모드</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <input id="cfg-backend-input-d" type="url" autocapitalize="off" autocomplete="off" spellcheck="false"
+                   placeholder="https://msdn.tail63441d.ts.net"
+                   style="flex:1;padding:8px 10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;color:var(--fg);font-family:var(--mono);font-size:12px;outline:none;">
+            <button type="button" onclick="window.nexusSaveBackendUrl && window.nexusSaveBackendUrl()"
+                    style="padding:8px 14px;background:var(--accent);color:#000;font-family:var(--sans);font-weight:700;font-size:12px;border:none;border-radius:4px;cursor:pointer;">
+              저장
+            </button>
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--fg-muted);">
+            예) <code>http://100.x.y.z:8443</code> · 저장 후 자동 새로고침.
           </div>
         </div>
 
@@ -6746,29 +6785,44 @@
       var urlEl = document.getElementById('cfg-backend-url');
       var stateEl = document.getElementById('cfg-backend-state');
       var syncEl = document.getElementById('cfg-backend-sync');
+      var urlElD = document.getElementById('cfg-backend-url-d');
+      var stateElD = document.getElementById('cfg-backend-state-d');
+      // 입력칸도 backend.url 로 sync — 단 사용자가 편집 중이면 덮어쓰지 않음
+      var inp = document.getElementById('cfg-backend-input');
+      if (inp && document.activeElement !== inp) inp.value = backend.url || '';
+      var inpD = document.getElementById('cfg-backend-input-d');
+      if (inpD && document.activeElement !== inpD) inpD.value = backend.url || '';
       if (urlEl) {
-        urlEl.textContent = backend.url || '설정 필요 →';
+        urlEl.textContent = backend.url || '설정 필요';
         urlEl.className = backend.url ? 'val' : 'val muted';
       }
-      if (stateEl) {
+      if (urlElD) {
+        urlElD.textContent = backend.url || '설정 필요';
+        urlElD.className = backend.url ? 'v' : 'v muted';
+      }
+      function _renderState(el, useDClass) {
+        if (!el) return;
+        var clsBase = useDClass ? 'v' : 'val';
         if (!backend.url) {
-          stateEl.textContent = 'mock 모드';
-          stateEl.className = 'val muted';
+          el.textContent = 'mock 모드';
+          el.className = clsBase + ' muted';
+          el.style.color = '';
         } else if (backend.mode === 'mirror') {
-          // Phase 2.13 — Firestore 폴백
-          stateEl.textContent = '◐ Firestore 폴백 (PC 꺼짐)';
-          stateEl.className = 'val';
-          stateEl.style.color = '#d97706';
+          el.textContent = '◐ Firestore 폴백 (PC 꺼짐)';
+          el.className = clsBase;
+          el.style.color = '#d97706';
         } else if (backend.connected) {
-          stateEl.textContent = '✓ 라이브';
-          stateEl.className = 'val';
-          stateEl.style.color = 'var(--accent)';
+          el.textContent = '✓ 라이브 (직결)';
+          el.className = clsBase;
+          el.style.color = 'var(--accent)';
         } else {
-          stateEl.textContent = '✗ 연결 실패';
-          stateEl.className = 'val';
-          stateEl.style.color = 'var(--negative)';
+          el.textContent = '✗ 연결 실패';
+          el.className = clsBase;
+          el.style.color = 'var(--negative)';
         }
       }
+      _renderState(stateEl, false);
+      _renderState(stateElD, true);
       if (syncEl) {
         syncEl.textContent = backend.lastSync
           ? backend.lastSync.toLocaleTimeString('ko-KR')
@@ -6909,7 +6963,7 @@
       showBanner('⚠ 백엔드 연결 실패 — mock 데이터 표시 중. 설정 탭에서 URL 확인.', 'error');
     }
 
-    // 백엔드 URL 설정 모달 (설정 탭에서 호출)
+    // 백엔드 URL 설정 모달 (설정 탭에서 호출, prompt 폴백)
     window.nexusConfigBackend = function() {
       var current = backend.url || getStoredUrl() || '';
       var input = prompt(
@@ -6932,6 +6986,36 @@
       } else {
         showBanner('백엔드 URL 제거됨 — mock 모드', 'ok');
       }
+    };
+
+    // Phase B+ — 설정 탭 인라인 입력 저장. 모바일/PC 양쪽 input 공용.
+    // prompt() 가 막히는 환경(iOS PWA standalone, 일부 안드로이드) 대응 + 일반 UX 개선.
+    window.nexusSaveBackendUrl = function() {
+      var inputs = [
+        document.getElementById('cfg-backend-input'),
+        document.getElementById('cfg-backend-input-d'),
+      ].filter(function(el){ return el; });
+      var v = '';
+      for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].value && inputs[i].value.trim()) { v = inputs[i].value.trim(); break; }
+      }
+      v = v.replace(/\/$/, '');
+      if (!v) {
+        showBanner('URL 비어있음 — 저장하지 않음', 'error');
+        return;
+      }
+      if (!/^https?:\/\//i.test(v)) {
+        showBanner('https:// 또는 http:// 로 시작해야 합니다', 'error');
+        return;
+      }
+      setStoredUrl(v);
+      backend.url = v;
+      backend.connected = false;
+      backend.lastSync = null;
+      updateSettingsUI();
+      showBanner('백엔드 저장: ' + v + ' — 새로고침 중', 'ok');
+      // 새 origin 으로 즉시 refresh 가 깔끔 — SW 셸 + 캐시도 함께 워밍업
+      setTimeout(function() { try { location.reload(); } catch (e) {} }, 600);
     };
 
     // 초기화

@@ -43,7 +43,8 @@
 // v11.2 — 설정 탭 "개발 로그" 카드 + /dev-log API (표시 전용, 매매 무관)
 // v11.3 — dev_log entry tokens_detail 구조 + 카드 "추정" 명시 렌더
 // v11.4 — 홈 정리: 카운트다운/Aegis 셀 중복 제거, 방어판→보유, 계층3→이력, 액션→설정
-const CACHE_VERSION = 'v11.4';
+// v11.5 — Chart.js 도입: NAV 라인 + PM 도넛 + 리스크 게이지 + 색·글씨 통일
+const CACHE_VERSION = 'v11.5';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

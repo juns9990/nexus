@@ -3184,20 +3184,122 @@
     display: flex; flex-direction: column; align-items: center;
     text-align: center;
   }
-  .gauge-svg { width: 80px; height: 80px; }
+  .gauge-svg { width: 84px; height: 84px; display: block; }
   .gauge-svg .track { stroke: rgba(255,255,255,0.08); }
   .gauge-svg .fill { transition: stroke-dashoffset 0.6s ease, stroke 0.3s; }
+  .gauge-svg-text {
+    font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    font-size: 13px; font-weight: 700; fill: var(--chart-white);
+  }
+  .gauge-fill-gate { stroke: var(--chart-strong); }
+  .gauge-fill-vix  { stroke: var(--pm-tide); }
+  .gauge-fill-cash { stroke: #60a5fa; }
+  .gauge-fill-mdd-ok    { stroke: var(--chart-up); }
+  .gauge-fill-mdd-warn  { stroke: var(--warn); }
+  .gauge-fill-mdd-alert { stroke: var(--chart-down); }
   .gauge-fill-ok    { stroke: var(--chart-up); }
   .gauge-fill-warn  { stroke: var(--warn); }
   .gauge-fill-alert { stroke: var(--chart-down); }
   .gauge-fill-info  { stroke: var(--chart-strong); }
-  .gauge-label { font-size: 11px; color: var(--fg-muted); margin-top: 4px; }
-  .gauge-value {
-    font-family: var(--mono); font-size: 15px;
-    color: var(--chart-white); font-weight: 700; margin-top: -56px;
-    pointer-events: none;
-  }
+  .gauge-label { font-size: 11px; color: var(--chart-white); margin-top: 4px; font-weight: 600; }
   .gauge-sub { font-size: 10px; color: var(--fg-muted); margin-top: 2px; font-family: var(--mono); }
+
+  /* ===== PM 바 색 매핑 ===== */
+  .hold-pm-row.pm-nw   .hold-pm-bar .actual { background: var(--pm-nw); }
+  .hold-pm-row.pm-tide .hold-pm-bar .actual { background: var(--pm-tide); }
+  .hold-pm-row.pm-sur  .hold-pm-bar .actual { background: var(--pm-sur); }
+  .hold-pm-row.pm-cash .hold-pm-bar .actual { background: var(--pm-cash); }
+  .hold-pm-row.pm-nw   .hold-pm-pcts .actual { color: var(--pm-nw); }
+  .hold-pm-row.pm-tide .hold-pm-pcts .actual { color: var(--pm-tide); }
+  .hold-pm-row.pm-sur  .hold-pm-pcts .actual { color: var(--pm-sur); }
+  .hold-pm-row.pm-cash .hold-pm-pcts .actual { color: var(--pm-cash); }
+  .hold-pm-name .pm-swatch {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    margin-right: 6px; vertical-align: middle;
+  }
+
+  /* ===== 캘린더 ===== */
+  .ev-cal {
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg-elev); padding: 12px; margin-bottom: 12px;
+  }
+  .ev-cal-head {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .ev-cal-title {
+    font-size: 14px; font-weight: 700; color: var(--chart-white); font-family: var(--mono);
+  }
+  .ev-cal-arrow {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--chart-white); padding: 4px 12px; cursor: pointer;
+    border-radius: 6px; font-family: var(--mono); font-size: 14px; font-weight: 700;
+  }
+  .ev-cal-arrow:hover { background: rgba(255,255,255,0.05); border-color: var(--chart-strong); }
+  .ev-cal-wkrow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 4px; }
+  .ev-cal-wkrow .wk {
+    text-align: center; font-size: 10px; color: var(--fg-muted);
+    font-family: var(--mono); padding: 4px 0; font-weight: 600;
+  }
+  .ev-cal-wkrow .wk.sun { color: #ef4444; }
+  .ev-cal-wkrow .wk.sat { color: #60a5fa; }
+  .ev-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .ev-cal-day {
+    aspect-ratio: 1; min-height: 44px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid transparent; border-radius: 6px;
+    padding: 4px 5px; font-family: var(--mono); font-size: 11px;
+    color: var(--fg-dim); cursor: default; position: relative;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+  }
+  .ev-cal-day.in-month { color: var(--chart-white); background: rgba(255,255,255,0.05); cursor: pointer; }
+  .ev-cal-day.in-month:hover { background: rgba(255,255,255,0.10); }
+  .ev-cal-day.today { border-color: var(--chart-strong); background: rgba(94,234,212,0.12); }
+  .ev-cal-day.selected { border-color: var(--chart-white); background: rgba(255,255,255,0.15); }
+  .ev-cal-day.blank { background: transparent; }
+  .ev-cal-day .dnum { font-weight: 600; font-size: 12px; line-height: 1; }
+  .ev-cal-day .dots { display: flex; gap: 2px; margin-top: auto; flex-wrap: wrap; align-self: flex-start; }
+  .ev-cal-day .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .ev-cal-day .dot.high   { background: #ef4444; }
+  .ev-cal-day .dot.medium { background: #facc15; }
+  .ev-cal-day .dot.low    { background: #88a8d0; }
+  .ev-cal-day .fomc-badge {
+    position: absolute; top: 2px; right: 3px;
+    font-size: 9px; font-weight: 800; line-height: 1;
+    color: #0a0a0a; background: var(--chart-strong);
+    padding: 1px 4px; border-radius: 3px;
+  }
+  .ev-cal-legend {
+    display: flex; gap: 12px; margin-top: 10px;
+    font-size: 11px; color: var(--fg-muted); font-family: var(--mono); flex-wrap: wrap;
+  }
+  .ev-cal-legend .lg-item { display: flex; align-items: center; gap: 4px; }
+  .ev-cal-legend .lg-item .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .ev-cal-legend .lg-item .dot.high { background: #ef4444; }
+  .ev-cal-legend .lg-item .dot.medium { background: #facc15; }
+  .ev-cal-legend .lg-item .dot.low { background: #88a8d0; }
+  .ev-cal-legend .lg-item .f {
+    font-size: 9px; font-weight: 800; color: #0a0a0a;
+    background: var(--chart-strong); padding: 1px 4px; border-radius: 3px;
+  }
+  .ev-cal-detail { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
+  .ev-cal-detail-empty { font-size: 12px; color: var(--fg-muted); padding: 4px 0; }
+  .ev-cal-detail-date {
+    font-size: 13px; font-weight: 700; color: var(--chart-white);
+    margin-bottom: 6px; font-family: var(--mono);
+  }
+  .ev-cal-detail-row {
+    display: flex; gap: 10px; padding: 6px 0; align-items: flex-start;
+    border-bottom: 1px dashed rgba(255,255,255,0.04);
+  }
+  .ev-cal-detail-row:last-child { border-bottom: none; }
+  .ev-cal-detail-row .imp-dot {
+    width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;
+  }
+  .ev-cal-detail-row .imp-dot.high { background: #ef4444; }
+  .ev-cal-detail-row .imp-dot.medium { background: #facc15; }
+  .ev-cal-detail-row .imp-dot.low { background: #88a8d0; }
+  .ev-cal-detail-row .name { font-size: 13px; color: var(--chart-white); font-weight: 600; }
+  .ev-cal-detail-row .meta { font-size: 11px; color: var(--fg-muted); font-family: var(--mono); margin-top: 2px; }
 
 </style>
 </head>
@@ -3381,8 +3483,12 @@
         <div class="nx-journal-empty">결재 이력 없음</div>
       </div>
 
-      <!-- 이벤트 캘린더 (홈에서 이동 — 다가오는 이벤트 = 의사결정 근거) -->
-      <div class="m-section-title" style="margin-top: 20px;">다가오는 이벤트<span class="meta">FOMC·지표·실적</span></div>
+      <!-- 이벤트 캘린더 (월별 그리드) -->
+      <div class="m-section-title" style="margin-top: 20px;">이벤트 달력<span class="meta">FOMC·지표·실적</span></div>
+      <div class="ev-cal" id="ev-cal-mobile"></div>
+
+      <!-- 기존 D-day 리스트 (보조) -->
+      <div class="m-section-title" style="margin-top: 16px;">다가오는 이벤트<span class="meta">D-day 정렬</span></div>
       <div class="events-card" id="events-card-mobile">
         <div class="ev-head">
           <span class="ev-title">D-day</span>
@@ -4491,7 +4597,14 @@
         <div class="nx-journal-empty">결재 이력 없음</div>
       </div>
 
-      <!-- 이벤트 캘린더 (홈에서 이동 — 다가오는 이벤트 = 의사결정 근거) -->
+      <!-- 이벤트 달력 -->
+      <div class="d-tab-section-title">
+        이벤트 달력
+        <span class="d-tab-section-meta">FOMC·지표·실적</span>
+      </div>
+      <div class="ev-cal" id="ev-cal-pc"></div>
+
+      <!-- 기존 D-day 리스트 (보조) -->
       <div class="d-tab-section-title">
         다가오는 이벤트
         <span class="d-tab-section-meta" data-bind="ev-meta">—</span>
@@ -5650,22 +5763,30 @@
         (cash != null ? '$' + Number(cash).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—');
       _setBinds('hold-split', splitTxt);
 
-      // PM 자본배분 바 3행
+      // PM 자본배분 바 — 한국 이름·색·범례 통일
       var pmHost = document.querySelector('[data-bind="hold-pm-list"]');
       if (pmHost) {
         var rows = port.pm_allocation || [];
         if (rows.length === 0) {
           pmHost.innerHTML = '<div class="hold-empty">데이터 수집 중…</div>';
         } else {
-          pmHost.innerHTML = rows.map(function(r) {
+          var PM_KO = { night_watch: '박세진', tide: '한도현', sur: '김선우' };
+          var PM_EN = { night_watch: 'Night Watch', tide: 'Tide', sur: 'Sur' };
+          var PM_COLOR = { night_watch: '#5eead4', tide: '#a78bfa', sur: '#fbbf24', cash: '#4b5563' };
+          var rowsHtml = rows.map(function(r) {
+            var k = r.key || '';
             var t = Number(r.target_pct) || 0;
             var a = Number(r.actual_pct) || 0;
-            var maxScale = Math.max(t, a, 60); // 그래프 스케일 — 0..60% 기본
+            var maxScale = Math.max(t, a, 60);
             var tw = Math.min(100, t / maxScale * 100);
             var aw = Math.min(100, a / maxScale * 100);
-            return '<div class="hold-pm-row">' +
+            var ko = PM_KO[k] || (r.label || k);
+            var en = PM_EN[k] || (r.short || '');
+            var nameHtml = '<span class="pm-swatch" style="background:' + (PM_COLOR[k] || '#4b5563') + '"></span>' +
+                           _escapeHtml(ko) + (en ? ' <span style="color:var(--fg-muted);font-weight:400;">(' + en + ')</span>' : '');
+            return '<div class="hold-pm-row pm-' + (k === 'night_watch' ? 'nw' : (k === 'tide' ? 'tide' : (k === 'sur' ? 'sur' : 'cash'))) + '">' +
               '<div class="hold-pm-head">' +
-                '<span class="hold-pm-name">' + _escapeHtml(r.label) + '</span>' +
+                '<span class="hold-pm-name">' + nameHtml + '</span>' +
                 '<span class="hold-pm-pcts">목표 ' + t.toFixed(0) + '% · 실제 ' +
                   '<span class="actual">' + a.toFixed(2) + '%</span></span>' +
               '</div>' +
@@ -5676,6 +5797,28 @@
               '</div>' +
             '</div>';
           }).join('');
+          var cashFloorPct = Number(port.cash_floor_target_pct || 10);
+          var navUsd2 = Number((window.nexusBackendData && window.nexusBackendData.nav && window.nexusBackendData.nav.value_usd) || 0);
+          var cashUsd2 = Number(port.cash_usd || 0);
+          var cashActual = navUsd2 > 0 ? (cashUsd2 / navUsd2 * 100) : 0;
+          var cMaxScale = Math.max(cashFloorPct, cashActual, 60);
+          var ctw = Math.min(100, cashFloorPct / cMaxScale * 100);
+          var caw = Math.min(100, cashActual / cMaxScale * 100);
+          rowsHtml += '<div class="hold-pm-row pm-cash">' +
+            '<div class="hold-pm-head">' +
+              '<span class="hold-pm-name">' +
+                '<span class="pm-swatch" style="background:#4b5563"></span>현금' +
+              '</span>' +
+              '<span class="hold-pm-pcts">목표(floor) ' + cashFloorPct.toFixed(0) + '% · 실제 ' +
+                '<span class="actual">' + cashActual.toFixed(2) + '%</span></span>' +
+            '</div>' +
+            '<div class="hold-pm-bar">' +
+              '<div class="target" style="width:' + ctw + '%"></div>' +
+              '<div class="actual" style="width:' + caw + '%"></div>' +
+              '<div class="marker" style="left:calc(' + ctw + '% - 1px)"></div>' +
+            '</div>' +
+          '</div>';
+          pmHost.innerHTML = rowsHtml;
         }
       }
 
@@ -8191,6 +8334,25 @@
     pm: { night_watch: '#5eead4', tide: '#a78bfa', sur: '#fbbf24', cash: '#4b5563' },
   };
   var PERIOD_DAYS = { '15D': 15, '1M': 30, '3M': 90, 'ALL': 0 };
+  var PM_NAMES = {
+    night_watch: { ko: '박세진', en: 'Night Watch' },
+    tide:        { ko: '한도현', en: 'Tide' },
+    sur:         { ko: '김선우', en: 'Sur' },
+  };
+  function _pmKey(p) {
+    return p && (p.key || (p.short || '').toLowerCase().replace(/\s+/g,'_'));
+  }
+  function _pmDisplayName(p) {
+    var key = _pmKey(p);
+    var meta = PM_NAMES[key];
+    if (meta) return meta.ko + ' (' + meta.en + ')';
+    return (p && (p.short || p.key)) || '?';
+  }
+  function _escapeHtmlNC(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
 
   function isChartReady() {
     return !window.__nexusChartJsFailed && typeof window.Chart === 'function';
@@ -8282,9 +8444,9 @@
       host.innerHTML = '<canvas id="' + canvasId + '" class="nx-chart-canvas" aria-label="PM 자본배분 도넛"></canvas>';
       canvas = document.getElementById(canvasId);
     }
-    var labels = pm.map(function(p){ return (p.short || p.key || '?'); }).concat(['현금']);
+    var labels = pm.map(_pmDisplayName).concat(['현금']);
     var data = pm.map(function(p){ return Number(p.target_pct || 0); }).concat([cashFloor]);
-    var bg = pm.map(function(p){ return COLORS.pm[p.key] || COLORS.muted; }).concat([COLORS.pm.cash]);
+    var bg = pm.map(function(p){ return COLORS.pm[_pmKey(p)] || COLORS.muted; }).concat([COLORS.pm.cash]);
 
     if (pmDonuts[canvasId]) {
       pmDonuts[canvasId].data.labels = labels;
@@ -8330,6 +8492,8 @@
     var pct = Math.max(0, Math.min(1, max > 0 ? value / max : 0));
     var circ = 2 * Math.PI * 30;
     var dashOffset = circ * (1 - pct);
+    var txt = String(valueText == null ? '—' : valueText);
+    var fontSize = txt.length >= 6 ? 11 : (txt.length >= 5 ? 12 : 13);
     return (
       '<div class="gauge-cell">' +
         '<svg class="gauge-svg" viewBox="0 0 80 80" aria-label="' + label + ' 게이지">' +
@@ -8337,10 +8501,12 @@
           '<circle class="fill ' + fillClass + '" cx="40" cy="40" r="30" fill="none" stroke-width="8" stroke-linecap="round" ' +
                   'stroke-dasharray="' + circ.toFixed(2) + '" stroke-dashoffset="' + dashOffset.toFixed(2) + '" ' +
                   'transform="rotate(-90 40 40)"/>' +
+          '<text class="gauge-svg-text" x="40" y="40" ' +
+                'text-anchor="middle" dominant-baseline="central" ' +
+                'style="font-size:' + fontSize + 'px;">' + _escapeHtmlNC(txt) + '</text>' +
         '</svg>' +
-        '<div class="gauge-value">' + valueText + '</div>' +
-        '<div class="gauge-label">' + label + '</div>' +
-        '<div class="gauge-sub">' + subText + '</div>' +
+        '<div class="gauge-label">' + _escapeHtmlNC(label) + '</div>' +
+        '<div class="gauge-sub">' + _escapeHtmlNC(subText) + '</div>' +
       '</div>'
     );
   }
@@ -8353,10 +8519,7 @@
     var gates = aegis.gates || [];
     var passing = gates.filter(function(g){return g.passing;}).length;
     var total = gates.length || 12;
-    var gateClass = (passing === total) ? 'gauge-fill-ok' : (passing >= total - 2 ? 'gauge-fill-warn' : 'gauge-fill-alert');
     var vix = market.vix;
-    var vixClass = (vix == null) ? 'gauge-fill-info'
-      : (vix <= 18 ? 'gauge-fill-ok' : (vix <= 25 ? 'gauge-fill-warn' : 'gauge-fill-alert'));
     var vixVal = (vix == null) ? '—' : Number(vix).toFixed(1);
     var vixSub = (vix == null) ? '수집 중'
       : (vix <= 18 ? '평온' : (vix <= 25 ? '보통' : (vix <= 30 ? '긴장' : '위험')));
@@ -8364,19 +8527,18 @@
     var cash = Number(port.cash_usd || 0);
     var cashPct = (nav > 0) ? (cash / nav * 100) : 0;
     var cashFloor = Number(port.cash_floor_target_pct || 10);
-    var cashClass = (cashPct >= cashFloor) ? 'gauge-fill-ok' : 'gauge-fill-warn';
     var cashVal = nav > 0 ? cashPct.toFixed(1) + '%' : '—';
     var mdd = (def.current_mdd_pct != null) ? Number(def.current_mdd_pct) : null;
     var mddAbs = (mdd != null) ? Math.abs(mdd) : 0;
     var mddClass = (mdd == null) ? 'gauge-fill-info'
-      : (mddAbs <= 3 ? 'gauge-fill-ok' : (mddAbs <= 7 ? 'gauge-fill-warn' : 'gauge-fill-alert'));
+      : (mddAbs <= 3 ? 'gauge-fill-mdd-ok' : (mddAbs <= 7 ? 'gauge-fill-mdd-warn' : 'gauge-fill-mdd-alert'));
     var mddVal = (mdd == null) ? '—' : (mdd >= 0 ? '+' : '') + mdd.toFixed(2) + '%';
     var mddSub = (mdd == null) ? '데이터 없음'
       : (mddAbs <= 3 ? '안전' : (mddAbs <= 7 ? '주의' : '위험'));
     var html =
-      gaugeSvg(passing, total, gateClass, passing + '/' + total, '게이트', '통과') +
-      gaugeSvg(Math.min(vix == null ? 0 : vix, 40), 40, vixClass, vixVal, 'VIX', vixSub) +
-      gaugeSvg(cashPct, 100, cashClass, cashVal, '현금', 'floor ' + cashFloor + '%') +
+      gaugeSvg(passing, total, 'gauge-fill-gate', passing + '/' + total, '게이트', '통과') +
+      gaugeSvg(Math.min(vix == null ? 0 : vix, 40), 40, 'gauge-fill-vix', vixVal, 'VIX', vixSub) +
+      gaugeSvg(cashPct, 100, 'gauge-fill-cash', cashVal, '현금', 'floor ' + cashFloor + '%') +
       gaugeSvg(Math.min(mddAbs, 10), 10, mddClass, mddVal, 'MDD', mddSub);
     ['nx-gauge-wrap-mobile', 'nx-gauge-wrap-pc'].forEach(function(id) {
       var el = document.getElementById(id);
@@ -8413,6 +8575,110 @@
     renderNavChart(target, data.performance || {});
   });
 
+  // ---- 이벤트 캘린더 ----
+  var EV_TYPE_LABEL = { fomc: 'FOMC', indicator: '경제지표', earnings: '실적 발표' };
+  var calState = { ym: null, selDay: null };
+  function _padN(n) { return n < 10 ? '0' + n : '' + n; }
+  function _ymToday() { var d = new Date(); return d.getFullYear() + '-' + _padN(d.getMonth()+1); }
+  function _ymdToday() { var d = new Date(); return d.getFullYear() + '-' + _padN(d.getMonth()+1) + '-' + _padN(d.getDate()); }
+  function _parseYm(ym) { var p = String(ym).split('-'); return { year: +p[0], month: (+p[1]) - 1 }; }
+  function _shiftYm(ym, delta) {
+    var p = _parseYm(ym);
+    var d = new Date(p.year, p.month + delta, 1);
+    return d.getFullYear() + '-' + _padN(d.getMonth()+1);
+  }
+  function _renderDayDetail(byDate, ymd) {
+    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트가 보입니다.</div></div>';
+    var evs = byDate[ymd] || [];
+    if (!evs.length) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + ymd + '</div><div class="ev-cal-detail-empty">이날엔 이벤트 없음</div></div>';
+    var rowsHtml = evs.map(function(e) {
+      var imp = e.importance || 'low';
+      var meta = (EV_TYPE_LABEL[e.type] || e.type || '') + (e.detail ? ' · ' + e.detail : '');
+      return '<div class="ev-cal-detail-row"><span class="imp-dot ' + imp + '"></span>' +
+        '<div><div class="name">' + _escapeHtmlNC(e.name || '?') + '</div>' +
+        '<div class="meta">' + _escapeHtmlNC(meta) + '</div></div></div>';
+    }).join('');
+    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + ymd + '</div>' + rowsHtml + '</div>';
+  }
+  function renderCalendar(eventsData) {
+    if (!calState.ym) calState.ym = _ymToday();
+    var events = (eventsData && Array.isArray(eventsData.events)) ? eventsData.events : [];
+    var todayYmd = _ymdToday();
+    var p = _parseYm(calState.ym);
+    var firstWeekday = new Date(p.year, p.month, 1).getDay();
+    var daysInMonth = new Date(p.year, p.month + 1, 0).getDate();
+    var byDate = {};
+    events.forEach(function(e) {
+      var dt = (e.date || '').slice(0, 10);
+      if (!dt) return;
+      if (!byDate[dt]) byDate[dt] = [];
+      byDate[dt].push(e);
+    });
+    var cells = [];
+    for (var i = 0; i < firstWeekday; i++) cells.push({ blank: true });
+    for (var dnum = 1; dnum <= daysInMonth; dnum++) {
+      var ymd = p.year + '-' + _padN(p.month + 1) + '-' + _padN(dnum);
+      cells.push({ day: dnum, ymd: ymd, events: byDate[ymd] || [], isToday: ymd === todayYmd });
+    }
+    while (cells.length % 7 !== 0) cells.push({ blank: true });
+    var titleStr = p.year + '년 ' + (p.month + 1) + '월';
+    var wkLabels = ['일','월','화','수','목','금','토'];
+    var headHtml = '<div class="ev-cal-head">' +
+      '<button type="button" class="ev-cal-arrow" data-cal-act="prev" aria-label="이전 달">←</button>' +
+      '<div class="ev-cal-title">' + titleStr + '</div>' +
+      '<button type="button" class="ev-cal-arrow" data-cal-act="next" aria-label="다음 달">→</button>' +
+    '</div>';
+    var wkHtml = '<div class="ev-cal-wkrow">' + wkLabels.map(function(w, i) {
+      var cls = i === 0 ? ' sun' : (i === 6 ? ' sat' : '');
+      return '<div class="wk' + cls + '">' + w + '</div>';
+    }).join('') + '</div>';
+    var gridHtml = '<div class="ev-cal-grid">' + cells.map(function(c) {
+      if (c.blank) return '<div class="ev-cal-day blank"></div>';
+      var classes = ['ev-cal-day', 'in-month'];
+      if (c.isToday) classes.push('today');
+      if (calState.selDay === c.ymd) classes.push('selected');
+      if (c.events.length) classes.push('has-events');
+      var hasFomc = c.events.some(function(e) { return e.type === 'fomc'; });
+      var dots = c.events.slice(0, 4).map(function(e) {
+        return '<span class="dot ' + (e.importance || 'low') + '"></span>';
+      }).join('');
+      return '<div class="' + classes.join(' ') + '" data-cal-day="' + c.ymd + '" role="button" tabindex="0">' +
+        (hasFomc ? '<span class="fomc-badge">F</span>' : '') +
+        '<span class="dnum">' + c.day + '</span>' +
+        (dots ? '<div class="dots">' + dots + '</div>' : '') +
+      '</div>';
+    }).join('') + '</div>';
+    var legendHtml = '<div class="ev-cal-legend">' +
+      '<span class="lg-item"><span class="dot high"></span>중요</span>' +
+      '<span class="lg-item"><span class="dot medium"></span>보통</span>' +
+      '<span class="lg-item"><span class="dot low"></span>참고</span>' +
+      '<span class="lg-item"><span class="f">F</span>FOMC</span>' +
+    '</div>';
+    var detailHtml = _renderDayDetail(byDate, calState.selDay);
+    var html = headHtml + wkHtml + gridHtml + legendHtml + detailHtml;
+    ['ev-cal-mobile', 'ev-cal-pc'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    });
+  }
+  document.addEventListener('click', function(e) {
+    var nav = e.target.closest('[data-cal-act]');
+    if (nav) {
+      var act = nav.getAttribute('data-cal-act');
+      calState.ym = _shiftYm(calState.ym || _ymToday(), act === 'prev' ? -1 : 1);
+      var data = window.nexusBackendData || {};
+      renderCalendar(data.events || {});
+      return;
+    }
+    var dayCell = e.target.closest('[data-cal-day]');
+    if (dayCell) {
+      calState.selDay = dayCell.getAttribute('data-cal-day');
+      var data2 = window.nexusBackendData || {};
+      renderCalendar(data2.events || {});
+      return;
+    }
+  });
+
   window.NexusCharts = {
     refresh: function(data) {
       try {
@@ -8422,6 +8688,7 @@
         renderPmDonut('nx-pm-donut-pc', data.portfolio || {});
         renderRiskGauges(data);
         renderMarketDeltas(data);
+        renderCalendar(data.events || {});
       } catch (e) {
         console.warn('[NexusCharts] refresh 예외:', e && e.message);
       }

@@ -7622,7 +7622,8 @@
         var brief = data && data.last_text ? data : null;
         if (!brief) {
           try {
-            var snap = await fetch('/dashboard/api/snapshot').then(r => r.json());
+            var base = (window.nexusBackend && window.nexusBackend.url ? window.nexusBackend.url : '');
+            var snap = await fetch(base + '/dashboard/api/snapshot').then(r => r.json());
             brief = snap && snap.briefing;
           } catch (e) {}
         }

@@ -1,0 +1,36 @@
+{
+  "name": "Vela Quantum Nexus",
+  "short_name": "Vela",
+  "description": "Vela Quantum Nexus — 1인 자동투자 시스템 실시간 대시보드",
+  "lang": "ko",
+  "dir": "ltr",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "start_url": "/nexus/dashboard.html",
+  "scope": "/nexus/",
+  "id": "/nexus/",
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {
+      "src": "./nexus-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./nexus-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./nexus-icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

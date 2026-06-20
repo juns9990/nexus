@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Vela Quantum Nexus — App Icon (vector original)
+  배경: #0a0a0a · "Vela" Fraunces italic 900 · V/e/a 흰색 · l 민트(#5eead4)
+  PNG 변환: app/static/nexus-icon-{192,512,maskable}.png
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Vela">
+  <title>Vela</title>
+  <defs>
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,900&amp;display=swap');
+      .vela {
+        font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+        font-style: italic;
+        font-weight: 900;
+        font-size: 360px;
+        letter-spacing: -0.01em;
+      }
+      .w { fill: #ffffff; }
+      .c { fill: #5eead4; }
+    </style>
+  </defs>
+  <rect width="512" height="512" fill="#0a0a0a"/>
+  <!--
+    SVG <text> 안의 <tspan> 은 형제 글자의 advance 폭을 유지하므로
+    V/e/a/l 각자 색만 다르게 적용해도 자간 영향 없음.
+    text-anchor=middle 로 가로 중앙, dominant-baseline=central 로 세로 중앙.
+  -->
+  <text class="vela" x="256" y="256"
+        text-anchor="middle"
+        dominant-baseline="central">
+    <tspan class="w">V</tspan><tspan class="w">e</tspan><tspan class="c">l</tspan><tspan class="w">a</tspan>
+  </text>
+</svg>

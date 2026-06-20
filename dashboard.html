@@ -3093,8 +3093,6 @@
     </div>
     <div class="m-header-meta" aria-label="시스템 상태 메타">
       <span class="m-meta-dot">●</span>
-      <span data-bind="header-day">D—</span>
-      <span class="m-meta-sep">·</span>
       <span data-bind="header-sys-ver">v—</span>
       <span class="m-meta-sep">·</span>
       <span>SW <span data-bind="header-sw-ver">v—</span></span>
@@ -3165,10 +3163,10 @@
           <span class="nx-aegis-meta" data-bind="aegis-pass-num">12/12</span>
         </div>
         <div class="nx-aegis-grid">
-          <div><div class="l">VIX</div><div class="v" data-bind="nx-aegis-vix">—</div><div class="t" data-bind="nx-aegis-vix-thr">—</div></div>
-          <div><div class="l">MDD</div><div class="v" data-bind="nx-aegis-mdd">—</div><div class="t" data-bind="nx-aegis-mdd-thr">—</div></div>
+          <div><div class="l">게이트</div><div class="v" data-bind="aegis-pass-num">12/12</div><div class="t">통과</div></div>
           <div><div class="l">현금</div><div class="v" data-bind="nx-aegis-cash">—</div><div class="t" data-bind="nx-aegis-cash-thr">—</div></div>
           <div><div class="l">차단</div><div class="v" data-bind="nx-aegis-blocked">0</div><div class="t">오늘</div></div>
+          <div><div class="l">방어</div><div class="v" data-bind="defense-mode">—</div><div class="t" data-bind="defense-meta">—</div></div>
         </div>
       </div>
 
@@ -3178,52 +3176,7 @@
         <div class="nx-journal-empty">최근 이벤트 없음</div>
       </div>
 
-      <!-- (7) 다음 미국장 카운트다운 (장 마감 시) -->
-      <div class="nx-countdown-card" id="nx-countdown-card" style="display:none;">
-        <div class="nx-cd-label">다음 미국장 시작까지</div>
-        <div class="nx-cd-time" id="nx-cd-time">— D — : — : —</div>
-        <div class="nx-cd-sub" data-bind="nx-cd-at">—</div>
-      </div>
-
-      <!-- ====== 하단 보존: 방어 상태판 · 계층3 · Recovery (기존 컴포넌트) ====== -->
-      <div class="nx-section-title" style="margin-top: 24px;">방어 상태판</div>
-      <div class="defense-board" id="defense-board-mobile">
-        <div class="db-head">
-          <span class="db-title">방어선 6선</span>
-          <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
-          <span class="db-meta" data-bind="defense-meta">—</span>
-        </div>
-        <div class="db-stats">
-          <span>고점 <span class="v" data-bind="defense-hwm">—</span></span>
-          <span>MDD <span class="v" data-bind="defense-mdd">—</span></span>
-          <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
-          <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
-        </div>
-        <div class="db-lines" data-bind="defense-lines"></div>
-        <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
-      </div>
-
-      <div class="nx-section-title" style="margin-top: 24px;">계층 3 · 장중 평가</div>
-      <div class="layer3-card" id="layer3-card-mobile">
-        <div class="l3-head">
-          <span class="l3-title">계층 3</span>
-          <span class="l3-mode simulate" data-bind="l3-mode">SIMULATE</span>
-          <span class="l3-mode-sub" data-bind="l3-mode-sub">관찰 중</span>
-          <button type="button" class="l3-test-btn" onclick="nexusLayer3TestNotify(this)">테스트 알림</button>
-          <span class="l3-meta" data-bind="l3-meta">—</span>
-        </div>
-        <div class="l3-stats">
-          <div class="l3-cell"><div class="l3-label">평가</div><div class="l3-val" data-bind="l3-evals">—</div></div>
-          <div class="l3-cell"><div class="l3-label" data-bind="l3-would-label">했을 매매 (시뮬)</div><div class="l3-val would" data-bind="l3-would">—</div><div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div></div>
-          <div class="l3-cell"><div class="l3-label">스킵</div><div class="l3-val skipped" data-bind="l3-skipped">—</div></div>
-          <div class="l3-cell"><div class="l3-label">안전배수</div><div class="l3-val" data-bind="l3-mult">×3</div></div>
-        </div>
-        <div class="l3-section">
-          <div class="l3-section-title">스킵 사유</div>
-          <div class="l3-reasons" data-bind="l3-reasons"><div class="l3-empty">집계 없음</div></div>
-        </div>
-      </div>
-
+      <!-- ====== 하단 보존: Recovery (방어판·계층3 는 각각 보유/이력 탭으로 이동) ====== -->
       <div class="recovery-card" id="recovery-card-mobile" style="margin-top: 16px;">
         <div class="rc-head">
           <div class="rc-badge" id="rc-badge-mobile">·</div>
@@ -3237,15 +3190,7 @@
         </div>
       </div>
 
-      <!-- 빠른 행동 -->
-      <div class="m-action-row" style="margin-top: 20px;">
-        <button type="button" class="m-action-btn" onclick="window.nexusOpenBriefingModal && window.nexusOpenBriefingModal()">
-          <span class="ico">📨</span>일일 리포트
-        </button>
-        <button type="button" class="m-action-btn" onclick="window.nexusOpenMandateModal && window.nexusOpenMandateModal()">
-          <span class="ico">📜</span>운영 헌법
-        </button>
-      </div>
+      <!-- 빠른 행동 → 설정 탭으로 이동 (홈 정리) -->
 
       <!-- 폐기 영역 (Phase 2.13 내러티브 홈에서 흡수됨):
            - 5인 운용진 list → 운용진 데스크 (5)
@@ -3338,6 +3283,24 @@
         <div class="m-positions-empty">데이터 수집 중…</div>
       </div>
 
+      <!-- 방어 상태판 (홈에서 이동 — 보유 + 방어선 통합) -->
+      <div class="m-section-title" style="margin-top: 20px;">방어 상태판<span class="meta">6선</span></div>
+      <div class="defense-board" id="defense-board-mobile">
+        <div class="db-head">
+          <span class="db-title">방어선 6선</span>
+          <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
+          <span class="db-meta" data-bind="defense-meta">—</span>
+        </div>
+        <div class="db-stats">
+          <span>고점 <span class="v" data-bind="defense-hwm">—</span></span>
+          <span>MDD <span class="v" data-bind="defense-mdd">—</span></span>
+          <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
+          <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
+        </div>
+        <div class="db-lines" data-bind="defense-lines"></div>
+        <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
+      </div>
+
       <!-- 리스크 메트릭 (홈에서 이동 — 포트폴리오 분석은 보유 탭) -->
       <div class="m-section-title" style="margin-top: 20px;">리스크 메트릭</div>
       <div class="risk-card" id="risk-card-mobile">
@@ -3379,6 +3342,34 @@
         <div class="m-history-empty">최근 활동 없음</div>
       </div>
 
+      <!-- 계층 3 · 장중 평가 (홈에서 이동 — 깊은 매매 분석은 이력 탭) -->
+      <div class="m-section-title" style="margin-top: 20px;">계층 3 · 장중 평가</div>
+      <div class="layer3-card" id="layer3-card-mobile">
+        <div class="l3-head">
+          <span class="l3-title">계층 3</span>
+          <span class="l3-mode simulate" data-bind="l3-mode">SIMULATE</span>
+          <span class="l3-mode-sub" data-bind="l3-mode-sub">관찰 중</span>
+          <button type="button" class="l3-test-btn" onclick="nexusLayer3TestNotify(this)">테스트 알림</button>
+          <span class="l3-meta" data-bind="l3-meta">—</span>
+        </div>
+        <div class="l3-stats">
+          <div class="l3-cell"><div class="l3-label">평가</div><div class="l3-val" data-bind="l3-evals">—</div></div>
+          <div class="l3-cell"><div class="l3-label" data-bind="l3-would-label">했을 매매 (시뮬)</div><div class="l3-val would" data-bind="l3-would">—</div><div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div></div>
+          <div class="l3-cell"><div class="l3-label">스킵</div><div class="l3-val skipped" data-bind="l3-skipped">—</div></div>
+          <div class="l3-cell"><div class="l3-label">안전배수</div><div class="l3-val" data-bind="l3-mult">×3</div></div>
+        </div>
+        <div class="l3-section">
+          <div class="l3-section-title">스킵 사유</div>
+          <div class="l3-reasons" data-bind="l3-reasons"><div class="l3-empty">집계 없음</div></div>
+        </div>
+        <div class="l3-section">
+          <div class="l3-section-title">최근 "했을 매매"</div>
+          <div class="l3-trades" data-bind="l3-trades">
+            <div class="l3-empty">기록 없음</div>
+          </div>
+        </div>
+      </div>
+
       <!-- 폐기: 데모 일자 그룹들 (raw notif feed 로 통합) -->
       <div style="display:none;">
         <div class="m-history-row">
@@ -3401,6 +3392,16 @@
           <div class="s">전 매매 즉시 중단 · 텔레그램 동시 발동</div>
         </div>
         <button type="button" class="btn-kill" onclick="window.nexusKillSwitch && window.nexusKillSwitch()">정지</button>
+      </div>
+
+      <!-- 빠른 행동 (홈에서 이동) -->
+      <div class="m-action-row" style="margin-top: 14px;">
+        <button type="button" class="m-action-btn" onclick="window.nexusOpenBriefingModal && window.nexusOpenBriefingModal()">
+          <span class="ico">📨</span>일일 리포트
+        </button>
+        <button type="button" class="m-action-btn" onclick="window.nexusOpenMandateModal && window.nexusOpenMandateModal()">
+          <span class="ico">📜</span>운영 헌법
+        </button>
       </div>
 
       <!-- Aegis 12 게이트 -->
@@ -3699,10 +3700,8 @@
       <span class="d-mast-meta">D47 · 개시 2026.03.18 · 격리계좌 ····XXXX</span>
     </div>
     <div class="d-mast-right">
-      <div class="item"><span class="dot"></span>라이브</div>
-      <div class="item">페이퍼</div>
-      <div class="item"><span class="mode">밸런스</span></div>
-      <div class="item ver" data-bind="d-mast-version">v2.1.0</div>
+      <div class="item"><span class="mode" data-bind="mode-label">—</span></div>
+      <div class="item ver" data-bind="d-mast-version">v—</div>
     </div>
   </header>
 
@@ -3791,28 +3790,17 @@
         <span class="nx-aegis-meta" data-bind="aegis-pass-num">12/12</span>
       </div>
       <div class="nx-aegis-grid">
-        <div><div class="l">VIX</div><div class="v" data-bind="nx-aegis-vix">—</div><div class="t" data-bind="nx-aegis-vix-thr">—</div></div>
-        <div><div class="l">MDD</div><div class="v" data-bind="nx-aegis-mdd">—</div><div class="t" data-bind="nx-aegis-mdd-thr">—</div></div>
+        <div><div class="l">게이트</div><div class="v" data-bind="aegis-pass-num">12/12</div><div class="t">통과</div></div>
         <div><div class="l">현금</div><div class="v" data-bind="nx-aegis-cash">—</div><div class="t" data-bind="nx-aegis-cash-thr">—</div></div>
         <div><div class="l">차단</div><div class="v" data-bind="nx-aegis-blocked">0</div><div class="t">오늘</div></div>
+        <div><div class="l">방어</div><div class="v" data-bind="defense-mode">—</div><div class="t" data-bind="defense-meta">—</div></div>
       </div>
     </div>
 
-    <!-- (6) 일지 + (7) 카운트다운 — 한 행 두 카드 -->
-    <div class="nx-row-2">
-      <div>
-        <div class="nx-section-title">일지 · 최근 8건</div>
-        <div class="nx-journal" data-bind="nx-journal">
-          <div class="nx-journal-empty">최근 이벤트 없음</div>
-        </div>
-      </div>
-      <div>
-        <div class="nx-countdown-card nx-countdown-pc" id="nx-countdown-card-pc">
-          <div class="nx-cd-label">다음 미국장 시작까지</div>
-          <div class="nx-cd-time" id="nx-cd-time-pc">— D — : — : —</div>
-          <div class="nx-cd-sub" data-bind="nx-cd-at">—</div>
-        </div>
-      </div>
+    <!-- (6) 일지 — 카운트다운 제거 (중복) -->
+    <div class="nx-section-title">일지 · 최근 8건</div>
+    <div class="nx-journal" data-bind="nx-journal">
+      <div class="nx-journal-empty">최근 이벤트 없음</div>
     </div>
 
   </div><!-- /.nx-narrative-pc -->
@@ -3822,108 +3810,13 @@
   <!-- ────────────────────────────────────────────── -->
   <div class="d-stack">
 
-    <!-- ── 그룹 1 · 상태 ── -->
-    <section class="d-group">
-      <h2 class="d-group-title">상태</h2>
-      <div class="d-group-stack">
-        <div class="live-banner dim" id="live-banner-pc" data-bind-banner="pc">
-          <span class="lb-dot"></span>
-          <span class="lb-msg" data-bind="banner-msg">상태 수집 중…</span>
-          <span class="lb-meta" data-bind="banner-meta">—</span>
-        </div>
+    <!-- 그룹 1 (상태/시장신호등) → H1·H4 와 중복으로 삭제됨 -->
+    <!-- 그룹 2 (방어 6선판) → 보유 탭으로 이동 -->
 
-        <div class="market-light" id="market-light-pc">
-          <div class="ml-cell">
-            <span class="ml-label">시장 분위기</span>
-            <span class="ml-val unknown" data-bind="market-summary">—</span>
-            <span class="ml-sub" data-bind="market-source">미수집</span>
-          </div>
-          <div class="ml-cell">
-            <span class="ml-label">VIX <span class="help-tip" tabindex="0" data-tip="공포지수. 시장 변동성. 20↓ 안정, 30↑ 공포" aria-label="VIX 도움말">?</span></span>
-            <span class="ml-val unknown" data-bind="market-vix">—</span>
-            <span class="ml-sub" data-bind="market-vix-class">—</span>
-          </div>
-          <div class="ml-cell">
-            <span class="ml-label">SPY · QQQ</span>
-            <span class="ml-val" data-bind="market-idx">—</span>
-            <span class="ml-sub" data-bind="market-idx-sub">—</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── 그룹 2 · 방어 (리스크는 보유 탭으로 이동) ── -->
-    <section class="d-group">
-      <h2 class="d-group-title">방어</h2>
-      <div class="d-group-stack">
-        <div class="defense-board" id="defense-board-pc">
-          <div class="db-head">
-            <span class="db-title">방어 상태판</span>
-            <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
-            <span class="db-meta" data-bind="defense-meta">—</span>
-          </div>
-          <div class="db-stats">
-            <span>고점 <span class="v" data-bind="defense-hwm">—</span><span class="help-tip" tabindex="0" data-tip="최고 자산액. MDD 계산 기준" aria-label="고점 도움말">?</span></span>
-            <span>MDD <span class="v" data-bind="defense-mdd">—</span><span class="help-tip" tabindex="0" data-tip="최대 낙폭. 고점에서 최대로 떨어진 폭" aria-label="MDD 도움말">?</span></span>
-            <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
-            <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
-          </div>
-          <div class="db-lines" data-bind="defense-lines"></div>
-          <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── 그룹 3 · 매매 ── -->
+    <!-- ── 그룹 3 · 매매 (계층3 → 이력 탭으로 이동, Recovery 만 유지) ── -->
     <section class="d-group">
       <h2 class="d-group-title">매매</h2>
       <div class="d-group-stack">
-
-        <!-- Layer 3 · 장중 평가 (PC) — mandate v1.4.0 -->
-        <div class="layer3-card" id="layer3-card-pc">
-          <div class="l3-head">
-            <span class="l3-title">계층 3 · 장중 평가</span>
-            <span class="l3-mode simulate" data-bind="l3-mode">SIMULATE</span>
-            <span class="l3-mode-sub" data-bind="l3-mode-sub">관찰 중</span>
-            <span class="help-tip" tabindex="0" data-tip="계층3: 5분마다 경제성 계산, 기대수익이 비용의 3배 넘을 때만 매매. 현재 관찰 모드" aria-label="계층3 도움말">?</span>
-            <button type="button" class="l3-test-btn" onclick="nexusLayer3TestNotify(this)" title="Telegram 알림 채널 동작 확인 (sim 기록 영향 X)">테스트 알림</button>
-            <span class="l3-meta" data-bind="l3-meta">—</span>
-          </div>
-          <div class="l3-stats">
-            <div class="l3-cell">
-              <div class="l3-label">평가 횟수</div>
-              <div class="l3-val" data-bind="l3-evals">—</div>
-              <div class="l3-sub">오늘 KST</div>
-            </div>
-            <div class="l3-cell">
-              <div class="l3-label"><span data-bind="l3-would-label">했을 매매 (시뮬)</span> <span class="help-tip" tabindex="0" data-tip="시뮬레이트 모드에서 실제로 발사됐을 매매 횟수" aria-label="would_trade 도움말">?</span></div>
-              <div class="l3-val would" data-bind="l3-would">—</div>
-              <div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div>
-            </div>
-            <div class="l3-cell">
-              <div class="l3-label">스킵</div>
-              <div class="l3-val skipped" data-bind="l3-skipped">—</div>
-              <div class="l3-sub">게이트 미통과</div>
-            </div>
-            <div class="l3-cell">
-              <div class="l3-label">안전배수 / 임계 <span class="help-tip tip-right" tabindex="0" data-tip="net_expected ≥ cost × multiplier. buy_thr ≤ 신호강도면 매수 후보" aria-label="임계 도움말">?</span></div>
-              <div class="l3-val" data-bind="l3-mult">×3</div>
-              <div class="l3-sub" data-bind="l3-thr-sub">매수 0.6 · 매도 0.4</div>
-            </div>
-          </div>
-          <div class="l3-section">
-            <div class="l3-section-title">스킵 사유 분포</div>
-            <div class="l3-reasons" data-bind="l3-reasons">
-              <div class="l3-empty">집계 없음</div>
-            </div>
-          </div>
-          <div class="l3-section">
-            <div class="l3-section-title">최근 "했을 매매"</div>
-            <div class="l3-trades" data-bind="l3-trades">
-              <div class="l3-empty">기록 없음</div>
-            </div>
-          </div>
-        </div>
 
         <!-- Phase 2.4 Recovery (PC) — 조건부 노출 (운용진 매매 흐름과 같은 그룹) -->
         <div class="recovery-card" id="recovery-card-pc">
@@ -4275,6 +4168,27 @@
         <div class="d-pos-empty">데이터 수집 중…</div>
       </div>
 
+      <!-- 방어 상태판 (홈에서 이동) -->
+      <div class="d-tab-section-title">
+        방어 상태판
+        <span class="d-tab-section-meta">6선</span>
+      </div>
+      <div class="defense-board" id="defense-board-pc">
+        <div class="db-head">
+          <span class="db-title">방어 상태판</span>
+          <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
+          <span class="db-meta" data-bind="defense-meta">—</span>
+        </div>
+        <div class="db-stats">
+          <span>고점 <span class="v" data-bind="defense-hwm">—</span><span class="help-tip" tabindex="0" data-tip="최고 자산액. MDD 계산 기준" aria-label="고점 도움말">?</span></span>
+          <span>MDD <span class="v" data-bind="defense-mdd">—</span><span class="help-tip" tabindex="0" data-tip="최대 낙폭. 고점에서 최대로 떨어진 폭" aria-label="MDD 도움말">?</span></span>
+          <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
+          <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
+        </div>
+        <div class="db-lines" data-bind="defense-lines"></div>
+        <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
+      </div>
+
       <!-- 리스크 메트릭 (홈에서 이동 — 포트폴리오 분석은 보유 탭) -->
       <div class="d-tab-section-title">
         리스크 메트릭
@@ -4319,19 +4233,52 @@
         <div class="d-history-empty">최근 활동 없음</div>
       </div>
 
-      <!-- 계층3 "했을매매" 상세 (홈 패널에서 분리 — 깊은 분석은 이력 탭) -->
+      <!-- 계층 3 · 장중 평가 (홈에서 이동 — 깊은 분석은 이력 탭) -->
       <div class="d-tab-section-title">
-        계층 3 · 최근 "했을 매매"
-        <span class="d-tab-section-meta">simulate · 게이트 통과 시점</span>
+        계층 3 · 장중 평가
+        <span class="d-tab-section-meta">mandate v1.4.0</span>
       </div>
-      <div class="layer3-card" style="margin: 0;">
-        <div class="l3-trades" data-bind="l3-trades">
-          <div class="l3-empty">기록 없음</div>
+      <div class="layer3-card" id="layer3-card-pc">
+        <div class="l3-head">
+          <span class="l3-title">계층 3 · 장중 평가</span>
+          <span class="l3-mode simulate" data-bind="l3-mode">SIMULATE</span>
+          <span class="l3-mode-sub" data-bind="l3-mode-sub">관찰 중</span>
+          <span class="help-tip" tabindex="0" data-tip="계층3: 5분마다 경제성 계산, 기대수익이 비용의 3배 넘을 때만 매매. 현재 관찰 모드" aria-label="계층3 도움말">?</span>
+          <button type="button" class="l3-test-btn" onclick="nexusLayer3TestNotify(this)" title="Telegram 알림 채널 동작 확인 (sim 기록 영향 X)">테스트 알림</button>
+          <span class="l3-meta" data-bind="l3-meta">—</span>
         </div>
-        <div style="margin-top: 10px;">
-          <div class="l3-section-title">스킵 사유 분포 (오늘)</div>
+        <div class="l3-stats">
+          <div class="l3-cell">
+            <div class="l3-label">평가 횟수</div>
+            <div class="l3-val" data-bind="l3-evals">—</div>
+            <div class="l3-sub">오늘 KST</div>
+          </div>
+          <div class="l3-cell">
+            <div class="l3-label"><span data-bind="l3-would-label">했을 매매 (시뮬)</span> <span class="help-tip" tabindex="0" data-tip="시뮬레이트 모드에서 실제로 발사됐을 매매 횟수" aria-label="would_trade 도움말">?</span></div>
+            <div class="l3-val would" data-bind="l3-would">—</div>
+            <div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div>
+          </div>
+          <div class="l3-cell">
+            <div class="l3-label">스킵</div>
+            <div class="l3-val skipped" data-bind="l3-skipped">—</div>
+            <div class="l3-sub">게이트 미통과</div>
+          </div>
+          <div class="l3-cell">
+            <div class="l3-label">안전배수 / 임계 <span class="help-tip tip-right" tabindex="0" data-tip="net_expected ≥ cost × multiplier. buy_thr ≤ 신호강도면 매수 후보" aria-label="임계 도움말">?</span></div>
+            <div class="l3-val" data-bind="l3-mult">×3</div>
+            <div class="l3-sub" data-bind="l3-thr-sub">매수 0.6 · 매도 0.4</div>
+          </div>
+        </div>
+        <div class="l3-section">
+          <div class="l3-section-title">스킵 사유 분포</div>
           <div class="l3-reasons" data-bind="l3-reasons">
             <div class="l3-empty">집계 없음</div>
+          </div>
+        </div>
+        <div class="l3-section">
+          <div class="l3-section-title">최근 "했을 매매"</div>
+          <div class="l3-trades" data-bind="l3-trades">
+            <div class="l3-empty">기록 없음</div>
           </div>
         </div>
       </div>

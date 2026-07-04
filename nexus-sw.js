@@ -47,7 +47,10 @@
 // v11.6 — 캘린더 그리드 + 게이지 SVG 텍스트 정중앙 + 게이지 색 분리 + PM 한국 이름·색 통일
 // v11.7 — PC 도넛 범례 HTML 화 (흰색) + 달력 컴팩트 + 상세 풍부 + D-day 리스트 제거
 // v11.8 — 개발 로그 자동 토큰 집계 (PC 백엔드 /dev-log 에서 enrich)
-const CACHE_VERSION = 'v11.8';
+// v12.0 — PC 리뉴얼 1차: B안 사이드바 레이아웃(≥1100px) + 공용 상세 패널
+//         + ? 도움말 엔진. 표시 계층만, 매매·Aegis·미러 로직 무변경.
+//         모바일(<1100px) 세로 레이아웃은 무손 — PC 전용 미디어쿼리로 격리.
+const CACHE_VERSION = 'v12.0';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

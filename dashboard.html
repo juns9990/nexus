@@ -3385,6 +3385,304 @@
     font-size: 12px; color: #d4d8dc; line-height: 1.5;
   }
 
+  /* ================================================================ */
+  /*  PC B-LAYOUT (≥1100px) — 사이드바 · 상세패널 · 도움말 (v12.0)      */
+  /*  모바일 <1100px 는 이 블록 밖에서만 정의 — 세로 레이아웃 보존.      */
+  /* ================================================================ */
+
+  /* 사이드바 · 패널 슬롯 — 기본 hidden (모바일/좁은 PC 안전값) */
+  .pc-b-sidebar,
+  .pc-b-panel-slot { display: none; }
+
+  /* ▶ 사이드바 (≥1100px) — 운용진 리스트 */
+  @media (min-width: 1100px) {
+    /* 홈 탭 활성 시에만 3존 그리드로 재배치 */
+    section.d-tab.active[data-tab="home"] {
+      display: grid;
+      grid-template-columns: 232px minmax(0, 1fr);
+      grid-template-rows: auto;
+      gap: 14px;
+      padding: 12px 20px 0;
+      align-items: start;
+      overflow-y: auto;
+    }
+    /* 세로 스크롤 부담 완화 — 헤더/탭바 아래 여백만 최소한 */
+    section.d-tab.active[data-tab="home"] > .pc-b-sidebar {
+      display: flex; flex-direction: column;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 10px;
+      position: sticky;
+      top: 8px;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      gap: 6px;
+    }
+    section.d-tab.active[data-tab="home"] > .pc-b-main {
+      display: flex; flex-direction: column; gap: 12px;
+      min-width: 0;
+    }
+    /* 기존 nx-narrative-pc / d-stack 컨테이너의 좌우 여백 정리 */
+    section.d-tab.active[data-tab="home"] > .pc-b-main > .d-stack {
+      padding: 0;
+    }
+    /* 상세 패널 열리면 오른쪽에 340px 슬롯 확보 (콘텐츠 시프트) */
+    body.pc-b-panel-open section.d-tab.active[data-tab="home"] > .pc-b-main {
+      padding-right: 356px;
+    }
+  }
+
+  /* 사이드바 헤더 */
+  .pc-b-sb-title {
+    font-size: 11px; font-weight: 700; color: var(--fg-muted);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 6px 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .pc-b-sb-title .cnt {
+    font-family: var(--mono); color: var(--accent); font-weight: 700;
+    font-size: 10px;
+  }
+
+  /* 사이드바 행 — 색 보더 + 이름 · 자본% · 상태 한 줄 */
+  .pc-b-pm-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    padding: 8px 8px 8px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--fg-dim);
+    border-radius: 4px;
+    cursor: pointer;
+    align-items: center;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .pc-b-pm-row:hover { background: rgba(94,234,212,0.05); }
+  .pc-b-pm-row.idle { opacity: 0.55; }
+  .pc-b-pm-row .name {
+    font-size: 12px; font-weight: 700; color: var(--fg-strong);
+    line-height: 1.15;
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 0;
+  }
+  .pc-b-pm-row .name .ko {
+    font-size: 10px; font-weight: 500; color: var(--fg-muted);
+    letter-spacing: 0;
+  }
+  .pc-b-pm-row .cap {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--fg); font-weight: 600;
+    text-align: right;
+    min-width: 34px;
+  }
+  .pc-b-pm-row .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 4px var(--accent);
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+  .pc-b-pm-row.idle .dot { background: var(--fg-dim); box-shadow: none; animation: none; }
+  .pc-b-pm-row .status-tag {
+    grid-column: 1 / -1;
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    color: var(--fg-muted); letter-spacing: 0.04em;
+    margin-top: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pc-b-pm-row.idle .status-tag { color: var(--fg-dim); }
+  .pc-b-pm-row.cash {
+    border-left-color: #4b5563;
+    background: var(--bg-deep);
+    cursor: default;
+  }
+  .pc-b-pm-row.cash:hover { background: var(--bg-deep); }
+
+  /* ================================================================ */
+  /*  상세 패널 (공용) — PC 우측 슬라이드 / 모바일 하단 시트           */
+  /* ================================================================ */
+  .pc-b-panel-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 199;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  body.pc-b-panel-open .pc-b-panel-backdrop {
+    opacity: 1; pointer-events: auto;
+  }
+  .pc-b-panel {
+    position: fixed;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    z-index: 200;
+    display: flex; flex-direction: column;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.45);
+  }
+  .pc-b-panel[hidden] { display: none !important; }
+  .pc-b-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  .pc-b-panel-title {
+    font-size: 14px; font-weight: 700; color: var(--fg-strong);
+    letter-spacing: 0.02em;
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 0;
+  }
+  .pc-b-panel-title .sub {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-muted);
+    font-weight: 500; letter-spacing: 0;
+  }
+  .pc-b-panel-close {
+    width: 36px; height: 36px;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--fg); border-radius: 6px;
+    font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .pc-b-panel-close:hover { background: var(--bg-card); }
+  .pc-b-panel-body {
+    padding: 14px 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .pc-b-panel-body .sec {
+    margin-top: 14px;
+  }
+  .pc-b-panel-body .sec:first-child { margin-top: 0; }
+  .pc-b-panel-body .sec-h {
+    font-size: 11px; font-weight: 700; color: var(--fg-muted);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .pc-b-panel-body .kv {
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 6px 12px; font-size: 12px;
+  }
+  .pc-b-panel-body .kv .k { color: var(--fg-muted); }
+  .pc-b-panel-body .kv .v {
+    font-family: var(--mono); font-weight: 600; color: var(--fg-strong);
+    text-align: right;
+  }
+  .pc-b-panel-body .kv .v.pos { color: var(--positive); }
+  .pc-b-panel-body .kv .v.neg { color: var(--negative); }
+  .pc-b-panel-body .list-row {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: 8px; padding: 6px 0;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    align-items: baseline;
+  }
+  .pc-b-panel-body .list-row:first-of-type { border-top: none; padding-top: 0; }
+  .pc-b-panel-body .list-row .sym {
+    font-family: var(--mono); font-weight: 700; color: var(--fg-strong);
+  }
+  .pc-b-panel-body .list-row .val {
+    font-family: var(--mono); color: var(--fg);
+    text-align: right;
+  }
+  .pc-b-panel-body .list-row .chg {
+    font-family: var(--mono); color: var(--positive); text-align: right;
+    font-size: 11px;
+  }
+  .pc-b-panel-body .list-row .chg.neg { color: var(--negative); }
+  .pc-b-panel-body .desc-row {
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--fg);
+    line-height: 1.5;
+  }
+  .pc-b-panel-body .desc-row:first-of-type { border-top: none; padding-top: 0; }
+  .pc-b-panel-body .desc-row .ts {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--fg-dim); display: block; margin-bottom: 2px;
+  }
+  .pc-b-panel-body .empty {
+    padding: 20px; text-align: center;
+    color: var(--fg-muted); font-size: 12px;
+  }
+
+  /* PC ≥1100px: 우측 슬라이드 인 */
+  @media (min-width: 1100px) {
+    .pc-b-panel {
+      top: 108px; right: 0; bottom: 0;
+      width: 340px;
+      border-right: none;
+      border-radius: 8px 0 0 0;
+      transform: translateX(100%);
+      transition: transform 0.24s ease;
+    }
+    .pc-b-panel[hidden] { display: flex !important; visibility: hidden; }
+    body.pc-b-panel-open .pc-b-panel {
+      transform: translateX(0);
+      visibility: visible;
+    }
+    .pc-b-panel-backdrop { display: none; }
+  }
+
+  /* 모바일/좁은 PC (<1100px): 하단 시트 */
+  @media (max-width: 1099px) {
+    .pc-b-panel {
+      left: 0; right: 0; bottom: 0;
+      top: auto;
+      max-height: 82vh;
+      border-radius: 14px 14px 0 0;
+      border-bottom: none;
+      transform: translateY(100%);
+      transition: transform 0.24s ease;
+    }
+    .pc-b-panel[hidden] { display: flex !important; visibility: hidden; }
+    body.pc-b-panel-open .pc-b-panel {
+      transform: translateY(0);
+      visibility: visible;
+    }
+    body.pc-b-panel-open { overflow: hidden; }
+  }
+
+  /* ================================================================ */
+  /*  ? 도움말 엔진 — 36px 터치 타깃, 카드 헤더용                       */
+  /* ================================================================ */
+  .nx-help-btn {
+    width: 24px; height: 24px;
+    min-width: 24px;
+    padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    color: var(--fg-muted);
+    font-size: 11px; font-weight: 700;
+    font-family: var(--sans);
+    cursor: pointer;
+    line-height: 1;
+    margin-left: 6px;
+    vertical-align: middle;
+    position: relative;
+  }
+  .nx-help-btn:hover, .nx-help-btn:focus {
+    background: var(--bg-card);
+    color: var(--fg-strong);
+    border-color: var(--accent);
+    outline: none;
+  }
+  /* 터치 확장 영역 (실제 히트 박스 36px) */
+  .nx-help-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+
 </style>
 </head>
 <body>
@@ -4062,6 +4360,14 @@
   <!-- ===== HOME TAB — Phase 2.13 내러티브 홈 ===== -->
   <section class="d-tab active" data-tab="home">
 
+  <!-- v12.0 B-layout: 사이드바(≥1100px) — 운용진 리스트. 좁은 화면은 CSS 로 숨김. -->
+  <aside class="pc-b-sidebar" data-bind="pc-b-sidebar" aria-label="운용진 사이드바">
+    <div class="pc-b-sb-title">운용진 <span class="cnt" data-bind="pc-b-sb-count">—</span></div>
+    <div class="pc-b-sb-empty" style="font-size:11px;color:var(--fg-muted);padding:6px;">데이터 수집 중…</div>
+  </aside>
+
+  <div class="pc-b-main">
+
   <!-- ────────────────────────────────────────────── -->
   <!--  PC 내러티브 7섹션 (모바일과 동일 위계)        -->
   <!-- ────────────────────────────────────────────── -->
@@ -4464,6 +4770,7 @@
 
   </div><!-- /.d-main-removed wrapper -->
 
+  </div><!-- /.pc-b-main -->
   </section><!-- /.d-tab[home] -->
 
   <!-- ===== POSITIONS TAB ===== -->
@@ -8858,6 +9165,638 @@
   }
   if (document.readyState === 'complete') setTimeout(tryInitialDraw, 200);
   else window.addEventListener('load', function(){ setTimeout(tryInitialDraw, 200); });
+})();
+</script>
+
+<!-- v12.0 — 상세 패널 + 도움말 시트 (공용, PC 슬라이드 / 모바일 시트) -->
+<div class="pc-b-panel-backdrop" data-pc-b-close="1" hidden></div>
+<div id="pc-b-panel" class="pc-b-panel" role="dialog" aria-modal="true" aria-labelledby="pc-b-panel-title" hidden>
+  <div class="pc-b-panel-head">
+    <div class="pc-b-panel-title">
+      <span id="pc-b-panel-title" data-bind="pc-b-panel-title">상세</span>
+      <span class="sub" data-bind="pc-b-panel-sub"></span>
+    </div>
+    <button class="pc-b-panel-close" type="button" data-pc-b-close="1" aria-label="닫기">✕</button>
+  </div>
+  <div class="pc-b-panel-body" data-bind="pc-b-panel-body"></div>
+</div>
+
+<script>
+/* ================================================================ */
+/*  Vela · PC B-layout v12.0 — 사이드바 + 상세패널 + 도움말 엔진      */
+/*  표시 계층 전용. 기존 30초 refresh · 매매 · Aegis 로직 무손.        */
+/* ================================================================ */
+(function() {
+  'use strict';
+
+  // -----------------------------------------------------------------
+  // PM 색·이름 매핑 — 7 PM 확장 준비 (mint · pulse 포함)
+  // -----------------------------------------------------------------
+  var PM_META = {
+    night_watch: { ko: '박세진', en: 'Night Watch', short: 'NW',    color: '#5eead4' },
+    tide:        { ko: '한도현', en: 'Tide',        short: 'Tide',  color: '#a78bfa' },
+    sur:         { ko: '김선우', en: 'Sur',         short: 'Sur',   color: '#fbbf24' },
+    terra:       { ko: '이지훈', en: 'Terra',       short: 'Terra', color: '#88a8d0' },
+    nova:        { ko: '정현우', en: 'Nova',        short: 'Nova',  color: '#f472b6' },
+    mint:        { ko: '조은서', en: 'Mint',        short: 'Mint',  color: '#4ade80' },
+    pulse:       { ko: '오성민', en: 'Pulse',       short: 'Pulse', color: '#fb923c' },
+    aegis:       { ko: '진수호', en: 'Aegis',       short: 'Aegis', color: '#ef6b6b' },
+    pathfinder:  { ko: '임도진', en: 'Pathfinder',  short: 'Path',  color: '#88a8d0' },
+    cash:        { ko: '현금',   en: 'Cash',        short: 'Cash',  color: '#4b5563' },
+  };
+
+  function _esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function _fmtPct(v, sign) {
+    if (v === null || v === undefined || isNaN(v)) return '—';
+    var s = (sign && Number(v) >= 0 ? '+' : '') + Number(v).toFixed(2) + '%';
+    return s;
+  }
+  function _fmtNum(v, d) {
+    if (v === null || v === undefined || isNaN(v)) return '—';
+    return Number(v).toFixed(d == null ? 2 : d);
+  }
+  function _pmMeta(key) {
+    return PM_META[key] || { ko: '?', en: key || '?', short: key || '?', color: '#666' };
+  }
+
+  // -----------------------------------------------------------------
+  // 사이드바 렌더러 — enabled personas 기반 (data.team_desk.desks)
+  // -----------------------------------------------------------------
+  function renderPcSidebar(data) {
+    var hosts = document.querySelectorAll('[data-bind="pc-b-sidebar"]');
+    if (!hosts.length) return;
+    var team = (data && data.team) || [];
+    var desks = (data && data.team_desk && Array.isArray(data.team_desk.desks))
+      ? data.team_desk.desks : [];
+    var aegisLine = (data && data.team_desk && data.team_desk.aegis_line) || {};
+
+    // 활성 PM 목록 = team_desk.desks (백엔드 get_enabled_personas 결과 반영).
+    //   빈 상태(초기 로딩) 폴백: team 배열의 active 항목.
+    var rows = [];
+    if (desks.length > 0) {
+      desks.forEach(function(d) {
+        var key = d.persona_key || (d.persona_label || '').toLowerCase();
+        var meta = _pmMeta(key);
+        var cap = (d.capital_weight_pct !== null && d.capital_weight_pct !== undefined)
+          ? Number(d.capital_weight_pct) : null;
+        var status = d.last_eval_at ? '평가' : '대기';
+        var oneLiner = d.one_liner || (d.watchlist && d.watchlist.length
+          ? d.watchlist.length + '종목 감시' : '데이터 수집 중');
+        rows.push({
+          key: key, meta: meta, cap: cap,
+          status: status, task: oneLiner, idle: false,
+        });
+      });
+    } else if (team.length > 0) {
+      team.forEach(function(t) {
+        if (!t) return;
+        var key = t.key || t.persona_key || (t.short || '').toLowerCase();
+        if (!key) return;
+        var meta = _pmMeta(key);
+        rows.push({
+          key: key, meta: meta,
+          cap: (t.capital_weight_pct != null ? Number(t.capital_weight_pct) : null),
+          status: t.active ? '활성' : '대기',
+          task: (t.role_desc || t.task || '—'),
+          idle: !t.active,
+        });
+      });
+    }
+
+    // 현금 행 (마지막) — aegis_line.cash_pct 사용
+    var cashPct = (aegisLine.cash_pct != null) ? Number(aegisLine.cash_pct) : null;
+    var cashFloor = aegisLine.cash_floor_pct || 10;
+
+    var html = '';
+    rows.forEach(function(r) {
+      html +=
+        '<div class="pc-b-pm-row' + (r.idle ? ' idle' : '') + '" ' +
+             'data-pm-key="' + _esc(r.key) + '" ' +
+             'style="border-left-color:' + _esc(r.meta.color) + ';" ' +
+             'role="button" tabindex="0" ' +
+             'aria-label="' + _esc(r.meta.ko + ' ' + r.meta.short) + ' 상세">' +
+          '<span class="dot" style="background:' + _esc(r.meta.color) +
+                                    ';box-shadow:0 0 4px ' + _esc(r.meta.color) + ';"></span>' +
+          '<div class="name">' +
+            '<span>' + _esc(r.meta.short) + '</span>' +
+            '<span class="ko">' + _esc(r.meta.ko) + '</span>' +
+          '</div>' +
+          '<span class="cap">' + (r.cap == null ? '—' : _fmtNum(r.cap, 0) + '%') + '</span>' +
+          '<span class="status-tag">' + _esc(r.status + ' · ' + r.task) + '</span>' +
+        '</div>';
+    });
+    // 현금
+    var cashMeta = _pmMeta('cash');
+    html +=
+      '<div class="pc-b-pm-row cash" data-pm-key="cash" tabindex="-1" ' +
+           'style="border-left-color:' + _esc(cashMeta.color) + ';" ' +
+           'aria-label="현금 잔고">' +
+        '<span class="dot" style="background:' + _esc(cashMeta.color) + ';box-shadow:none;animation:none;"></span>' +
+        '<div class="name">' +
+          '<span>현금</span>' +
+          '<span class="ko">Cash</span>' +
+        '</div>' +
+        '<span class="cap">' + (cashPct == null ? '—' : _fmtNum(cashPct, 1) + '%') + '</span>' +
+        '<span class="status-tag">하한 ' + cashFloor + '%</span>' +
+      '</div>';
+
+    hosts.forEach(function(h) {
+      // 제목 + 카운트 유지, 아래 리스트만 갱신
+      var title = h.querySelector('.pc-b-sb-title');
+      h.innerHTML = '';
+      if (title) h.appendChild(title);
+      var wrap = document.createElement('div');
+      wrap.innerHTML = html;
+      while (wrap.firstChild) h.appendChild(wrap.firstChild);
+    });
+    // 카운트
+    document.querySelectorAll('[data-bind="pc-b-sb-count"]').forEach(function(el) {
+      el.textContent = rows.length + (cashPct != null ? '+1' : '');
+    });
+  }
+
+  // -----------------------------------------------------------------
+  // 상세 패널 엔진 — openDetailPanel(type, key)
+  // -----------------------------------------------------------------
+  var _panelState = { open: false, type: null, key: null };
+
+  function _snap() { return window.nexusBackendData || {}; }
+
+  function _setPanel(title, sub, bodyHtml) {
+    var t = document.querySelector('[data-bind="pc-b-panel-title"]');
+    var s = document.querySelector('[data-bind="pc-b-panel-sub"]');
+    var b = document.querySelector('[data-bind="pc-b-panel-body"]');
+    if (t) t.textContent = title;
+    if (s) s.textContent = sub || '';
+    if (b) b.innerHTML = bodyHtml;
+  }
+
+  function _renderPmPanel(key) {
+    var data = _snap();
+    var meta = _pmMeta(key);
+    var desks = (data.team_desk && data.team_desk.desks) || [];
+    var d = null;
+    for (var i = 0; i < desks.length; i++) {
+      if ((desks[i].persona_key || '') === key) { d = desks[i]; break; }
+    }
+    var team = (data.team || []).filter(function(t){
+      return t && (t.key || t.persona_key || (t.short || '').toLowerCase()) === key;
+    })[0] || {};
+    var sys = data.system_status || {};
+    var sysP = sys[key] || {};
+
+    var cap = d ? d.capital_weight_pct : team.capital_weight_pct;
+    var role = team.role_desc || team.role || d && d.one_liner || '—';
+    var burn = sysP.burn_rate_pct != null ? _fmtPct(sysP.burn_rate_pct) :
+               (sysP.tokens_used && sysP.tokens_budget
+                  ? _fmtPct(sysP.tokens_used / sysP.tokens_budget * 100) : '—');
+    var uni = d && d.watchlist ? d.watchlist.length : (sysP.tickers_tracked || 0);
+    var decisions = sysP.decisions_count || 0;
+
+    // 신호 TOP10
+    var watch = (d && Array.isArray(d.watchlist)) ? d.watchlist.slice(0, 10) : [];
+    var sigRows = watch.length === 0
+      ? '<div class="empty">watchlist 데이터 없음</div>'
+      : watch.map(function(w) {
+          var val = (w.signal_value != null) ? Number(w.signal_value).toFixed(2)
+                   : (w.last_price != null ? '$' + Number(w.last_price).toFixed(2) : '—');
+          var chg = (w.change_pct != null) ? _fmtPct(w.change_pct, true) : '—';
+          var chgCls = (w.change_pct != null && w.change_pct < 0) ? 'neg' : '';
+          return '<div class="list-row">' +
+            '<span class="sym">' + _esc(w.symbol || w.ticker || '?') + '</span>' +
+            '<span class="val">' + _esc(val) + '</span>' +
+            '<span class="chg ' + chgCls + '">' + _esc(chg) + '</span>' +
+          '</div>';
+        }).join('');
+
+    // 최근 결정 5건 — layer3.recent_would_trades 필터
+    var l3 = ((data.layer3 && data.layer3.recent_would_trades) || [])
+      .filter(function(w){
+        var pk = w.persona_key || w.persona || '';
+        return !pk || pk === key;
+      }).slice(0, 5);
+    var decRows = l3.length === 0
+      ? '<div class="empty">최근 결정 기록 없음</div>'
+      : l3.map(function(w) {
+          var t = w.ts || w.timestamp || w.at || '';
+          return '<div class="desc-row">' +
+            '<span class="ts">' + _esc(t.replace('T',' ').slice(0, 16)) + '</span>' +
+            _esc((w.symbol || '?') + ' ' + (w.action || 'sim') + ' — ' +
+                  (w.rationale || w.reason || '경제성 통과')) +
+          '</div>';
+        }).join('');
+
+    var body =
+      '<div class="sec">' +
+        '<div class="kv">' +
+          '<span class="k">역할</span>' +
+          '<span class="v" style="text-align:right;font-family:var(--sans);color:var(--fg);font-weight:500;">' + _esc(role) + '</span>' +
+          '<span class="k">자본 배분</span>' +
+          '<span class="v">' + (cap == null ? '—' : _fmtNum(cap, 1) + '%') + '</span>' +
+          '<span class="k">소진율</span>' +
+          '<span class="v">' + _esc(burn) + '</span>' +
+          '<span class="k">유니버스</span>' +
+          '<span class="v">' + uni + '</span>' +
+          '<span class="k">결정 수</span>' +
+          '<span class="v">' + decisions + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sec">' +
+        '<div class="sec-h">신호 TOP ' + Math.min(watch.length, 10) + '</div>' +
+        sigRows +
+      '</div>' +
+      '<div class="sec">' +
+        '<div class="sec-h">최근 결정 · 5건</div>' +
+        decRows +
+      '</div>';
+
+    _setPanel(meta.ko + ' · ' + meta.en, meta.short + ' PM 상세', body);
+  }
+
+  function _renderNavPanel() {
+    var data = _snap();
+    var perf = data.performance || {};
+    var nav = data.nav || {};
+    var defense = data.defense || {};
+    var days = perf.days_recorded || (perf.nav_series && perf.nav_series.length) || 0;
+
+    var body =
+      '<div class="sec">' +
+        '<div class="kv">' +
+          '<span class="k">현재 NAV</span>' +
+          '<span class="v">' + (nav.value_usd != null
+              ? '$' + Number(nav.value_usd).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—') + '</span>' +
+          '<span class="k">오늘</span>' +
+          '<span class="v ' + (perf.today_pnl_pct >= 0 ? 'pos' : 'neg') + '">' + _fmtPct(perf.today_pnl_pct, true) + '</span>' +
+          '<span class="k">이번주</span>' +
+          '<span class="v">' + (perf.week_pnl_pct != null ? _fmtPct(perf.week_pnl_pct, true) : '기록중') + '</span>' +
+          '<span class="k">이번달</span>' +
+          '<span class="v">' + (perf.month_pnl_pct != null ? _fmtPct(perf.month_pnl_pct, true) : '기록중') + '</span>' +
+          '<span class="k">누적</span>' +
+          '<span class="v">' + (perf.cumulative_pct != null ? _fmtPct(perf.cumulative_pct, true) : '기록 시작 전') + '</span>' +
+          '<span class="k">MDD</span>' +
+          '<span class="v neg">' + (defense.current_mdd_pct != null ? _fmtPct(defense.current_mdd_pct) : '—') + '</span>' +
+          '<span class="k">기록일수</span>' +
+          '<span class="v">' + days + '일</span>' +
+          '<span class="k">시작일</span>' +
+          '<span class="v" style="font-family:var(--sans);">' + _esc(perf.started_at || '—') + '</span>' +
+        '</div>' +
+      '</div>';
+    _setPanel('NAV · 성과', '기간별 수익 · MDD · 기록', body);
+  }
+
+  function _renderMarketPanel() {
+    var data = _snap();
+    var m = data.market || {};
+    var updated = m.updated_at || m.ts || '';
+    var body =
+      '<div class="sec">' +
+        '<div class="kv">' +
+          '<span class="k">SPY</span>' +
+          '<span class="v">' + (m.spy != null ? '$' + Number(m.spy).toFixed(2) : '—') + '</span>' +
+          '<span class="k">QQQ</span>' +
+          '<span class="v">' + (m.qqq != null ? '$' + Number(m.qqq).toFixed(2) : '—') + '</span>' +
+          '<span class="k">VIX</span>' +
+          '<span class="v">' + (m.vix != null ? Number(m.vix).toFixed(1) : '—') + '</span>' +
+          '<span class="k">USD/KRW</span>' +
+          '<span class="v">' + (m.usdkrw != null ? Number(m.usdkrw).toLocaleString() : (data.nav && data.nav.usd_to_krw ? Number(data.nav.usd_to_krw).toLocaleString() : '—')) + '</span>' +
+          '<span class="k">10Y 금리</span>' +
+          '<span class="v">' + (m.us10y != null ? Number(m.us10y).toFixed(2) + '%' : '—') + '</span>' +
+          '<span class="k">DXY</span>' +
+          '<span class="v">' + (m.dxy != null ? Number(m.dxy).toFixed(2) : '—') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sec">' +
+        '<div class="sec-h">갱신</div>' +
+        '<div class="desc-row">' + _esc(updated || '실시간') + '</div>' +
+      '</div>';
+    _setPanel('시장', '주요 지표 전체', body);
+  }
+
+  function _renderRiskPanel() {
+    var data = _snap();
+    var gates = (data.aegis_detail && data.aegis_detail.gates) || [];
+    var defense = data.defense || {};
+    var lines = defense.lines || [];
+    var pass = gates.filter(function(g){return g.passing;}).length;
+
+    var gateHtml = gates.length === 0
+      ? '<div class="empty">Aegis 데이터 없음</div>'
+      : gates.map(function(g) {
+          var st = g.passing ? 'pos' : 'neg';
+          return '<div class="list-row">' +
+            '<span class="sym">' + _esc('G' + g.num + ' ' + (g.name || '')) + '</span>' +
+            '<span class="val">' + _esc(g.current_value || '—') + '</span>' +
+            '<span class="chg ' + (g.passing ? '' : 'neg') + '">' + (g.passing ? '통과' : '주의') + '</span>' +
+          '</div>';
+        }).join('');
+
+    var lineHtml = lines.length === 0
+      ? '<div class="empty">방어선 데이터 없음</div>'
+      : lines.map(function(ln) {
+          return '<div class="list-row">' +
+            '<span class="sym">' + _esc(ln.id || ln.name || '?') + '</span>' +
+            '<span class="val">' + _esc(ln.value || ln.current || '—') + '</span>' +
+            '<span class="chg ' + (ln.state === 'triggered' ? 'neg' : '') + '">' + _esc(ln.state || 'ok') + '</span>' +
+          '</div>';
+        }).join('');
+
+    var body =
+      '<div class="sec">' +
+        '<div class="sec-h">Aegis · 12 게이트 (' + pass + '/' + gates.length + ' 통과)</div>' +
+        gateHtml +
+      '</div>' +
+      '<div class="sec">' +
+        '<div class="sec-h">방어선 상태</div>' +
+        lineHtml +
+      '</div>';
+    _setPanel('리스크', 'Aegis 게이트 + 방어선', body);
+  }
+
+  function _renderDiscoveryPanel() {
+    var data = _snap();
+    var ap = data.approvals || {};
+    var pending = ap.pending || [];
+    var history = ap.history || [];
+
+    var pendHtml = pending.length === 0
+      ? '<div class="empty">대기 중인 제안 없음</div>'
+      : pending.map(function(p) {
+          var t = p.ts || p.created_at || '';
+          return '<div class="desc-row">' +
+            '<span class="ts">' + _esc(String(t).replace('T',' ').slice(0, 16)) + '</span>' +
+            _esc((p.ticker || p.symbol || '?') + ' · ' + (p.type || 'proposal') + ' — ' +
+                  (p.reason || p.rationale || '')) +
+          '</div>';
+        }).join('');
+
+    var histHtml = history.length === 0
+      ? '<div class="empty">승인 이력 없음</div>'
+      : history.slice(0, 10).map(function(h) {
+          var t = h.ts || h.decided_at || '';
+          return '<div class="desc-row">' +
+            '<span class="ts">' + _esc(String(t).replace('T',' ').slice(0, 16)) + ' · ' + _esc(h.decision || '?') + '</span>' +
+            _esc((h.ticker || h.symbol || '?') + ' — ' + (h.reason || h.rationale || '')) +
+          '</div>';
+        }).join('');
+
+    var body =
+      '<div class="sec">' +
+        '<div class="sec-h">대기 · ' + pending.length + '건</div>' +
+        pendHtml +
+      '</div>' +
+      '<div class="sec">' +
+        '<div class="sec-h">최근 결정 · ' + Math.min(history.length, 10) + '건</div>' +
+        histHtml +
+      '</div>';
+    _setPanel('발굴 · 승인', 'Pathfinder 제안 이력', body);
+  }
+
+  window.openDetailPanel = function(type, key) {
+    if (!type) return;
+    _panelState = { open: true, type: type, key: key || null };
+    var panel = document.getElementById('pc-b-panel');
+    var back = document.querySelector('.pc-b-panel-backdrop');
+    if (panel) panel.hidden = false;
+    if (back)  back.hidden = false;
+
+    try {
+      if (type === 'pm')             _renderPmPanel(key);
+      else if (type === 'nav')       _renderNavPanel();
+      else if (type === 'market')    _renderMarketPanel();
+      else if (type === 'risk')      _renderRiskPanel();
+      else if (type === 'discovery') _renderDiscoveryPanel();
+      else _setPanel('상세', type, '<div class="empty">알 수 없는 항목</div>');
+    } catch (e) {
+      _setPanel('오류', '', '<div class="empty">렌더 실패: ' + _esc(e && e.message || e) + '</div>');
+    }
+    // 애니메이션은 다음 frame 에 클래스 붙여야 정상 트리거
+    requestAnimationFrame(function() {
+      document.body.classList.add('pc-b-panel-open');
+    });
+  };
+  window.closeDetailPanel = function() {
+    _panelState.open = false;
+    document.body.classList.remove('pc-b-panel-open');
+    setTimeout(function() {
+      var panel = document.getElementById('pc-b-panel');
+      var back = document.querySelector('.pc-b-panel-backdrop');
+      if (panel) panel.hidden = true;
+      if (back)  back.hidden = true;
+    }, 260);
+  };
+
+  // 닫기 이벤트 — ✕ · 바깥 · ESC
+  document.addEventListener('click', function(ev) {
+    var closer = ev.target.closest('[data-pc-b-close]');
+    if (closer) { ev.preventDefault(); window.closeDetailPanel(); return; }
+    var helpBtn = ev.target.closest('[data-help]');
+    if (helpBtn) { ev.preventDefault(); ev.stopPropagation(); openHelpSheet(helpBtn.getAttribute('data-help')); return; }
+    var pmRow = ev.target.closest('.pc-b-pm-row[data-pm-key]');
+    if (pmRow) {
+      var k = pmRow.getAttribute('data-pm-key');
+      if (k && k !== 'cash') window.openDetailPanel('pm', k);
+      return;
+    }
+    var opener = ev.target.closest('[data-open-panel]');
+    if (opener) {
+      ev.preventDefault();
+      var t = opener.getAttribute('data-open-panel');
+      var k = opener.getAttribute('data-open-key') || null;
+      window.openDetailPanel(t, k);
+    }
+  });
+  document.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Escape' && _panelState.open) window.closeDetailPanel();
+  });
+  document.querySelectorAll('.pc-b-pm-row[data-pm-key]').forEach(function(row) {
+    row.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        var k = row.getAttribute('data-pm-key');
+        if (k && k !== 'cash') window.openDetailPanel('pm', k);
+      }
+    });
+  });
+
+  // -----------------------------------------------------------------
+  // ? 도움말 엔진 — HELP_TEXTS + openHelpSheet
+  //   패널을 공유 (같은 pc-b-panel 재사용) — 코드·CSS 재활용
+  // -----------------------------------------------------------------
+  var HELP_TEXTS = {
+    nav:        '순자산가치(NAV). 시작일 이후 자산 합계. 아래 곡선은 일별 종가 기록.',
+    market:     '전 세계 주요 지표. SPY/QQQ는 미국 증시, VIX는 변동성 지수, USD/KRW는 환율.',
+    risk:       'Aegis가 감시하는 12개 게이트와 6단 방어선. 하나라도 실패하면 신규 매매가 막힌다.',
+    desk:       '활성 운용진(PM) 리스트. 각 PM은 자기 자본 배분 안에서 watchlist를 관리한다.',
+    aegis:      'Aegis · 위험 관리. VIX·MDD·현금·차단 4개 축을 실시간 감시.',
+    pm_util:    '자본 소진율. 배분받은 자본 중 얼마나 매수했는지. 낮으면 여유, 높으면 포화.',
+    signal:     '해당 종목의 매매 신호 값. PM별로 산출식이 다르며 판단(매수/보류/제외)의 근거.',
+    mdd:        '최고점 대비 하락률(Max Drawdown). -4% 넘으면 소프트 방어, -7% 넘으면 하드 청산.',
+    gate:       'Aegis 12게이트. VIX·유동성·집중도·상관·낙폭 등 항목별 안전 조건.',
+    journal:    '최근 매매/평가/알림 8건. Telegram 발송 원본과 계층3 시뮬 결정.',
+    discovery:  '발굴 · 승인. Pathfinder가 제안한 신규 종목을 승인/보류로 결정한 이력.',
+    story:      '한 줄 이야기. 현재 시스템이 뭘 하는지 사람 말로 요약.',
+    performance: '기간별 수익률 · MDD · 기록일수. 첫 장마감(KST 06:00) 이후 누적 시작.',
+    countdown: '다음 미국장 개장까지의 카운트다운. 장 마감 시에만 표시.',
+    trade_flow: 'PM별 매매 흐름 · 5단 파이프라인 (스캔 → 심사 → 결정 → 발주 → 체결).',
+    portfolio: '보유 자산 도넛 + PM별 자본 배분. 미국 ETF · 현금 USD · 기타.',
+    events: 'FOMC · 지표 · 실적 · D-day 캘린더. 중요 이벤트만 표시.',
+  };
+  window.HELP_TEXTS = HELP_TEXTS;
+
+  var HELP_TITLES = {
+    nav: 'NAV — 순자산가치',
+    market: '시장 지표',
+    risk: '리스크 관리',
+    desk: '운용진',
+    aegis: 'Aegis',
+    pm_util: '소진율',
+    signal: '매매 신호',
+    mdd: 'MDD',
+    gate: 'Aegis 게이트',
+    journal: '일지',
+    discovery: '발굴 · 승인',
+    story: '한 줄 이야기',
+    performance: '성과',
+    countdown: '개장 카운트다운',
+    trade_flow: '매매 흐름',
+    portfolio: '자산 배분',
+    events: '캘린더',
+  };
+
+  function openHelpSheet(k) {
+    var text = HELP_TEXTS[k] || '설명 준비 중.';
+    var title = HELP_TITLES[k] || '도움말';
+    _panelState = { open: true, type: 'help', key: k };
+    var panel = document.getElementById('pc-b-panel');
+    var back = document.querySelector('.pc-b-panel-backdrop');
+    if (panel) panel.hidden = false;
+    if (back)  back.hidden = false;
+    _setPanel(title, '도움말',
+      '<div class="sec"><div class="desc-row">' + _esc(text) + '</div></div>');
+    requestAnimationFrame(function() {
+      document.body.classList.add('pc-b-panel-open');
+    });
+  }
+  window.openHelpSheet = openHelpSheet;
+
+  // 카드 헤더에 ? 자동 부착 — data-help 속성이 없는 곳은 스킵.
+  //   객체 한 줄 추가만으로 확장 가능한 명명: 아래 SELECTOR_MAP 을 확장.
+  var HELP_SELECTOR_MAP = [
+    { sel: '.nx-perf-label',   key: 'nav' },
+    { sel: '.nx-mkt-title',    key: 'market' },
+    { sel: '.nx-aegis-head',   key: 'aegis' },
+    { sel: '.nx-story-main',   key: 'story' },
+    { sel: '.nx-section-title', key: null }, // 텍스트로 매핑
+  ];
+  function _autoAttachHelp() {
+    document.querySelectorAll('.nx-perf-label').forEach(function(el) {
+      if (el.querySelector('.nx-help-btn')) return;
+      el.insertAdjacentHTML('beforeend',
+        ' <button type="button" class="nx-help-btn" data-help="nav" aria-label="NAV 도움말">?</button>');
+    });
+    document.querySelectorAll('.nx-mkt-title').forEach(function(el) {
+      if (el.querySelector('.nx-help-btn')) return;
+      el.insertAdjacentHTML('beforeend',
+        ' <button type="button" class="nx-help-btn" data-help="market" aria-label="시장 도움말">?</button>');
+    });
+    document.querySelectorAll('.nx-aegis-head').forEach(function(el) {
+      if (el.querySelector('.nx-help-btn')) return;
+      // 자식 첫 텍스트 뒤에 삽입
+      el.insertAdjacentHTML('beforeend',
+        ' <button type="button" class="nx-help-btn" data-help="aegis" aria-label="Aegis 도움말">?</button>');
+    });
+    // .nx-section-title — 텍스트로 매핑
+    var titleMap = {
+      '운용진 데스크': 'desk',
+      '일지 · 최근 8건': 'journal',
+      '매매': 'trade_flow',
+      '보유 · 자산 배분': 'portfolio',
+    };
+    document.querySelectorAll('.nx-section-title, .d-group-title').forEach(function(el) {
+      if (el.querySelector('.nx-help-btn')) return;
+      var txt = (el.textContent || '').trim();
+      var k = titleMap[txt];
+      if (!k) return;
+      el.insertAdjacentHTML('beforeend',
+        ' <button type="button" class="nx-help-btn" data-help="' + k + '" aria-label="' + k + ' 도움말">?</button>');
+    });
+    // 위 아래 대시보드 카드 헤더 커버 — nx-story
+    document.querySelectorAll('.nx-story-pc .nx-story-main').forEach(function(el) {
+      if (el.querySelector('.nx-help-btn')) return;
+      el.insertAdjacentHTML('beforeend',
+        ' <button type="button" class="nx-help-btn" data-help="story" aria-label="스토리 도움말">?</button>');
+    });
+  }
+
+  // -----------------------------------------------------------------
+  // NAV/시장/리스크/발굴 카드 자동 오프너 부착
+  //  각 카드 헤더에 data-open-panel 속성 없으면 붙여준다.
+  // -----------------------------------------------------------------
+  function _autoAttachOpeners() {
+    // NAV 카드 → 헤더 클릭으로 NAV 상세
+    document.querySelectorAll('.nx-perf-head').forEach(function(el) {
+      if (el.hasAttribute('data-open-panel')) return;
+      el.setAttribute('data-open-panel', 'nav');
+      el.style.cursor = 'pointer';
+    });
+    // 시장 카드
+    document.querySelectorAll('.nx-mkt-card').forEach(function(el) {
+      if (el.hasAttribute('data-open-panel')) return;
+      el.setAttribute('data-open-panel', 'market');
+      el.style.cursor = 'pointer';
+    });
+    // Aegis 카드 → risk 상세
+    document.querySelectorAll('.nx-aegis-card').forEach(function(el) {
+      if (el.hasAttribute('data-open-panel')) return;
+      el.setAttribute('data-open-panel', 'risk');
+      el.style.cursor = 'pointer';
+    });
+  }
+
+  // -----------------------------------------------------------------
+  // 초기화 & refresh hook — 기존 30s refresh 가 window.nexusBackendData 을
+  //   갱신할 때마다 사이드바 재렌더. 패널이 열려있으면 유지.
+  // -----------------------------------------------------------------
+  function refreshFromSnapshot() {
+    var data = window.nexusBackendData || {};
+    try { renderPcSidebar(data); } catch (e) { console.warn('[pc-b] sidebar', e); }
+    try { _autoAttachHelp(); }   catch (e) { console.warn('[pc-b] help', e); }
+    try { _autoAttachOpeners(); } catch (e) { console.warn('[pc-b] openers', e); }
+    // 패널이 열려있고 데이터에 의존하는 뷰면 재렌더 — but do not force-close
+    if (_panelState.open && _panelState.type && _panelState.type !== 'help') {
+      try {
+        if (_panelState.type === 'pm')             _renderPmPanel(_panelState.key);
+        else if (_panelState.type === 'nav')       _renderNavPanel();
+        else if (_panelState.type === 'market')    _renderMarketPanel();
+        else if (_panelState.type === 'risk')      _renderRiskPanel();
+        else if (_panelState.type === 'discovery') _renderDiscoveryPanel();
+      } catch (e) { /* silent */ }
+    }
+  }
+  window.__pcBRefreshFromSnapshot = refreshFromSnapshot;
+
+  // 주기적으로 snapshot 미러 감시 — refresh 완료 순간을 놓치지 않음
+  var _lastSyncTs = 0;
+  setInterval(function() {
+    var b = window.nexusBackend;
+    var ts = b && b.lastSync ? (new Date(b.lastSync)).getTime() : 0;
+    if (ts && ts !== _lastSyncTs) {
+      _lastSyncTs = ts;
+      refreshFromSnapshot();
+    }
+  }, 1500);
+
+  // 최초 즉시 시도
+  if (document.readyState !== 'loading') {
+    refreshFromSnapshot();
+  } else {
+    document.addEventListener('DOMContentLoaded', refreshFromSnapshot);
+  }
 })();
 </script>
 

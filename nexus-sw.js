@@ -58,7 +58,12 @@
 //         · 날짜 그룹 타임라인 · sim/live 모드 배지. openDetailPanel에 'trade'
 //         타입 추가. HELP_TEXTS 확장 (timeline · daily_bar · trade_detail ·
 //         skip_reason · mode_badge). 계층3 카드 위치 유지 + ? 부착. 백엔드 무손.
-const CACHE_VERSION = 'v12.2';
+// v12.3 — PC 리뉴얼 4차: 승인 탭 B-layout. 대기 승인 카드 최상단 강조 + 2열
+//         (달력|처리 이력) + 카드 클릭 상세 패널. openDetailPanel에 'approval'·
+//         'event' 타입 추가. nexusApprovalDecide 동작 무손 (버튼 stopPropagation).
+//         HELP_TEXTS 확장 (approval_queue · discovery_score · event_calendar ·
+//         approval_history). 백엔드 무손.
+const CACHE_VERSION = 'v12.3';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

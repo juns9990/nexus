@@ -4084,6 +4084,106 @@
     border-color: var(--accent);
   }
 
+  /* ================================================================ */
+  /*  v12.3 — 승인 탭 B-layout (≥1100px). <1100px 기본 unchanged.        */
+  /*  대기 카드 강조 · 달력/처리이력 2열. 승인/거절 버튼 동작 무손.       */
+  /* ================================================================ */
+  @media (min-width: 1100px) {
+    /* 대기 승인 카드 강조 보더 (m-approval-card 재사용) */
+    section.d-tab[data-tab="approval"] .m-approval-card {
+      border-left: 3px solid var(--warn);
+      background: linear-gradient(135deg, rgba(212,165,94,0.06) 0%, var(--bg-elev) 60%);
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+    section.d-tab[data-tab="approval"] .m-approval-card:hover {
+      border-left-color: var(--accent);
+      background: linear-gradient(135deg, rgba(94,234,212,0.05) 0%, var(--bg-elev) 60%);
+    }
+    /* 승인/거절 버튼 클릭은 카드 자체 클릭보다 우선하도록 stopPropagation JS 로 처리 */
+
+    /* 2열 배치 — 달력 | 처리 이력 */
+    .h4-two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      margin-top: 4px;
+    }
+    .h4-col { min-width: 0; }
+  }
+  @media (max-width: 1099px) {
+    .h4-two-col { display: block; }
+  }
+
+  /* 대기 승인 카드 최상단 강조 배지 */
+  .h4-pending-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.04em;
+    background: rgba(212,165,94,0.15); color: var(--warn);
+    border: 1px solid var(--warn);
+    margin-left: 6px;
+  }
+  .h4-pending-badge.zero {
+    background: var(--bg-card); color: var(--fg-dim);
+    border-color: var(--border);
+  }
+
+  /* 처리 이력 (v12.3 스타일) — 상태 배지 */
+  .h4-hist-row {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 10px; padding: 9px 12px;
+    border-top: 1px solid var(--border);
+    align-items: baseline;
+    font-size: 12px;
+  }
+  .h4-hist-row:first-of-type { border-top: none; }
+  .h4-hist-row .t {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--fg-dim);
+  }
+  .h4-hist-row .sym {
+    font-family: var(--mono); font-weight: 700;
+    color: var(--fg-strong);
+  }
+  .h4-hist-row .body {
+    font-size: 12px; color: var(--fg);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .h4-hist-row .body .type { color: var(--fg-muted); font-size: 11px; }
+  .h4-hist-badge {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 7px; border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+  .h4-hist-badge.approved { background: rgba(94,234,212,0.15); color: var(--positive); }
+  .h4-hist-badge.rejected { background: rgba(239,107,107,0.15); color: var(--negative); }
+  .h4-hist-badge.expired  { background: rgba(154,154,150,0.15); color: var(--fg-muted); }
+
+  .h4-hist-wrap {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+  }
+
+  .h4-empty {
+    padding: 22px 20px; text-align: center;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--fg-muted);
+  }
+  .h4-empty .big {
+    font-size: 14px; font-weight: 700; color: var(--fg);
+    margin-bottom: 4px;
+  }
+  .h4-empty .desc { font-size: 12px; line-height: 1.55; }
+  .h4-empty .last {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 11px; color: var(--fg-dim);
+  }
+
 </style>
 </head>
 <body>
@@ -5451,8 +5551,11 @@
   <!-- ===== APPROVAL TAB ===== -->
   <section class="d-tab" data-tab="approval">
     <div class="d-tab-pad">
+      <!-- v12.3 — 대기 승인 카드 최상단 (강조) -->
       <div class="d-tab-section-title">
         승인 대기
+        <button type="button" class="nx-help-btn" data-help="approval_queue" aria-label="승인 도움말">?</button>
+        <span class="h4-pending-badge zero" data-bind="h4-pending-badge">대기 0</span>
         <span class="d-tab-section-meta" data-bind="d-approval-meta">0건</span>
       </div>
       <div data-bind="d-approval-body">
@@ -5462,20 +5565,29 @@
         </div>
       </div>
 
-      <div class="d-tab-section-title">
-        결재 이력
-        <span class="d-tab-section-meta">최근 10건</span>
+      <!-- v12.3 — 2열: 이벤트 달력 | 처리 이력 (≥1100px). 좁은 화면은 세로 스택. -->
+      <div class="h4-two-col">
+        <div class="h4-col">
+          <div class="d-tab-section-title">
+            이벤트 달력
+            <button type="button" class="nx-help-btn" data-help="event_calendar" aria-label="달력 도움말">?</button>
+            <span class="d-tab-section-meta">FOMC·지표·실적</span>
+          </div>
+          <div class="ev-cal" id="ev-cal-pc"></div>
+        </div>
+        <div class="h4-col">
+          <div class="d-tab-section-title">
+            처리 이력
+            <button type="button" class="nx-help-btn" data-help="approval_history" aria-label="이력 도움말">?</button>
+            <span class="d-tab-section-meta">최근 10건</span>
+          </div>
+          <div class="h4-hist-wrap" data-bind="h4-hist-wrap">
+            <div class="nx-journal" data-bind="approval-history">
+              <div class="nx-journal-empty">결재 이력 없음</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="nx-journal" data-bind="approval-history">
-        <div class="nx-journal-empty">결재 이력 없음</div>
-      </div>
-
-      <!-- 이벤트 달력 (D-day 리스트 대체) -->
-      <div class="d-tab-section-title">
-        이벤트 달력
-        <span class="d-tab-section-meta">FOMC·지표·실적</span>
-      </div>
-      <div class="ev-cal" id="ev-cal-pc"></div>
     </div>
   </section>
 
@@ -10147,6 +10259,163 @@
     _setPanel(tk, real ? '실보유 포지션' : 'sim 가상 포지션', body);
   }
 
+  // v12.3 — 승인 상세 패널 (approvals.pending 또는 .history 매칭)
+  function _renderApprovalPanel(id) {
+    var data = _snap();
+    var ap = data.approvals || {};
+    var pending = ap.pending || [];
+    var history = ap.history || [];
+    var found = null, inHist = false;
+    var idStr = String(id);
+    for (var i = 0; i < pending.length; i++) {
+      if (String(pending[i].id) === idStr) { found = pending[i]; break; }
+    }
+    if (!found) {
+      for (var j = 0; j < history.length; j++) {
+        if (String(history[j].id) === idStr) { found = history[j]; inHist = true; break; }
+      }
+    }
+    if (!found) {
+      _setPanel('승인 상세', '스냅샷 밖', '<div class="empty">해당 승인 데이터 없음 — snapshot rolling window 밖.</div>');
+      return;
+    }
+    var pmKey = found.persona_key || found.routing_pm || found.pm_key || 'pathfinder';
+    var pmMeta = _pmMeta(pmKey);
+    var routing = found.routing_pm || found.assigned_pm || null;
+    var routingMeta = routing ? _pmMeta(routing) : null;
+    var typeLabel = {
+      watchlist_add: '진입 검토 (watchlist 추가)',
+      watchlist_remove: '제외 (watchlist 제거)',
+      weight_adjust: '비중 조정',
+    };
+    var t = found.created_at || found.decided_at || '';
+    var score = (found.score != null) ? found.score
+             : (found.discovery_score != null ? found.discovery_score : null);
+    var mentions = found.mention_count != null ? found.mention_count
+                : (found.news_count != null ? found.news_count : null);
+    var news = Array.isArray(found.news_items) ? found.news_items
+            : (Array.isArray(found.news) ? found.news : []);
+
+    var status = found.status || 'pending';
+    var statusLabel = { pending: '대기', approved: '승인', rejected: '반려', expired: '만료' };
+    var statusColor = { pending: 'var(--warn)', approved: 'var(--positive)', rejected: 'var(--negative)', expired: 'var(--fg-muted)' };
+
+    var kvHtml =
+      '<div class="kv">' +
+        '<span class="k">종목</span><span class="v">' + _esc(found.symbol || '?') + '</span>' +
+        '<span class="k">유형</span><span class="v" style="font-family:var(--sans);color:var(--fg);">' + _esc(typeLabel[found.type] || found.type || '—') + '</span>' +
+        '<span class="k">발굴 PM</span>' +
+        '<span class="v" style="font-family:var(--sans);color:' + pmMeta.color + ';">' + _esc(pmMeta.ko + ' · ' + pmMeta.short) + '</span>' +
+        '<span class="k">라우팅 PM</span>' +
+        '<span class="v" style="font-family:var(--sans);color:' + (routingMeta ? routingMeta.color : 'var(--fg-muted)') + ';">' +
+          _esc(routingMeta ? (routingMeta.ko + ' · ' + routingMeta.short) : '(자동 · 미지정)') + '</span>' +
+        '<span class="k">제안일</span><span class="v">' + _esc(String(t).replace('T',' ').slice(0, 16) || '—') + '</span>' +
+        '<span class="k">언급 수</span><span class="v">' + (mentions != null ? mentions : '—') + '</span>' +
+        '<span class="k">발굴 점수</span><span class="v">' + (score != null ? Number(score).toFixed(2) : '—') + '</span>' +
+        '<span class="k">상태</span>' +
+        '<span class="v" style="font-family:var(--sans);color:' + (statusColor[status] || 'var(--fg)') + ';">' + _esc(statusLabel[status] || status) + '</span>' +
+      '</div>';
+
+    var reasonHtml = '';
+    if (found.reason) {
+      reasonHtml =
+        '<div class="sec">' +
+          '<div class="sec-h">발굴 사유</div>' +
+          '<div class="desc-row">' + _esc(String(found.reason)) + '</div>' +
+        '</div>';
+    }
+
+    var newsHtml = '';
+    if (news.length > 0) {
+      newsHtml =
+        '<div class="sec">' +
+          '<div class="sec-h">뉴스 근거 · ' + news.length + '건</div>' +
+          news.slice(0, 6).map(function(n) {
+            var ts = n.ts || n.published_at || n.date || '';
+            return '<div class="desc-row">' +
+              '<span class="ts">' + _esc(String(ts).replace('T',' ').slice(0, 16)) + '</span>' +
+              _esc(n.title || n.headline || n.summary || '(제목 없음)') +
+              (n.source ? ' <span style="color:var(--fg-dim);font-size:11px;">· ' + _esc(n.source) + '</span>' : '') +
+            '</div>';
+          }).join('') +
+        '</div>';
+    } else if (!inHist && status === 'pending') {
+      newsHtml =
+        '<div class="sec">' +
+          '<div class="sec-h">뉴스 근거</div>' +
+          '<div class="empty">뉴스 목록 스냅샷 밖 — Pathfinder 원본에서 확인 가능</div>' +
+        '</div>';
+    }
+
+    var actionHtml = '';
+    if (!inHist && status === 'pending') {
+      // 기존 nexusApprovalDecide 재사용 (동작 로직 무손)
+      actionHtml =
+        '<div class="sec">' +
+          '<div class="sec-h">결재</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+            '<button type="button" style="padding:10px;border-radius:6px;background:transparent;border:1px solid var(--border-strong);color:var(--fg);cursor:pointer;font-size:13px;font-weight:600;" onclick="event.stopPropagation();nexusApprovalDecide(' + _esc(String(found.id)) + ', \'reject\', this)">반려</button>' +
+            '<button type="button" style="padding:10px;border-radius:6px;background:var(--accent);border:none;color:var(--bg);cursor:pointer;font-size:13px;font-weight:700;" onclick="event.stopPropagation();nexusApprovalDecide(' + _esc(String(found.id)) + ', \'approve\', this)">승인</button>' +
+          '</div>' +
+        '</div>';
+    } else if (inHist) {
+      var decidedAt = found.decided_at || '';
+      actionHtml =
+        '<div class="sec">' +
+          '<div class="sec-h">결재 완료</div>' +
+          '<div class="desc-row"><span class="ts">' + _esc(String(decidedAt).replace('T',' ').slice(0, 16)) + '</span>' +
+          _esc(statusLabel[status] || status) + (found.decided_by ? ' · ' + _esc(found.decided_by) : '') +
+          '</div>' +
+        '</div>';
+    }
+
+    var body =
+      '<div class="sec">' + kvHtml + '</div>' +
+      reasonHtml + newsHtml + actionHtml;
+    _setPanel(
+      (found.symbol || '?') + ' · ' + (typeLabel[found.type] || found.type || 'proposal'),
+      inHist ? '결재 완료' : '승인 대기',
+      body
+    );
+  }
+
+  // v12.3 — 이벤트 상세 패널 (달력 날짜 클릭)
+  function _renderEventPanel(dateOrId) {
+    var data = _snap();
+    var events = ((data.events || {}).events) || [];
+    var byDate = {};
+    events.forEach(function(e) {
+      var d = (e.date || '').slice(0, 10);
+      if (!d) return;
+      if (!byDate[d]) byDate[d] = [];
+      byDate[d].push(e);
+    });
+    var key = String(dateOrId || '');
+    var day = byDate[key] || [];
+    if (day.length === 0) {
+      _setPanel(key || '이벤트', '해당 날짜', '<div class="empty">이 날짜 이벤트 없음</div>');
+      return;
+    }
+    var typeLabel = { fomc: 'FOMC', indicator: '지표', earnings: '실적' };
+    var body =
+      '<div class="sec">' +
+        '<div class="sec-h">' + day.length + '건</div>' +
+        day.map(function(e) {
+          var imp = e.importance || 'low';
+          var impColor = imp === 'high' ? 'var(--negative)' : (imp === 'medium' ? 'var(--warn)' : 'var(--info)');
+          return '<div class="desc-row">' +
+            '<span class="ts" style="color:' + impColor + ';">' + _esc((typeLabel[e.type] || e.type || '').toUpperCase()) + ' · ' + _esc(imp) + '</span>' +
+            '<b>' + _esc(e.name || e.title || '?') + '</b>' +
+            (e.description ? '<br><span style="color:var(--fg-muted);font-size:11px;">' + _esc(e.description) + '</span>' : '') +
+            (e.actual != null ? '<div style="font-family:var(--mono);font-size:11px;margin-top:4px;">실적 ' + _esc(String(e.actual)) +
+              (e.forecast != null ? ' · 예상 ' + _esc(String(e.forecast)) : '') +
+              (e.previous != null ? ' · 이전 ' + _esc(String(e.previous)) : '') + '</div>' : '') +
+          '</div>';
+        }).join('') +
+      '</div>';
+    _setPanel(key, day.length + '건 이벤트', body);
+  }
+
   // v12.2 — 거래 상세 패널 (recent_would_trades id 기반)
   //   trade id = ts + '#' + ticker. 스냅샷에서 매칭 실패 시 "—" 로 표시.
   function _renderTradePanel(tradeId) {
@@ -10241,6 +10510,8 @@
       else if (type === 'discovery') _renderDiscoveryPanel();
       else if (type === 'position')  _renderPositionPanel(key);
       else if (type === 'trade')     _renderTradePanel(key);
+      else if (type === 'approval')  _renderApprovalPanel(key);
+      else if (type === 'event')     _renderEventPanel(key);
       else _setPanel('상세', type, '<div class="empty">알 수 없는 항목</div>');
     } catch (e) {
       _setPanel('오류', '', '<div class="empty">렌더 실패: ' + _esc(e && e.message || e) + '</div>');
@@ -10328,6 +10599,11 @@
     trade_detail:  '거래 상세: 신호값·게이트 통과·목표 비중·기대 순수익·비용·안전배수. 스냅샷에 없는 값은 —.',
     skip_reason:   '계층3 스킵 사유. 게이트를 통과하지 못한 이유 (신호 부족·비용 초과·안전배수 미달 등).',
     mode_badge:    'sim: 실제 발주 없이 시뮬만. live: 실계좌 발주. 현재는 sim만 존재 (D단계에서 live 전환).',
+    // v12.3 — 승인 탭
+    approval_queue:    'Pathfinder가 발굴한 신규 종목 후보 대기열. Principal 승인 시 담당 PM watchlist 편입.',
+    discovery_score:   '발굴 점수. 언급 수·뉴스 밀도·모멘텀·희소성 등 가중치 합산 (0~1). 높을수록 우선.',
+    event_calendar:    'FOMC·경제지표·실적 발표 일정. 붉은 점=중요, 노란=보통, 파란=참고. F 배지는 FOMC.',
+    approval_history:  '결재 완료 이력. 승인/반려/만료(24h). 항목 터치 시 당시 근거·라우팅 PM 확인.',
   };
   window.HELP_TEXTS = HELP_TEXTS;
 
@@ -10359,6 +10635,10 @@
     trade_detail: '거래 상세',
     skip_reason: '계층3 스킵',
     mode_badge: 'sim / live 모드',
+    approval_queue: '승인 대기',
+    discovery_score: '발굴 점수',
+    event_calendar: '이벤트 달력',
+    approval_history: '처리 이력',
   };
 
   function openHelpSheet(k) {
@@ -10935,6 +11215,77 @@
   }
 
   // 필터 · 행 · 초기화 클릭 위임
+  // -----------------------------------------------------------------
+  // v12.3 — 승인 탭 렌더러 (배지 · 처리 이력 스타일)
+  //   nexusApprovalDecide 는 변경 없음. 카드 자체 클릭 → 상세 패널만.
+  // -----------------------------------------------------------------
+  function renderPcApprovalV12(data) {
+    var ap = data.approvals || { pending_count: 0, pending: [], history: [] };
+    var pendingCnt = (ap.pending && ap.pending.length) || ap.pending_count || 0;
+    // 배지 (승인 대기 섹션 옆)
+    var badge = document.querySelector('[data-bind="h4-pending-badge"]');
+    if (badge) {
+      badge.textContent = pendingCnt > 0 ? '대기 ' + pendingCnt : '대기 0';
+      badge.className = 'h4-pending-badge' + (pendingCnt === 0 ? ' zero' : '');
+    }
+    // 처리 이력 카드 스타일 (h4-hist-wrap 안에 이미 approval-history 가 렌더됨).
+    //   기존 renderPcApprovalTab 이 nx-journal-row 로 렌더한 뒤 우리가 h4- 스타일로 재구성.
+    var histHost = document.querySelector('[data-bind="approval-history"]');
+    if (histHost) {
+      var history = ap.history || [];
+      if (history.length === 0) {
+        histHost.innerHTML = '<div class="nx-journal-empty">결재 이력 없음</div>';
+      } else {
+        var statusLabel = { approved: '승인', rejected: '반려', expired: '만료' };
+        histHost.innerHTML = history.slice(0, 10).map(function(p) {
+          var t = (p.decided_at || '').replace('T',' ').slice(0, 16);
+          var st = p.status || '';
+          return '<div class="h4-hist-row" data-h4-approval-id="' + _esc(String(p.id || '')) + '">' +
+            '<span class="t">' + _esc(t) + '</span>' +
+            '<span class="body">' +
+              '<span class="sym">' + _esc(p.symbol || '?') + '</span> ' +
+              '<span class="type">· ' + _esc(p.type || '') + '</span>' +
+            '</span>' +
+            '<span class="h4-hist-badge ' + _esc(st) + '">' + _esc(statusLabel[st] || st) + '</span>' +
+          '</div>';
+        }).join('');
+      }
+    }
+    // 대기 카드 자체 클릭 시 상세 패널 오픈 — 승인/거절 버튼은 stopPropagation.
+    document.querySelectorAll('section.d-tab[data-tab="approval"] .m-approval-card[data-proposal-id]').forEach(function(card) {
+      if (card._h4Bound) return;
+      card._h4Bound = true;
+      card.addEventListener('click', function(ev) {
+        // 버튼 클릭이면 무시
+        if (ev.target.closest('button')) return;
+        var id = card.getAttribute('data-proposal-id');
+        if (id) window.openDetailPanel('approval', id);
+      });
+    });
+  }
+
+  // 위임 클릭: 처리 이력 행 · 달력 날짜
+  document.addEventListener('click', function(ev) {
+    var histRow = ev.target.closest('[data-h4-approval-id]');
+    if (histRow) {
+      var id = histRow.getAttribute('data-h4-approval-id');
+      if (id) window.openDetailPanel('approval', id);
+      return;
+    }
+    // 달력 날짜: 기존 handler 가 selDay 를 갱신하고 재렌더 — 우리는 그 후 패널을 오픈만.
+    //   기존 handler 는 별개 IIFE 에 있으므로 이 리스너가 별도로 호출된다.
+    var dayCell = ev.target.closest('[data-cal-day]');
+    if (dayCell) {
+      var d = dayCell.getAttribute('data-cal-day');
+      // 이벤트가 있는 날만 패널 오픈
+      var data = _snap();
+      var events = ((data.events || {}).events) || [];
+      var has = events.some(function(e) { return (e.date || '').slice(0, 10) === d; });
+      if (has) window.openDetailPanel('event', d);
+      return;
+    }
+  });
+
   document.addEventListener('click', function(ev) {
     var pm = ev.target.closest('[data-h3-pm]');
     if (pm) { ev.preventDefault(); _historyFilter.pm = pm.getAttribute('data-h3-pm'); try { renderPcHistoryV12(_snap()); } catch(e){} return; }
@@ -10983,6 +11334,7 @@
     try { renderPcSidebar(data); } catch (e) { console.warn('[pc-b] sidebar', e); }
     try { renderPcHoldingsV12(data); } catch (e) { console.warn('[pc-b] holdings', e); }
     try { renderPcHistoryV12(data); } catch (e) { console.warn('[pc-b] history', e); }
+    try { renderPcApprovalV12(data); } catch (e) { console.warn('[pc-b] approval', e); }
     try { _autoAttachHelp(); }   catch (e) { console.warn('[pc-b] help', e); }
     try { _autoAttachOpeners(); } catch (e) { console.warn('[pc-b] openers', e); }
     // 패널이 열려있고 데이터에 의존하는 뷰면 재렌더 — but do not force-close
@@ -10995,6 +11347,8 @@
         else if (_panelState.type === 'discovery') _renderDiscoveryPanel();
         else if (_panelState.type === 'position')  _renderPositionPanel(_panelState.key);
         else if (_panelState.type === 'trade')     _renderTradePanel(_panelState.key);
+        else if (_panelState.type === 'approval')  _renderApprovalPanel(_panelState.key);
+        else if (_panelState.type === 'event')     _renderEventPanel(_panelState.key);
       } catch (e) { /* silent */ }
     }
   }

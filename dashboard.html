@@ -3855,6 +3855,235 @@
     color: var(--fg-strong);
   }
 
+  /* ================================================================ */
+  /*  v12.2 — 이력 탭 B-layout (≥1100px). <1100px 기본 hidden.           */
+  /*  기존 d-history-list · notif recent 는 ≥1100px 에서 숨김.           */
+  /* ================================================================ */
+  .h3-history-block { display: none; }
+  @media (min-width: 1100px) {
+    .h3-history-block { display: block; margin-bottom: 14px; }
+    section.d-tab[data-tab="history"] > .d-tab-pad > .d-tab-section-title[data-h3-hide="1"],
+    section.d-tab[data-tab="history"] > .d-tab-pad > .d-history-list { display: none; }
+  }
+
+  /* 필터 바 */
+  .h3-filter-bar {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .h3-filter-row {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+  .h3-filter-label {
+    font-size: 10px; font-weight: 700; color: var(--fg-muted);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    min-width: 46px;
+  }
+  .h3-seg {
+    display: inline-flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .h3-seg button {
+    background: transparent; border: none;
+    color: var(--fg-muted);
+    font-size: 11px; font-weight: 600;
+    font-family: var(--sans);
+    padding: 5px 10px;
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+  }
+  .h3-seg button:last-child { border-right: none; }
+  .h3-seg button:hover { background: var(--bg-elev); color: var(--fg); }
+  .h3-seg button.active {
+    background: rgba(94,234,212,0.12); color: var(--accent);
+  }
+  .h3-mode-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+  .h3-mode-badge.sim  { background: rgba(212,165,94,0.12); color: var(--warn);   border: 1px solid var(--warn); }
+  .h3-mode-badge.live { background: rgba(94,234,212,0.12); color: var(--accent); border: 1px solid var(--accent); }
+
+  /* 일별 미니바 */
+  .h3-daily {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 12px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .h3-daily-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-size: 11px; color: var(--fg-muted);
+  }
+  .h3-daily-title {
+    font-size: 12px; font-weight: 700; color: var(--fg);
+    display: flex; align-items: center;
+  }
+  .h3-daily-legend {
+    font-family: var(--mono); font-size: 10px;
+    display: inline-flex; gap: 10px;
+  }
+  .h3-daily-legend .buy  { color: var(--positive); }
+  .h3-daily-legend .sell { color: var(--negative); }
+  .h3-daily-bars {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 4px;
+    height: 60px;
+    align-items: end;
+  }
+  .h3-daily-bar {
+    display: flex; flex-direction: column;
+    height: 100%; align-items: stretch; justify-content: flex-end;
+    background: var(--bg-card);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    cursor: default;
+  }
+  .h3-daily-bar .seg-buy  { background: var(--positive); }
+  .h3-daily-bar .seg-sell { background: var(--negative); }
+  .h3-daily-bar .seg-empty {
+    flex: 1;
+    background: transparent;
+    border-bottom: 1px dashed var(--border);
+  }
+  .h3-daily-bar[data-count="0"] {
+    background: var(--bg-deep);
+  }
+  .h3-daily-labels {
+    display: grid; grid-template-columns: repeat(14, 1fr);
+    gap: 4px;
+    font-family: var(--mono); font-size: 9px; color: var(--fg-dim);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* 타임라인 */
+  .h3-timeline {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .h3-day-group {
+    border-top: 1px solid var(--border);
+  }
+  .h3-day-group:first-child { border-top: none; }
+  .h3-day-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 8px 14px;
+    background: var(--bg-card);
+    font-size: 11px; font-weight: 700;
+    color: var(--fg-muted);
+    letter-spacing: 0.04em;
+  }
+  .h3-day-head .cnt {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--fg-dim); font-weight: 500;
+  }
+  .h3-trow {
+    display: grid;
+    grid-template-columns: 62px auto 1fr auto auto auto;
+    gap: 10px;
+    padding: 9px 14px;
+    border-top: 1px solid var(--border);
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.15s ease;
+  }
+  .h3-trow:first-of-type { border-top: none; }
+  .h3-trow:hover { background: var(--bg-card); }
+  .h3-trow .t {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--fg-dim);
+  }
+  .h3-trow .pm {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--fg-muted);
+    min-width: 60px;
+  }
+  .h3-trow .pm .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--fg-dim); flex-shrink: 0;
+  }
+  .h3-trow .sym {
+    font-family: var(--mono); font-weight: 700;
+    color: var(--fg-strong); font-size: 13px;
+  }
+  .h3-trow .side {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 7px; border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+  .h3-trow .side.buy {
+    background: rgba(94,234,212,0.15); color: var(--positive);
+  }
+  .h3-trow .side.sell {
+    background: rgba(239,107,107,0.15); color: var(--negative);
+  }
+  .h3-trow .tgt {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--fg-muted); text-align: right;
+    min-width: 60px;
+  }
+  .h3-trow .sig {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--fg); text-align: right;
+    min-width: 44px;
+    font-weight: 600;
+  }
+  .h3-trow.skipped {
+    opacity: 0.55;
+  }
+  .h3-trow.skipped .sig {
+    color: var(--fg-dim);
+  }
+
+  .h3-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--fg-muted);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .h3-empty .big {
+    font-size: 14px; font-weight: 700; color: var(--fg);
+    margin-bottom: 6px;
+  }
+  .h3-empty .desc { font-size: 12px; margin-bottom: 14px; }
+  .h3-empty button {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    color: var(--fg);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: var(--sans);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  .h3-empty button:hover {
+    background: rgba(94,234,212,0.10);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
 </style>
 </head>
 <body>
@@ -5101,7 +5330,64 @@
   <!-- ===== HISTORY TAB ===== -->
   <section class="d-tab" data-tab="history">
     <div class="d-tab-pad">
-      <div class="d-tab-section-title">
+
+      <!-- v12.2 — 이력 탭 B-layout (≥1100px). 필터·미니바·타임라인. -->
+      <div class="h3-history-block" data-bind="h3-history-block">
+        <!-- 필터 바 -->
+        <div class="h3-filter-bar">
+          <div class="h3-filter-row">
+            <span class="h3-filter-label">PM</span>
+            <div class="h3-seg" data-bind="h3-pm-chips" role="tablist" aria-label="PM 필터"></div>
+            <span class="h3-mode-badge sim" data-bind="h3-mode-badge">sim
+              <button type="button" class="nx-help-btn" data-help="mode_badge" aria-label="모드 도움말">?</button>
+            </span>
+          </div>
+          <div class="h3-filter-row">
+            <span class="h3-filter-label">유형</span>
+            <div class="h3-seg" role="tablist" aria-label="유형 필터">
+              <button type="button" data-h3-type="all"  class="active">전체</button>
+              <button type="button" data-h3-type="buy">매수</button>
+              <button type="button" data-h3-type="sell">매도</button>
+            </div>
+            <span class="h3-filter-label" style="margin-left:14px;">기간</span>
+            <div class="h3-seg" role="tablist" aria-label="기간 필터">
+              <button type="button" data-h3-period="7">7D</button>
+              <button type="button" data-h3-period="30" class="active">30D</button>
+              <button type="button" data-h3-period="all">전체</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 일별 미니바 (최근 14일) -->
+        <div class="h3-daily">
+          <div class="h3-daily-head">
+            <span class="h3-daily-title">최근 14일 매매
+              <button type="button" class="nx-help-btn" data-help="daily_bar" aria-label="일별 도움말">?</button>
+            </span>
+            <span class="h3-daily-legend">
+              <span class="buy">■ 매수</span>
+              <span class="sell">■ 매도</span>
+            </span>
+          </div>
+          <div class="h3-daily-bars" data-bind="h3-daily-bars"></div>
+          <div class="h3-daily-labels" data-bind="h3-daily-labels"></div>
+        </div>
+
+        <!-- 타임라인 -->
+        <div class="d-tab-section-title" style="margin-top:8px;">
+          타임라인
+          <button type="button" class="nx-help-btn" data-help="timeline" aria-label="타임라인 도움말">?</button>
+          <span class="d-tab-section-meta" data-bind="h3-timeline-meta">—</span>
+        </div>
+        <div data-bind="h3-timeline-host">
+          <div class="h3-empty">
+            <div class="big">데이터 수집 중…</div>
+            <div class="desc">첫 snapshot 도착 대기</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-tab-section-title" data-h3-hide="1">
         최근 활동
         <span class="d-tab-section-meta" data-bind="d-history-meta">audit · 변경불가</span>
       </div>
@@ -5112,6 +5398,7 @@
       <!-- 계층 3 · 장중 평가 (홈에서 이동 — 깊은 분석은 이력 탭) -->
       <div class="d-tab-section-title">
         계층 3 · 장중 평가
+        <button type="button" class="nx-help-btn" data-help="skip_reason" aria-label="계층3 도움말">?</button>
         <span class="d-tab-section-meta">mandate v1.4.0</span>
       </div>
       <div class="layer3-card" id="layer3-card-pc">
@@ -9860,6 +10147,84 @@
     _setPanel(tk, real ? '실보유 포지션' : 'sim 가상 포지션', body);
   }
 
+  // v12.2 — 거래 상세 패널 (recent_would_trades id 기반)
+  //   trade id = ts + '#' + ticker. 스냅샷에서 매칭 실패 시 "—" 로 표시.
+  function _renderTradePanel(tradeId) {
+    var data = _snap();
+    var trades = (data.layer3 && data.layer3.recent_would_trades) || [];
+    var t = null;
+    for (var i = 0; i < trades.length; i++) {
+      var id = (trades[i].ts || '') + '#' + (trades[i].ticker || trades[i].symbol || '');
+      if (id === tradeId) { t = trades[i]; break; }
+    }
+    if (!t) {
+      _setPanel('거래 상세', '스냅샷 밖', '<div class="empty">해당 거래 데이터 없음 — 스냅샷 rolling window 밖.</div>');
+      return;
+    }
+    var pmKey = t.persona_key || t.persona || null;
+    var pmMeta = pmKey ? _pmMeta(pmKey) : null;
+    var side = (t.action || t.intent || 'buy').toLowerCase();
+    var sideKo = side === 'buy' ? '매수' : (side === 'sell' ? '매도' : side);
+    var ts = t.ts || t.timestamp || '';
+    var gateOk = !!t.gate_pass;
+    var executed = !!t.executed;
+    var mode = t.mode || (executed ? 'live' : 'sim');
+
+    function _f(v, d) {
+      if (v === null || v === undefined) return '—';
+      if (typeof v === 'number') return Number(v).toFixed(d == null ? 2 : d);
+      return String(v);
+    }
+    function _pctOrDash(v) {
+      return (v === null || v === undefined) ? '—' : Number(v).toFixed(2) + '%';
+    }
+
+    var sig = (t.signal_value != null) ? t.signal_value : t.signal_strength;
+
+    var kvHtml =
+      '<div class="kv">' +
+        '<span class="k">담당 PM</span>' +
+        '<span class="v" style="font-family:var(--sans);color:' + _esc(pmMeta ? pmMeta.color : 'var(--fg-strong)') + ';">' +
+          _esc(pmMeta ? (pmMeta.ko + ' · ' + pmMeta.short) : '—') + '</span>' +
+        '<span class="k">시각</span><span class="v">' + _esc(String(ts).replace('T',' ').slice(0, 19)) + '</span>' +
+        '<span class="k">종목</span><span class="v">' + _esc(t.ticker || t.symbol || '—') + '</span>' +
+        '<span class="k">방향</span><span class="v" style="color:' + (side === 'buy' ? 'var(--positive)' : 'var(--negative)') + ';">' + sideKo + '</span>' +
+        '<span class="k">신호값</span><span class="v">' + _f(sig, 3) + '</span>' +
+        '<span class="k">목표 비중</span><span class="v">' + _pctOrDash(t.target_weight_pct) + '</span>' +
+        '<span class="k">현재 비중</span><span class="v">' + _pctOrDash(t.current_weight_pct) + '</span>' +
+        '<span class="k">기대 순수익</span><span class="v">' + _pctOrDash(t.net_expected_pct) + '</span>' +
+        '<span class="k">총 비용</span><span class="v">' + _pctOrDash(t.total_cost_pct) + '</span>' +
+        '<span class="k">안전배수</span><span class="v">×' + _f(t.safety_multiplier, 1) + '</span>' +
+        '<span class="k">GATE</span><span class="v ' + (gateOk ? 'pos' : 'neg') + '">' + (gateOk ? '통과 ✓' : '스킵 ✗') + '</span>' +
+        '<span class="k">실행</span><span class="v" style="color:' + (executed ? 'var(--accent)' : 'var(--fg-muted)') + ';">' + (executed ? '체결' : 'sim — 미체결') + '</span>' +
+        '<span class="k">모드</span><span class="v" style="font-family:var(--sans);color:var(--warn);">' + _esc(mode) + '</span>' +
+      '</div>';
+
+    var reasonHtml = '';
+    if (t.reason) {
+      reasonHtml =
+        '<div class="sec">' +
+          '<div class="sec-h">' + (gateOk ? '결정 근거' : '스킵 사유') + '</div>' +
+          '<div class="desc-row">' + _esc(String(t.reason)) + '</div>' +
+        '</div>';
+    } else if (t.rationale) {
+      reasonHtml =
+        '<div class="sec">' +
+          '<div class="sec-h">결정 근거</div>' +
+          '<div class="desc-row">' + _esc(String(t.rationale)) + '</div>' +
+        '</div>';
+    }
+
+    var body =
+      '<div class="sec">' + kvHtml + '</div>' +
+      reasonHtml;
+    _setPanel(
+      (t.ticker || '—') + ' · ' + sideKo,
+      mode + ' 거래 상세',
+      body
+    );
+  }
+
   window.openDetailPanel = function(type, key) {
     if (!type) return;
     _panelState = { open: true, type: type, key: key || null };
@@ -9875,6 +10240,7 @@
       else if (type === 'risk')      _renderRiskPanel();
       else if (type === 'discovery') _renderDiscoveryPanel();
       else if (type === 'position')  _renderPositionPanel(key);
+      else if (type === 'trade')     _renderTradePanel(key);
       else _setPanel('상세', type, '<div class="empty">알 수 없는 항목</div>');
     } catch (e) {
       _setPanel('오류', '', '<div class="empty">렌더 실패: ' + _esc(e && e.message || e) + '</div>');
@@ -9956,6 +10322,12 @@
     pm_owner:      '이 종목을 담당하는 PM. 매매 결정 · 청산 판단의 주체.',
     sim_position:  'sim 가상 포지션. 실 발주 없이 계층3에서 "샀다면" 이라고 시뮬한 결과. 실계좌 잔고와 무관.',
     defense_lines: '방어 6선. L1 종목 손절 · L2 일일 · L3 소프트 MDD · L4 하드 MDD · L5 VIX · L6 급락.',
+    // v12.2 — 이력 탭
+    timeline:      '거래 타임라인. 날짜별 그룹 → 시각·PM·종목·방향·비중·신호값. 행 터치 시 상세.',
+    daily_bar:     '최근 14일 매매 건수. 위쪽 초록은 매수, 아래 빨강은 매도. 0건인 날은 점선.',
+    trade_detail:  '거래 상세: 신호값·게이트 통과·목표 비중·기대 순수익·비용·안전배수. 스냅샷에 없는 값은 —.',
+    skip_reason:   '계층3 스킵 사유. 게이트를 통과하지 못한 이유 (신호 부족·비용 초과·안전배수 미달 등).',
+    mode_badge:    'sim: 실제 발주 없이 시뮬만. live: 실계좌 발주. 현재는 sim만 존재 (D단계에서 live 전환).',
   };
   window.HELP_TEXTS = HELP_TEXTS;
 
@@ -9982,6 +10354,11 @@
     pm_owner: '담당 PM',
     sim_position: 'sim 가상 포지션',
     defense_lines: '방어 6선',
+    timeline: '거래 타임라인',
+    daily_bar: '일별 매매 집계',
+    trade_detail: '거래 상세',
+    skip_reason: '계층3 스킵',
+    mode_badge: 'sim / live 모드',
   };
 
   function openHelpSheet(k) {
@@ -10347,6 +10724,257 @@
   });
 
   // -----------------------------------------------------------------
+  // v12.2 — 이력 탭 렌더러 (필터 · 일별 미니바 · 타임라인)
+  //   상태는 IIFE 스코프 — refresh 시 초기화 안 함. 스크롤 위치는 브라우저 유지.
+  // -----------------------------------------------------------------
+  var _historyFilter = { pm: 'all', type: 'all', period: '30' };  // days or 'all'
+
+  function _tsMs(ts) {
+    if (!ts) return 0;
+    var s = String(ts);
+    // naive ISO (KST assumed) → 브라우저 로컬 파싱
+    var d = new Date(s.indexOf('T') >= 0 ? s : s.replace(' ', 'T'));
+    return d.getTime() || 0;
+  }
+  function _dayKey(ts) {
+    if (!ts) return '';
+    return String(ts).slice(0, 10);  // YYYY-MM-DD
+  }
+  function _timeShort(ts) {
+    if (!ts) return '—';
+    var s = String(ts);
+    var i = s.indexOf('T');
+    if (i < 0) i = s.indexOf(' ');
+    return i >= 0 ? s.slice(i + 1, i + 6) : s.slice(0, 5);
+  }
+  function _dayLabel(k) {
+    if (!k) return '—';
+    var d = new Date(k + 'T00:00:00');
+    if (isNaN(d.getTime())) return k;
+    var wd = ['일','월','화','수','목','금','토'][d.getDay()];
+    return k.slice(5) + ' (' + wd + ')';
+  }
+
+  function _tradeId(t) {
+    return (t.ts || '') + '#' + (t.ticker || t.symbol || '');
+  }
+
+  function _renderHistoryPmChips(activePms, total) {
+    var host = document.querySelector('[data-bind="h3-pm-chips"]');
+    if (!host) return;
+    var chips = [{ key: 'all', label: '전체', color: 'var(--accent)', count: total }];
+    activePms.forEach(function(p) {
+      chips.push({ key: p.key, label: p.meta.ko || p.meta.short, color: p.meta.color, count: p.count });
+    });
+    host.innerHTML = chips.map(function(c) {
+      var active = (_historyFilter.pm === c.key) ? ' active' : '';
+      return '<button type="button" data-h3-pm="' + _esc(c.key) + '" class="' + active.trim() + '">' +
+        _esc(c.label) + ' ' +
+        '<span style="color:var(--fg-dim);font-family:var(--mono);font-size:10px;margin-left:2px;">' + c.count + '</span>' +
+      '</button>';
+    }).join('');
+  }
+
+  function _renderDailyBars(trades) {
+    var barsHost = document.querySelector('[data-bind="h3-daily-bars"]');
+    var labelsHost = document.querySelector('[data-bind="h3-daily-labels"]');
+    if (!barsHost || !labelsHost) return;
+    // 오늘 KST 기준 최근 14일
+    var today = new Date();
+    var days = [];
+    for (var i = 13; i >= 0; i--) {
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+      var key = d.getFullYear() + '-' +
+                String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                String(d.getDate()).padStart(2, '0');
+      days.push({ key: key, buy: 0, sell: 0 });
+    }
+    (trades || []).forEach(function(t) {
+      var k = _dayKey(t.ts);
+      if (!k) return;
+      var day = days.find(function(x) { return x.key === k; });
+      if (!day) return;
+      var side = (t.action || t.intent || 'buy').toLowerCase();
+      if (side === 'sell') day.sell++;
+      else day.buy++;
+    });
+    var maxCnt = Math.max.apply(null, days.map(function(d){return d.buy + d.sell;})) || 1;
+    barsHost.innerHTML = days.map(function(d) {
+      var total = d.buy + d.sell;
+      if (total === 0) {
+        return '<div class="h3-daily-bar" data-count="0" title="' + d.key + ': 0"><div class="seg-empty"></div></div>';
+      }
+      var buyH = (d.buy / maxCnt) * 100;
+      var sellH = (d.sell / maxCnt) * 100;
+      var buyHtml = d.buy > 0 ? '<div class="seg-buy" style="height:' + buyH + '%;" title="매수 ' + d.buy + '"></div>' : '';
+      var sellHtml = d.sell > 0 ? '<div class="seg-sell" style="height:' + sellH + '%;" title="매도 ' + d.sell + '"></div>' : '';
+      return '<div class="h3-daily-bar" title="' + d.key + ': 매수 ' + d.buy + ' · 매도 ' + d.sell + '">' +
+        buyHtml + sellHtml +
+      '</div>';
+    }).join('');
+    labelsHost.innerHTML = days.map(function(d) {
+      return '<span>' + d.key.slice(5).replace('-','/') + '</span>';
+    }).join('');
+  }
+
+  function _renderTimeline(filtered) {
+    var host = document.querySelector('[data-bind="h3-timeline-host"]');
+    if (!host) return;
+    if (!filtered.length) {
+      var msg = (_historyFilter.pm === 'all' && _historyFilter.type === 'all')
+        ? '이 기간 매매 없음'
+        : '조건에 맞는 매매 없음';
+      host.innerHTML =
+        '<div class="h3-empty">' +
+          '<div class="big">' + msg + '</div>' +
+          '<div class="desc">필터를 초기화하거나 기간을 넓혀 보세요.</div>' +
+          '<button type="button" data-h3-reset="1">필터 초기화</button>' +
+        '</div>';
+      return;
+    }
+    // 날짜별 그룹
+    var groups = {};
+    filtered.forEach(function(t) {
+      var k = _dayKey(t.ts) || '—';
+      if (!groups[k]) groups[k] = [];
+      groups[k].push(t);
+    });
+    var dayKeys = Object.keys(groups).sort(function(a, b) { return b.localeCompare(a); });
+    var html = '<div class="h3-timeline">';
+    dayKeys.forEach(function(k) {
+      var rows = groups[k];
+      html +=
+        '<div class="h3-day-group">' +
+          '<div class="h3-day-head">' + _dayLabel(k) + ' <span class="cnt">' + rows.length + '건</span></div>';
+      rows.forEach(function(t) {
+        var pmKey = t.persona_key || t.persona || null;
+        var pmMeta = pmKey ? _pmMeta(pmKey) : null;
+        var side = (t.action || t.intent || 'buy').toLowerCase();
+        var gate = !!t.gate_pass;
+        var sig = (t.signal_value != null) ? t.signal_value : t.signal_strength;
+        var sigTxt = (sig != null) ? Number(sig).toFixed(2) : '—';
+        var tgt = (t.target_weight_pct != null) ? Number(t.target_weight_pct).toFixed(1) + '%' : '—';
+        html +=
+          '<div class="h3-trow' + (gate ? '' : ' skipped') + '" data-h3-tid="' + _esc(_tradeId(t)) + '">' +
+            '<span class="t">' + _esc(_timeShort(t.ts)) + '</span>' +
+            '<span class="pm">' +
+              '<span class="dot" style="background:' + _esc(pmMeta ? pmMeta.color : 'var(--fg-dim)') + ';"></span>' +
+              _esc(pmMeta ? pmMeta.short : '—') +
+            '</span>' +
+            '<span class="sym">' + _esc(t.ticker || t.symbol || '?') + '</span>' +
+            '<span class="side ' + side + '">' + (side === 'buy' ? '매수' : '매도') + '</span>' +
+            '<span class="tgt">비중 ' + tgt + '</span>' +
+            '<span class="sig">' + sigTxt + '</span>' +
+          '</div>';
+      });
+      html += '</div>';
+    });
+    html += '</div>';
+    host.innerHTML = html;
+  }
+
+  function renderPcHistoryV12(data) {
+    var block = document.querySelector('[data-bind="h3-history-block"]');
+    if (!block) return;
+    var trades = (data.layer3 && Array.isArray(data.layer3.recent_would_trades))
+      ? data.layer3.recent_would_trades : [];
+    var mode = (data.layer3 && data.layer3.mode) ||
+               (trades.some(function(t){return t.executed;}) ? 'live' : 'sim');
+
+    // 모드 배지
+    var mb = document.querySelector('[data-bind="h3-mode-badge"]');
+    if (mb) {
+      // 도움말 버튼 유지
+      var helpBtn = mb.querySelector('.nx-help-btn');
+      mb.className = 'h3-mode-badge ' + (mode === 'live' ? 'live' : 'sim');
+      mb.firstChild && (mb.firstChild.nodeValue = mode + ' ');
+      if (helpBtn && !mb.contains(helpBtn)) mb.appendChild(helpBtn);
+    }
+
+    // 일별 미니바는 전체 rolling window 사용 (필터와 무관)
+    _renderDailyBars(trades);
+
+    // PM 별 카운트 (필터에 사용) — 유형·기간 무관 전체 기준
+    var pmCounts = {};
+    trades.forEach(function(t) {
+      var k = t.persona_key || t.persona || 'unknown';
+      pmCounts[k] = (pmCounts[k] || 0) + 1;
+    });
+    var activePms = Object.keys(pmCounts).map(function(k) {
+      return { key: k, meta: _pmMeta(k), count: pmCounts[k] };
+    });
+    activePms.sort(function(a, b){ return b.count - a.count; });
+    _renderHistoryPmChips(activePms, trades.length);
+
+    // 필터 적용 (PM · 유형 · 기간)
+    var nowMs = Date.now();
+    var cutoffMs = _historyFilter.period === 'all' ? 0
+      : nowMs - (Number(_historyFilter.period) * 86400 * 1000);
+    var filtered = trades.filter(function(t) {
+      if (_historyFilter.pm !== 'all') {
+        var pk = t.persona_key || t.persona || 'unknown';
+        if (pk !== _historyFilter.pm) return false;
+      }
+      if (_historyFilter.type !== 'all') {
+        var side = (t.action || t.intent || 'buy').toLowerCase();
+        if (side !== _historyFilter.type) return false;
+      }
+      if (cutoffMs > 0) {
+        var ms = _tsMs(t.ts);
+        if (ms && ms < cutoffMs) return false;
+      }
+      return true;
+    });
+    // 최신순 정렬
+    filtered.sort(function(a, b) { return _tsMs(b.ts) - _tsMs(a.ts); });
+
+    var meta = document.querySelector('[data-bind="h3-timeline-meta"]');
+    if (meta) meta.textContent = filtered.length + '건 / 전체 ' + trades.length;
+
+    _renderTimeline(filtered);
+  }
+
+  // 필터 · 행 · 초기화 클릭 위임
+  document.addEventListener('click', function(ev) {
+    var pm = ev.target.closest('[data-h3-pm]');
+    if (pm) { ev.preventDefault(); _historyFilter.pm = pm.getAttribute('data-h3-pm'); try { renderPcHistoryV12(_snap()); } catch(e){} return; }
+    var ty = ev.target.closest('[data-h3-type]');
+    if (ty) {
+      ev.preventDefault();
+      _historyFilter.type = ty.getAttribute('data-h3-type');
+      // active 클래스 갱신
+      var siblings = ty.parentElement.querySelectorAll('[data-h3-type]');
+      siblings.forEach(function(x){ x.classList.remove('active'); });
+      ty.classList.add('active');
+      try { renderPcHistoryV12(_snap()); } catch(e){}
+      return;
+    }
+    var pd = ev.target.closest('[data-h3-period]');
+    if (pd) {
+      ev.preventDefault();
+      _historyFilter.period = pd.getAttribute('data-h3-period');
+      var pdSiblings = pd.parentElement.querySelectorAll('[data-h3-period]');
+      pdSiblings.forEach(function(x){ x.classList.remove('active'); });
+      pd.classList.add('active');
+      try { renderPcHistoryV12(_snap()); } catch(e){}
+      return;
+    }
+    var reset = ev.target.closest('[data-h3-reset]');
+    if (reset) {
+      ev.preventDefault();
+      _historyFilter = { pm: 'all', type: 'all', period: '30' };
+      try { renderPcHistoryV12(_snap()); } catch(e){}
+      return;
+    }
+    var trow = ev.target.closest('.h3-trow[data-h3-tid]');
+    if (trow) {
+      var tid = trow.getAttribute('data-h3-tid');
+      if (tid) window.openDetailPanel('trade', tid);
+      return;
+    }
+  });
+
+  // -----------------------------------------------------------------
   // 초기화 & refresh hook — 기존 30s refresh 가 window.nexusBackendData 을
   //   갱신할 때마다 사이드바 재렌더. 패널이 열려있으면 유지.
   // -----------------------------------------------------------------
@@ -10354,6 +10982,7 @@
     var data = window.nexusBackendData || {};
     try { renderPcSidebar(data); } catch (e) { console.warn('[pc-b] sidebar', e); }
     try { renderPcHoldingsV12(data); } catch (e) { console.warn('[pc-b] holdings', e); }
+    try { renderPcHistoryV12(data); } catch (e) { console.warn('[pc-b] history', e); }
     try { _autoAttachHelp(); }   catch (e) { console.warn('[pc-b] help', e); }
     try { _autoAttachOpeners(); } catch (e) { console.warn('[pc-b] openers', e); }
     // 패널이 열려있고 데이터에 의존하는 뷰면 재렌더 — but do not force-close
@@ -10365,6 +10994,7 @@
         else if (_panelState.type === 'risk')      _renderRiskPanel();
         else if (_panelState.type === 'discovery') _renderDiscoveryPanel();
         else if (_panelState.type === 'position')  _renderPositionPanel(_panelState.key);
+        else if (_panelState.type === 'trade')     _renderTradePanel(_panelState.key);
       } catch (e) { /* silent */ }
     }
   }

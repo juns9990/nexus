@@ -54,7 +54,11 @@
 //         테이블(실계좌/sim 구분 배지) + 방어 6선 ? 도움말. openDetailPanel
 //         에 'position' 타입 추가. HELP_TEXTS 확장 (position · pnl · pm_owner
 //         · sim_position · defense_lines). 백엔드 무손.
-const CACHE_VERSION = 'v12.1';
+// v12.2 — PC 리뉴얼 3차: 이력 탭 B-layout. PM/유형/기간 3필터 · 일별 미니바(14D)
+//         · 날짜 그룹 타임라인 · sim/live 모드 배지. openDetailPanel에 'trade'
+//         타입 추가. HELP_TEXTS 확장 (timeline · daily_bar · trade_detail ·
+//         skip_reason · mode_badge). 계층3 카드 위치 유지 + ? 부착. 백엔드 무손.
+const CACHE_VERSION = 'v12.2';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

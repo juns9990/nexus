@@ -50,7 +50,11 @@
 // v12.0 — PC 리뉴얼 1차: B안 사이드바 레이아웃(≥1100px) + 공용 상세 패널
 //         + ? 도움말 엔진. 표시 계층만, 매매·Aegis·미러 로직 무변경.
 //         모바일(<1100px) 세로 레이아웃은 무손 — PC 전용 미디어쿼리로 격리.
-const CACHE_VERSION = 'v12.0';
+// v12.1 — PC 리뉴얼 2차: 보유 탭 B-layout. 3 요약 카드 + PM 필터 칩 + 포지션
+//         테이블(실계좌/sim 구분 배지) + 방어 6선 ? 도움말. openDetailPanel
+//         에 'position' 타입 추가. HELP_TEXTS 확장 (position · pnl · pm_owner
+//         · sim_position · defense_lines). 백엔드 무손.
+const CACHE_VERSION = 'v12.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

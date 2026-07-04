@@ -3683,6 +3683,178 @@
     inset: -6px;
   }
 
+  /* ================================================================ */
+  /*  v12.1 — 보유 탭 B-layout (≥1100px). <1100px 는 기본 hidden.        */
+  /*  기존 hold-summary · d-positions 리스트는 ≥1100px 에서 숨김.        */
+  /* ================================================================ */
+  .h2-holdings-block { display: none; }
+  @media (min-width: 1100px) {
+    .h2-holdings-block { display: block; margin-bottom: 14px; }
+    /* 신규 3카드가 대체 — 기존 요약/구 리스트는 PC 넓은 폭에서만 숨김 */
+    section.d-tab[data-tab="positions"] > .d-tab-pad > .hold-summary,
+    section.d-tab[data-tab="positions"] > .d-tab-pad > .d-positions,
+    section.d-tab[data-tab="positions"] > .d-tab-pad > .d-tab-section-title[data-h2-hide="1"] { display: none; }
+  }
+
+  /* 3 요약 카드 */
+  .h2-sum-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px; margin-bottom: 14px;
+  }
+  .h2-sum-card {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .h2-sum-card .l {
+    font-size: 10px; font-weight: 700; color: var(--fg-muted);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .h2-sum-card .v {
+    font-family: var(--mono); font-size: 22px; font-weight: 600;
+    color: var(--fg-strong); letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .h2-sum-card .v.pos { color: var(--positive); }
+  .h2-sum-card .v.neg { color: var(--negative); }
+  .h2-sum-card .s {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--fg-muted);
+  }
+
+  /* PM 필터 칩 */
+  .h2-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 12px;
+    padding: 4px 0 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .h2-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    font-size: 12px; font-weight: 600;
+    background: var(--bg-elev); color: var(--fg-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    font-family: var(--sans);
+  }
+  .h2-chip .swatch {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--fg-dim); flex-shrink: 0;
+  }
+  .h2-chip:hover { background: var(--bg-card); color: var(--fg); }
+  .h2-chip.active {
+    background: rgba(94,234,212,0.10);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .h2-chip .count {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-dim);
+  }
+  .h2-chip.active .count { color: var(--accent); }
+
+  /* 포지션 테이블 + 소스 배지 */
+  .h2-source-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 2px 10px;
+    font-size: 11px; color: var(--fg-muted);
+  }
+  .h2-source-badge {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px;
+    letter-spacing: 0.04em;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .h2-source-badge.real {
+    background: rgba(94,234,212,0.10); color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .h2-source-badge.sim {
+    background: rgba(212,165,94,0.10); color: var(--warn);
+    border: 1px solid var(--warn);
+  }
+  .h2-source-badge.empty {
+    background: var(--bg-card); color: var(--fg-dim);
+    border: 1px solid var(--border);
+  }
+
+  .h2-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12px;
+    table-layout: fixed;
+  }
+  .h2-table thead th {
+    background: var(--bg-card);
+    color: var(--fg-muted);
+    font-weight: 700; font-size: 10px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .h2-table thead th.num { text-align: right; }
+  .h2-table tbody tr {
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .h2-table tbody tr:first-child { border-top: none; }
+  .h2-table tbody tr:hover { background: var(--bg-card); }
+  .h2-table tbody td {
+    padding: 10px 12px;
+    color: var(--fg);
+    vertical-align: middle;
+  }
+  .h2-table tbody td.num {
+    font-family: var(--mono); text-align: right; font-weight: 500;
+  }
+  .h2-table .sym {
+    font-family: var(--mono); font-weight: 700;
+    color: var(--fg-strong); font-size: 13px;
+  }
+  .h2-table .pm-cell {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--fg-muted);
+    max-width: 100%;
+  }
+  .h2-table .pm-cell .swatch {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .h2-table td.pnl.pos { color: var(--positive); }
+  .h2-table td.pnl.neg { color: var(--negative); }
+  .h2-table td.pnl.neut { color: var(--fg-dim); }
+  .h2-table tbody tr.sim td {
+    background: rgba(212,165,94,0.03);
+    color: var(--fg-muted);
+  }
+  .h2-table tbody tr.sim .sym { color: var(--warn); }
+
+  .h2-empty {
+    padding: 26px 20px; text-align: center;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--fg-muted);
+  }
+  .h2-empty .big {
+    font-size: 14px; font-weight: 700; color: var(--fg);
+    margin-bottom: 6px;
+  }
+  .h2-empty .desc { font-size: 12px; }
+  .h2-empty .cash-line {
+    margin-top: 14px; padding: 12px;
+    background: var(--bg-deep); border-radius: 6px;
+    font-family: var(--mono); font-size: 13px;
+    color: var(--fg-strong);
+  }
+
 </style>
 </head>
 <body>
@@ -4777,6 +4949,46 @@
   <section class="d-tab" data-tab="positions">
     <div class="d-tab-pad">
 
+      <!-- v12.1 — B-layout 보유 탭 (≥1100px). 3카드 + PM 칩 + 테이블. -->
+      <div class="h2-holdings-block" data-bind="h2-holdings-block">
+        <div class="h2-sum-grid">
+          <div class="h2-sum-card">
+            <div class="l">총 보유가치
+              <button type="button" class="nx-help-btn" data-help="position" aria-label="보유가치 도움말">?</button>
+            </div>
+            <div class="v" data-bind="h2-total-value">—</div>
+            <div class="s" data-bind="h2-total-sub">평가액 · USD</div>
+          </div>
+          <div class="h2-sum-card">
+            <div class="l">평가손익
+              <button type="button" class="nx-help-btn" data-help="pnl" aria-label="평가손익 도움말">?</button>
+            </div>
+            <div class="v" data-bind="h2-pnl">—</div>
+            <div class="s" data-bind="h2-pnl-sub">평단 대비</div>
+          </div>
+          <div class="h2-sum-card">
+            <div class="l">현금 비중
+              <button type="button" class="nx-help-btn" data-help="pm_owner" aria-label="현금 도움말">?</button>
+            </div>
+            <div class="v" data-bind="h2-cash-pct">—</div>
+            <div class="s" data-bind="h2-cash-sub">하한 —</div>
+          </div>
+        </div>
+
+        <div class="h2-chips" data-bind="h2-chips" role="tablist" aria-label="PM 필터"></div>
+
+        <div class="h2-source-bar">
+          <span data-bind="h2-source-label">포지션 —</span>
+          <span class="h2-source-badge empty" data-bind="h2-source-badge">—</span>
+        </div>
+        <div data-bind="h2-table-host">
+          <div class="h2-empty">
+            <div class="big">데이터 수집 중…</div>
+            <div class="desc">첫 snapshot 도착 대기</div>
+          </div>
+        </div>
+      </div>
+
       <!-- A. 자산 구성 요약 -->
       <div class="hold-summary">
         <div class="hold-nav-row">
@@ -4834,6 +5046,7 @@
       <!-- 방어 상태판 (홈에서 이동) -->
       <div class="d-tab-section-title">
         방어 상태판
+        <button type="button" class="nx-help-btn" data-help="defense_lines" aria-label="방어선 도움말">?</button>
         <span class="d-tab-section-meta">6선</span>
       </div>
       <div class="defense-board" id="defense-board-pc">
@@ -9556,6 +9769,97 @@
     _setPanel('발굴 · 승인', 'Pathfinder 제안 이력', body);
   }
 
+  // v12.1 — 포지션 상세 패널 (broker 실 or sim 가상)
+  function _renderPositionPanel(ticker) {
+    var data = _snap();
+    var tk = String(ticker || '').toUpperCase();
+    var positions = Array.isArray(data.positions) ? data.positions : [];
+    var real = null;
+    for (var i = 0; i < positions.length; i++) {
+      var s = String(positions[i].symbol || positions[i].ticker || '').toUpperCase();
+      if (s === tk) { real = positions[i]; break; }
+    }
+    var l3 = (data.layer3 && data.layer3.recent_would_trades) || [];
+    var tkTrades = l3.filter(function(w) {
+      return String(w.ticker || w.symbol || '').toUpperCase() === tk;
+    }).slice(0, 8);
+
+    var owner = real && (real.pm_key || real.persona_key || real.pm_label);
+    if (!owner && tkTrades.length) {
+      owner = tkTrades[0].persona_key || tkTrades[0].persona || null;
+    }
+    var ownerMeta = owner ? _pmMeta(owner) : null;
+    var latestSig = tkTrades.length ? tkTrades[0] : null;
+
+    var kvHtml = '';
+    if (real) {
+      var qty = real.quantity != null ? real.quantity : real.qty;
+      var avg = real.avg_cost != null ? real.avg_cost : real.average_cost;
+      var last = real.market_price != null ? real.market_price : real.last_price;
+      var mv = real.market_value;
+      var pnl = real.unrealized_pnl;
+      var pnlPct = real.unrealized_pnl_pct;
+      var w = real.actual_weight_pct;
+      kvHtml =
+        '<div class="kv">' +
+          '<span class="k">담당 PM</span>' +
+          '<span class="v" style="font-family:var(--sans);color:' + _esc(ownerMeta ? ownerMeta.color : 'var(--fg-strong)') + ';">' +
+            _esc(ownerMeta ? (ownerMeta.ko + ' · ' + ownerMeta.short) : '—') + '</span>' +
+          '<span class="k">수량</span><span class="v">' + (qty != null ? qty + '주' : '—') + '</span>' +
+          '<span class="k">평단</span><span class="v">' + (avg ? '$' + Number(avg).toFixed(2) : '—') + '</span>' +
+          '<span class="k">현재가</span><span class="v">' + (last ? '$' + Number(last).toFixed(2) : '—') + '</span>' +
+          '<span class="k">평가액</span><span class="v">' + (mv != null ? '$' + Number(mv).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—') + '</span>' +
+          '<span class="k">평가손익</span>' +
+          '<span class="v ' + (pnl == null ? '' : (pnl >= 0 ? 'pos' : 'neg')) + '">' +
+            (pnl == null ? '—' : (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toLocaleString('en-US', {maximumFractionDigits: 0})) +
+            (pnlPct != null ? ' (' + _fmtPct(pnlPct, true) + ')' : '') + '</span>' +
+          '<span class="k">비중</span><span class="v">' + (w != null ? Number(w).toFixed(2) + '%' : '—') + '</span>' +
+        '</div>';
+    } else {
+      kvHtml =
+        '<div class="kv">' +
+          '<span class="k">담당 PM</span>' +
+          '<span class="v" style="font-family:var(--sans);color:' + _esc(ownerMeta ? ownerMeta.color : 'var(--fg-strong)') + ';">' +
+            _esc(ownerMeta ? (ownerMeta.ko + ' · ' + ownerMeta.short) : '—') + '</span>' +
+          '<span class="k">상태</span><span class="v" style="font-family:var(--sans);color:var(--warn);">sim — 가상 (실보유 없음)</span>' +
+          '<span class="k">sim 결정 수</span><span class="v">' + tkTrades.length + '</span>' +
+          '<span class="k">최근 신호</span>' +
+          '<span class="v">' + _esc(latestSig ? (latestSig.action || 'sim') + ' · ' +
+              (latestSig.net_expected_pct != null ? Number(latestSig.net_expected_pct).toFixed(2) + '%' : '—')
+              : '—') + '</span>' +
+        '</div>';
+    }
+
+    var decHtml = tkTrades.length === 0
+      ? '<div class="empty">결정 로그 없음</div>'
+      : tkTrades.map(function(w) {
+          var t = w.ts || w.timestamp || w.at || '';
+          var side = w.action || w.intent || 'sim';
+          var exp = (w.net_expected_pct != null) ? Number(w.net_expected_pct).toFixed(2) + '%' : '—';
+          var gate = w.gate_pass ? 'GATE✓' : 'GATE✕';
+          return '<div class="desc-row">' +
+            '<span class="ts">' + _esc(String(t).replace('T',' ').slice(0, 16)) + ' · ' + _esc(side) + ' · ' + gate + '</span>' +
+            _esc('기대 ' + exp + ' — ' + (w.rationale || w.reason || '경제성 통과')) +
+          '</div>';
+        }).join('');
+
+    var srcBadge = real
+      ? '<span style="color:var(--accent);font-family:var(--mono);font-weight:700;">실계좌</span>'
+      : '<span style="color:var(--warn);font-family:var(--mono);font-weight:700;">sim — 가상</span>';
+
+    var body =
+      '<div class="sec">' + kvHtml + '</div>' +
+      '<div class="sec">' +
+        '<div class="sec-h">출처 · ' + srcBadge + '</div>' +
+      '</div>' +
+      '<div class="sec">' +
+        '<div class="sec-h">결정 로그 · 최근 ' + tkTrades.length + '건</div>' +
+        decHtml +
+      '</div>';
+
+    _setPanel(tk, real ? '실보유 포지션' : 'sim 가상 포지션', body);
+  }
+
   window.openDetailPanel = function(type, key) {
     if (!type) return;
     _panelState = { open: true, type: type, key: key || null };
@@ -9570,6 +9874,7 @@
       else if (type === 'market')    _renderMarketPanel();
       else if (type === 'risk')      _renderRiskPanel();
       else if (type === 'discovery') _renderDiscoveryPanel();
+      else if (type === 'position')  _renderPositionPanel(key);
       else _setPanel('상세', type, '<div class="empty">알 수 없는 항목</div>');
     } catch (e) {
       _setPanel('오류', '', '<div class="empty">렌더 실패: ' + _esc(e && e.message || e) + '</div>');
@@ -9645,6 +9950,12 @@
     trade_flow: 'PM별 매매 흐름 · 5단 파이프라인 (스캔 → 심사 → 결정 → 발주 → 체결).',
     portfolio: '보유 자산 도넛 + PM별 자본 배분. 미국 ETF · 현금 USD · 기타.',
     events: 'FOMC · 지표 · 실적 · D-day 캘린더. 중요 이벤트만 표시.',
+    // v12.1 — 보유 탭
+    position:      '실계좌 브로커에 잡힌 현재 보유 종목. 평단·현재가·수량은 조회 시각 기준.',
+    pnl:           '평가손익. (현재가 − 평단) × 수량. 실현되지 않은 손익.',
+    pm_owner:      '이 종목을 담당하는 PM. 매매 결정 · 청산 판단의 주체.',
+    sim_position:  'sim 가상 포지션. 실 발주 없이 계층3에서 "샀다면" 이라고 시뮬한 결과. 실계좌 잔고와 무관.',
+    defense_lines: '방어 6선. L1 종목 손절 · L2 일일 · L3 소프트 MDD · L4 하드 MDD · L5 VIX · L6 급락.',
   };
   window.HELP_TEXTS = HELP_TEXTS;
 
@@ -9666,6 +9977,11 @@
     trade_flow: '매매 흐름',
     portfolio: '자산 배분',
     events: '캘린더',
+    position: '보유 · 실계좌',
+    pnl: '평가손익',
+    pm_owner: '담당 PM',
+    sim_position: 'sim 가상 포지션',
+    defense_lines: '방어 6선',
   };
 
   function openHelpSheet(k) {
@@ -9759,12 +10075,285 @@
   }
 
   // -----------------------------------------------------------------
+  // v12.1 — 보유 탭 렌더러 (PM 칩 필터 + sim/실 구분 테이블)
+  //   필터 상태는 사용자 세션 내 유지 — refresh 시 초기화 안 함.
+  // -----------------------------------------------------------------
+  var _holdingsFilter = 'all';  // 'all' | persona_key
+
+  function _pmKeyFromPos(p) {
+    if (!p) return null;
+    return p.pm_key || p.persona_key || p.persona || null;
+  }
+  function _pmKeyFromTrade(w) {
+    if (!w) return null;
+    return w.persona_key || w.persona || null;
+  }
+
+  function _aggregateSimPositions(l3trades) {
+    // sim 가상 포지션 집계: buy 개수 - sell 개수 > 0 인 ticker.
+    //   실 수량/평단은 계산 불가 — '—' 로 두고 결정 수 · 최근 신호 · 담당 PM 만 노출.
+    var byTicker = {};
+    (l3trades || []).forEach(function(w) {
+      var tk = (w.ticker || w.symbol || '').toUpperCase();
+      if (!tk) return;
+      if (!byTicker[tk]) byTicker[tk] = { ticker: tk, buys: 0, sells: 0, trades: [], pm_key: null };
+      var side = (w.action || w.intent || 'buy').toLowerCase();
+      if (side === 'sell') byTicker[tk].sells++;
+      else byTicker[tk].buys++;
+      byTicker[tk].trades.push(w);
+      if (!byTicker[tk].pm_key) byTicker[tk].pm_key = _pmKeyFromTrade(w);
+    });
+    var arr = [];
+    Object.keys(byTicker).forEach(function(tk) {
+      var b = byTicker[tk];
+      if (b.buys - b.sells <= 0) return;
+      arr.push({
+        symbol: tk,
+        _sim: true,
+        pm_key: b.pm_key,
+        _decisions: b.trades.length,
+        _latest: b.trades[0],
+      });
+    });
+    return arr;
+  }
+
+  function _renderHoldingsChips(activePersonas) {
+    var host = document.querySelector('[data-bind="h2-chips"]');
+    if (!host) return;
+    // 항상 [전체] 먼저, 활성 PM 순서대로. counts 전달됨.
+    var chips = [{ key: 'all', label: '전체', ko: '', color: 'var(--accent)', count: activePersonas.reduce(function(s, p){return s + (p.count || 0);}, 0) }];
+    activePersonas.forEach(function(p) {
+      chips.push({ key: p.key, label: p.meta.ko, ko: p.meta.en, color: p.meta.color, count: p.count });
+    });
+    host.innerHTML = chips.map(function(c) {
+      var active = (_holdingsFilter === c.key) ? ' active' : '';
+      return '<button type="button" class="h2-chip' + active + '" data-h2-filter="' + _esc(c.key) + '" ' +
+             'role="tab" aria-selected="' + (active ? 'true' : 'false') + '">' +
+        '<span class="swatch" style="background:' + _esc(c.color) + ';"></span>' +
+        _esc(c.label) +
+        '<span class="count">' + c.count + '</span>' +
+      '</button>';
+    }).join('');
+  }
+
+  function _renderHoldingsTable(rows, isSim) {
+    var host = document.querySelector('[data-bind="h2-table-host"]');
+    if (!host) return;
+    if (!rows.length) {
+      host.innerHTML = '';
+      return;
+    }
+    var rowsHtml = rows.map(function(r) {
+      var tk = r.symbol;
+      var pmKey = _pmKeyFromPos(r);
+      var pmMeta = pmKey ? _pmMeta(pmKey) : null;
+      var pmHtml = pmMeta
+        ? '<span class="pm-cell"><span class="swatch" style="background:' + _esc(pmMeta.color) + ';"></span>' +
+          _esc(pmMeta.short) + '</span>'
+        : '<span class="pm-cell"><span class="swatch"></span>—</span>';
+      if (r._sim) {
+        // sim: 계산 불가 필드는 — 로. 결정 수 · 최근 신호 표시.
+        var latest = r._latest || {};
+        var exp = (latest.net_expected_pct != null) ? Number(latest.net_expected_pct).toFixed(2) + '%' : '—';
+        return '<tr class="sim" data-h2-tk="' + _esc(tk) + '" data-h2-pm="' + _esc(pmKey || '') + '">' +
+          '<td><span class="sym">' + _esc(tk) + '</span></td>' +
+          '<td>' + pmHtml + '</td>' +
+          '<td class="num">—</td>' +
+          '<td class="num">—</td>' +
+          '<td class="num">—</td>' +
+          '<td class="num neut">' + _esc(exp) + '</td>' +
+          '<td class="num">' + r._decisions + '회</td>' +
+        '</tr>';
+      }
+      var qty = r.quantity != null ? r.quantity : r.qty;
+      var avg = r.avg_cost != null ? r.avg_cost : r.average_cost;
+      var last = r.market_price != null ? r.market_price : r.last_price;
+      var pnl = r.unrealized_pnl;
+      var pnlPct = r.unrealized_pnl_pct;
+      var w = r.actual_weight_pct;
+      var pnlCls = (pnl == null) ? 'neut' : (pnl >= 0 ? 'pos' : 'neg');
+      var pnlTxt = (pnl == null) ? '—' :
+        (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toLocaleString('en-US', {maximumFractionDigits: 0}) +
+        (pnlPct != null ? ' (' + _fmtPct(pnlPct, true) + ')' : '');
+      return '<tr data-h2-tk="' + _esc(tk) + '" data-h2-pm="' + _esc(pmKey || '') + '">' +
+        '<td><span class="sym">' + _esc(tk) + '</span></td>' +
+        '<td>' + pmHtml + '</td>' +
+        '<td class="num">' + (qty != null ? qty : '—') + '</td>' +
+        '<td class="num">' + (avg ? '$' + Number(avg).toFixed(2) : '—') + '</td>' +
+        '<td class="num">' + (last ? '$' + Number(last).toFixed(2) : '—') + '</td>' +
+        '<td class="num pnl ' + pnlCls + '">' + pnlTxt + '</td>' +
+        '<td class="num">' + (w != null ? Number(w).toFixed(2) + '%' : '—') + '</td>' +
+      '</tr>';
+    }).join('');
+
+    host.innerHTML =
+      '<table class="h2-table">' +
+        '<thead><tr>' +
+          '<th>종목</th>' +
+          '<th>담당 PM</th>' +
+          '<th class="num">수량</th>' +
+          '<th class="num">평단</th>' +
+          '<th class="num">현재가</th>' +
+          '<th class="num">' + (isSim ? '기대' : '손익') + '</th>' +
+          '<th class="num">' + (isSim ? '결정' : '비중') + '</th>' +
+        '</tr></thead>' +
+        '<tbody>' + rowsHtml + '</tbody>' +
+      '</table>';
+  }
+
+  function _renderHoldingsEmptyState(nav, portfolio) {
+    var host = document.querySelector('[data-bind="h2-table-host"]');
+    if (!host) return;
+    var cash = (portfolio && portfolio.cash_usd) || (nav && nav.value_usd) || 0;
+    var cashTxt = cash > 0
+      ? '$' + Number(cash).toLocaleString('en-US', {maximumFractionDigits: 0})
+      : '—';
+    host.innerHTML =
+      '<div class="h2-empty">' +
+        '<div class="big">보유 없음</div>' +
+        '<div class="desc">다음 평가 KST 22:30 — Aegis 게이트 통과 시 진입</div>' +
+        '<div class="cash-line">현금 (전액) ' + cashTxt + '</div>' +
+      '</div>';
+  }
+
+  function renderPcHoldingsV12(data) {
+    var block = document.querySelector('[data-bind="h2-holdings-block"]');
+    if (!block) return;
+    var positions = Array.isArray(data.positions)
+      ? data.positions.filter(function(p){return p && (p.quantity || p.qty);}) : [];
+    var portfolio = data.portfolio || {};
+    var nav = data.nav || {};
+    var aegisLine = (data.team_desk && data.team_desk.aegis_line) || {};
+    var l3trades = (data.layer3 && data.layer3.recent_would_trades) || [];
+
+    var isSim = false;
+    var rows = positions.slice();
+    var srcLabel = '', srcCls = 'empty', srcBadgeTxt = '—';
+
+    if (positions.length > 0) {
+      // 실계좌
+      isSim = false;
+      srcCls = 'real';
+      srcBadgeTxt = '실계좌';
+      srcLabel = '포지션 ' + positions.length + '건 · 실계좌 잔고';
+    } else {
+      // sim 폴백
+      var sim = _aggregateSimPositions(l3trades);
+      if (sim.length > 0) {
+        rows = sim;
+        isSim = true;
+        srcCls = 'sim';
+        srcBadgeTxt = 'sim — 가상';
+        srcLabel = 'sim 가상 포지션 ' + sim.length + '건 · 실보유 0';
+      } else {
+        rows = [];
+        srcCls = 'empty';
+        srcBadgeTxt = '대기';
+        srcLabel = '포지션 0 · 다음 평가 KST 22:30';
+      }
+    }
+
+    // 3 카드 (실계좌 있으면 실측 값, sim 이면 '—' 또는 sim 표시)
+    var totalMV = 0, totalPnl = 0, havePnl = false;
+    rows.forEach(function(p) {
+      if (p._sim) return;
+      if (p.market_value != null) totalMV += Number(p.market_value);
+      if (p.unrealized_pnl != null) { totalPnl += Number(p.unrealized_pnl); havePnl = true; }
+    });
+    var totalTxt = isSim || rows.length === 0
+      ? '—'
+      : '$' + Number(totalMV).toLocaleString('en-US', {maximumFractionDigits: 0});
+    var pnlTxt = isSim || !havePnl
+      ? '—'
+      : (totalPnl >= 0 ? '+' : '−') + '$' + Math.abs(totalPnl).toLocaleString('en-US', {maximumFractionDigits: 0});
+    var pnlCls = isSim || !havePnl ? '' : (totalPnl >= 0 ? 'pos' : 'neg');
+    var pnlSub = isSim
+      ? 'sim — 실 손익 없음'
+      : (havePnl ? '평단 대비' : '—');
+
+    var navUsd = Number(nav.value_usd || 0);
+    var cashUsd = Number(portfolio.cash_usd != null ? portfolio.cash_usd : (aegisLine.cash_pct != null && navUsd ? (aegisLine.cash_pct / 100 * navUsd) : 0));
+    var cashPct = (aegisLine.cash_pct != null) ? Number(aegisLine.cash_pct)
+                  : (navUsd > 0 ? (cashUsd / navUsd * 100) : null);
+    var cashFloor = aegisLine.cash_floor_pct || portfolio.cash_floor_target_pct || 10;
+
+    var t = document.querySelector('[data-bind="h2-total-value"]');
+    var ts = document.querySelector('[data-bind="h2-total-sub"]');
+    var p = document.querySelector('[data-bind="h2-pnl"]');
+    var ps = document.querySelector('[data-bind="h2-pnl-sub"]');
+    var c = document.querySelector('[data-bind="h2-cash-pct"]');
+    var cs = document.querySelector('[data-bind="h2-cash-sub"]');
+    if (t)  t.textContent = totalTxt;
+    if (ts) ts.textContent = isSim ? 'sim — 계산 불가' : '평가액 · USD';
+    if (p) {
+      p.textContent = pnlTxt;
+      p.className = 'v ' + pnlCls;
+    }
+    if (ps) ps.textContent = pnlSub;
+    if (c)  c.textContent = (cashPct == null ? '—' : Number(cashPct).toFixed(1) + '%');
+    if (cs) cs.textContent = '하한 ' + cashFloor + '%';
+
+    // 소스 라벨/배지
+    var sl = document.querySelector('[data-bind="h2-source-label"]');
+    var sb = document.querySelector('[data-bind="h2-source-badge"]');
+    if (sl) sl.textContent = srcLabel;
+    if (sb) { sb.textContent = srcBadgeTxt; sb.className = 'h2-source-badge ' + srcCls; }
+
+    // PM 칩 — 활성 PM = 현재 rows 에서 나타난 PM 만.
+    //   실계좌면 broker positions 의 pm_key. sim 이면 sim 결정의 persona_key.
+    //   count = 해당 PM 소유 포지션 수.
+    var counts = {};
+    rows.forEach(function(r) {
+      var k = _pmKeyFromPos(r) || 'unknown';
+      counts[k] = (counts[k] || 0) + 1;
+    });
+    var activePms = Object.keys(counts).map(function(k) {
+      return { key: k, meta: _pmMeta(k), count: counts[k] };
+    });
+    activePms.sort(function(a, b){ return b.count - a.count; });
+    _renderHoldingsChips(activePms);
+
+    // 필터 적용
+    var filtered = rows;
+    if (_holdingsFilter !== 'all') {
+      filtered = rows.filter(function(r) {
+        return (_pmKeyFromPos(r) || 'unknown') === _holdingsFilter;
+      });
+    }
+
+    if (rows.length === 0) {
+      _renderHoldingsEmptyState(nav, portfolio);
+    } else {
+      _renderHoldingsTable(filtered, isSim);
+    }
+  }
+
+  // 위임 클릭: 칩 · 행
+  document.addEventListener('click', function(ev) {
+    var chip = ev.target.closest('[data-h2-filter]');
+    if (chip) {
+      ev.preventDefault();
+      _holdingsFilter = chip.getAttribute('data-h2-filter') || 'all';
+      try { renderPcHoldingsV12(_snap()); } catch (e) {}
+      return;
+    }
+    var row = ev.target.closest('.h2-table tbody tr[data-h2-tk]');
+    if (row) {
+      var tk = row.getAttribute('data-h2-tk');
+      if (tk) window.openDetailPanel('position', tk);
+      return;
+    }
+  });
+
+  // -----------------------------------------------------------------
   // 초기화 & refresh hook — 기존 30s refresh 가 window.nexusBackendData 을
   //   갱신할 때마다 사이드바 재렌더. 패널이 열려있으면 유지.
   // -----------------------------------------------------------------
   function refreshFromSnapshot() {
     var data = window.nexusBackendData || {};
     try { renderPcSidebar(data); } catch (e) { console.warn('[pc-b] sidebar', e); }
+    try { renderPcHoldingsV12(data); } catch (e) { console.warn('[pc-b] holdings', e); }
     try { _autoAttachHelp(); }   catch (e) { console.warn('[pc-b] help', e); }
     try { _autoAttachOpeners(); } catch (e) { console.warn('[pc-b] openers', e); }
     // 패널이 열려있고 데이터에 의존하는 뷰면 재렌더 — but do not force-close
@@ -9775,6 +10364,7 @@
         else if (_panelState.type === 'market')    _renderMarketPanel();
         else if (_panelState.type === 'risk')      _renderRiskPanel();
         else if (_panelState.type === 'discovery') _renderDiscoveryPanel();
+        else if (_panelState.type === 'position')  _renderPositionPanel(_panelState.key);
       } catch (e) { /* silent */ }
     }
   }

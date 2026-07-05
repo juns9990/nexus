@@ -63,7 +63,13 @@
 //         'event' 타입 추가. nexusApprovalDecide 동작 무손 (버튼 stopPropagation).
 //         HELP_TEXTS 확장 (approval_queue · discovery_score · event_calendar ·
 //         approval_history). 백엔드 무손.
-const CACHE_VERSION = 'v12.3';
+// v12.4 — 보유 탭 PM 도넛 7 PM 대응: 하드코딩 3 PM 목록 (박세진/한도현/김선우)
+//         제거 → data.team_desk.desks 순회. NexusCharts.COLORS.pm / PM_NAMES /
+//         renderHoldingsSummary 의 PM_KO/PM_EN/PM_COLOR 맵 모두 삭제.
+//         단일 소스로 window.NEXUS_PM_META (v12.0 정의) 재사용. mint·pulse 활성
+//         시 자동 6~7조각. 합 100 검증 → 현금 조각 보정. hold-pm-row 색은
+//         CSS 클래스 대신 inline background (data-driven). 백엔드 무손.
+const CACHE_VERSION = 'v12.4';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

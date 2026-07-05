@@ -6,7 +6,7 @@
 <title>Vela Quantum Nexus — v2.1.0</title>
 
 <!-- PWA — 홈 화면에 추가 (Vela 앱 설치) -->
-<link rel="manifest" href="/dashboard/nexus-manifest.json">
+<link rel="manifest" href="./nexus-manifest.json">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="color-scheme" content="dark">
 <meta name="application-name" content="Vela">
@@ -15,13 +15,13 @@
 <meta name="apple-mobile-web-app-title" content="Vela">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="msapplication-TileColor" content="#0a0a0a">
-<meta name="msapplication-TileImage" content="/dashboard/nexus-icon-192.png">
+<meta name="msapplication-TileImage" content="./nexus-icon-192.png">
 <!-- iOS — apple-touch-icon 은 PNG 필요 (SVG 미지원) -->
-<link rel="apple-touch-icon" href="/dashboard/nexus-icon-192.png">
-<link rel="apple-touch-icon" sizes="192x192" href="/dashboard/nexus-icon-192.png">
-<link rel="apple-touch-icon" sizes="512x512" href="/dashboard/nexus-icon-512.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/dashboard/nexus-icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/dashboard/nexus-icon-512.png">
+<link rel="apple-touch-icon" href="./nexus-icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="./nexus-icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="./nexus-icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./nexus-icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./nexus-icon-512.png">
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -1474,7 +1474,7 @@
     font-size: 12px; color: var(--fg-muted); padding: 6px 0;
   }
 
-  /* ----- 자동 토큰 집계 표시 (Claude Code JSONL → 읽기 전용) ----- */
+  /* ----- 자동 토큰 집계 표시 ----- */
   .dl-tag {
     display: inline-block; font-size: 9px; font-weight: 800;
     padding: 1px 6px; border-radius: 999px;
@@ -1483,9 +1483,7 @@
     margin-right: 4px;
   }
   .dl-tag.auto { background: rgba(94,234,212,0.18); color: var(--accent); }
-  .dl-est {
-    color: #d4d8dc; font-family: var(--mono); font-size: 10px; margin-left: 4px;
-  }
+  .dl-est { color: #d4d8dc; font-family: var(--mono); font-size: 10px; margin-left: 4px; }
   .dev-log-actual {
     font-family: var(--mono); font-size: 10.5px;
     color: #d4d8dc; margin-top: 4px; line-height: 1.5;
@@ -3080,11 +3078,6 @@
 
   /* ============================================================ */
   /*  COLOR + TYPOGRAPHY UNIFICATION (전역 통일)                  */
-  /*  - 상승: 초록 #22c55e ▲  /  하락: 빨강 #ef4444 ▼  (US-style)  */
-  /*  - 강한 신호: 시안 #5eead4                                    */
-  /*  - 본문 텍스트: 흰색 #f4f6f7                                  */
-  /*  - PM 색: 박세진 시안 / 한도현 보라 / 김선우 금색 / 현금 회색  */
-  /*  - 섹션 제목·메뉴: 13~14px 흰색 (가독성 우선)                  */
   /* ============================================================ */
   :root {
     --chart-up: #22c55e;
@@ -3096,18 +3089,11 @@
     --pm-sur: #fbbf24;
     --pm-cash: #4b5563;
   }
-  /* US-style 등락 — positive/negative 변수 재정의 */
   :root {
     --positive: #22c55e;
     --negative: #ef4444;
   }
-
-  /* 본문 흰색 — 일반 글자 톤 통일 */
-  body, .m-shell, .d-shell {
-    color: var(--chart-white);
-  }
-
-  /* 섹션 제목 ★ 13~14px 흰색 + 두께 */
+  body, .m-shell, .d-shell { color: var(--chart-white); }
   .m-section-title,
   .nx-section-title,
   .d-tab-section-title,
@@ -3126,18 +3112,9 @@
     color: var(--fg-muted) !important;
     font-weight: 500 !important;
   }
-
-  /* 카드 헤더 — 통일 */
-  .nx-aegis-head,
-  .nx-perf-label,
-  .nx-mkt-title,
-  .l3-title,
-  .db-title,
-  .rk-title,
-  .ev-title,
-  .hold-pm-title,
-  .hold-donut-title,
-  .hold-nav-label,
+  .nx-aegis-head, .nx-perf-label, .nx-mkt-title,
+  .l3-title, .db-title, .rk-title, .ev-title,
+  .hold-pm-title, .hold-donut-title, .hold-nav-label,
   .nx-story-main {
     color: var(--chart-white) !important;
   }
@@ -3146,8 +3123,6 @@
     color: var(--chart-white) !important;
     font-weight: 600 !important;
   }
-
-  /* 모바일 하단 탭바 — 활성/비활성 모두 또렷한 흰색 계열 */
   .m-tabbtn .lbl {
     font-size: 11px !important;
     font-weight: 600 !important;
@@ -3158,7 +3133,6 @@
     color: var(--chart-white) !important;
     font-weight: 700 !important;
   }
-  /* PC 상단 탭바 */
   .d-tabbtn {
     font-size: 14px !important;
     font-weight: 600 !important;
@@ -3167,7 +3141,6 @@
   .d-tabbtn:hover { color: var(--chart-white) !important; }
   .d-tabbtn.active { color: var(--chart-white) !important; font-weight: 700 !important; }
 
-  /* PM 색 클래스 (도넛/바 공통) */
   .pm-color-nw   { color: var(--pm-nw);   }
   .pm-color-tide { color: var(--pm-tide); }
   .pm-color-sur  { color: var(--pm-sur);  }
@@ -3177,28 +3150,18 @@
   .pm-bg-sur  { background: var(--pm-sur);  }
   .pm-bg-cash { background: var(--pm-cash); }
 
-  /* 등락 화살표 + 색 (US-style) */
   .delta-up   { color: var(--chart-up)   !important; }
   .delta-down { color: var(--chart-down) !important; }
   .delta-flat { color: var(--fg-muted)   !important; }
-
-  /* 강한 신호 강조 */
   .signal-strong { color: var(--chart-strong) !important; font-weight: 700; }
 
-  /* 차트 전용 컨테이너 */
   .nx-chart-wrap {
-    position: relative;
-    width: 100%;
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 14px;
+    position: relative; width: 100%;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; margin-bottom: 14px;
   }
   .nx-chart-canvas {
-    width: 100% !important;
-    height: 180px !important;
-    display: block;
+    width: 100% !important; height: 180px !important; display: block;
   }
   .nx-chart-canvas.tall { height: 220px !important; }
   .nx-chart-canvas.small { height: 90px !important; }
@@ -3218,12 +3181,11 @@
   }
   .nx-chart-empty {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 180px; color: #b0b6bb; font-size: 12px; text-align: center;
-    gap: 4px;
+    height: 180px; color: #b0b6bb; font-size: 12px; text-align: center; gap: 4px;
   }
   .nx-chart-empty .big { font-size: 16px; color: var(--chart-white); font-weight: 700; }
 
-  /* ===== 커스텀 차트 범례 (Chart.js 내장 대신 HTML) ===== */
+  /* ===== 커스텀 차트 범례 ===== */
   .nx-chart-legend {
     margin-top: 10px;
     display: flex; flex-direction: column; gap: 6px;
@@ -3244,19 +3206,15 @@
     color: var(--chart-white); font-family: var(--mono);
     font-weight: 700; font-size: 13px;
   }
-  /* "데이터 수집 중" 등 빈 상태 — 흐림 방지 */
   .hold-empty { color: #b0b6bb !important; }
 
-  /* 신호 강도 바 (HTML) */
   .sig-bar-wrap { margin-top: 6px; }
   .sig-bar-row {
     display: grid; grid-template-columns: 60px 1fr 60px;
     align-items: center; gap: 8px;
     padding: 4px 0; font-family: var(--mono); font-size: 12px;
   }
-  .sig-bar-row .tk {
-    color: var(--chart-white); font-weight: 600;
-  }
+  .sig-bar-row .tk { color: var(--chart-white); font-weight: 600; }
   .sig-bar-track {
     background: rgba(255,255,255,0.06); height: 6px; border-radius: 999px;
     overflow: hidden; position: relative;
@@ -3268,7 +3226,6 @@
   .sig-bar-fill.strong { background: var(--chart-strong); box-shadow: 0 0 6px var(--accent-glow); }
   .sig-bar-row .val { color: var(--chart-white); text-align: right; }
 
-  /* SVG 원형 게이지 */
   .gauge-wrap {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
     margin-top: 10px;
@@ -3288,17 +3245,13 @@
   .gauge-svg-text {
     font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
     font-size: 13px; font-weight: 700; fill: var(--chart-white);
-    /* paint-order 로 stroke 가 텍스트 뒤에 그려져 외곽 둥글게 안정 */
   }
-  /* 차트별 색 구분 (의미 기반) */
-  .gauge-fill-gate { stroke: var(--chart-strong); }   /* 시안 — 게이트 */
-  .gauge-fill-vix  { stroke: var(--pm-tide); }        /* 보라 — VIX */
-  .gauge-fill-cash { stroke: #60a5fa; }               /* 파랑 — 현금 */
-  /* MDD 는 상태색 (안전 초록 / 주의 황 / 위험 빨강) */
+  .gauge-fill-gate { stroke: var(--chart-strong); }
+  .gauge-fill-vix  { stroke: var(--pm-tide); }
+  .gauge-fill-cash { stroke: #60a5fa; }
   .gauge-fill-mdd-ok    { stroke: var(--chart-up); }
   .gauge-fill-mdd-warn  { stroke: var(--warn); }
   .gauge-fill-mdd-alert { stroke: var(--chart-down); }
-  /* 호환용 (게이트 등 상태 시) */
   .gauge-fill-ok    { stroke: var(--chart-up); }
   .gauge-fill-warn  { stroke: var(--warn); }
   .gauge-fill-alert { stroke: var(--chart-down); }
@@ -3306,7 +3259,7 @@
   .gauge-label { font-size: 11px; color: var(--chart-white); margin-top: 4px; font-weight: 600; }
   .gauge-sub { font-size: 10px; color: var(--fg-muted); margin-top: 2px; font-family: var(--mono); }
 
-  /* ===== PM 바 색 매핑 (도넛·범례·바 일치) ===== */
+  /* ===== PM 바 색 매핑 ===== */
   .hold-pm-row.pm-nw   .hold-pm-bar .actual { background: var(--pm-nw); }
   .hold-pm-row.pm-tide .hold-pm-bar .actual { background: var(--pm-tide); }
   .hold-pm-row.pm-sur  .hold-pm-bar .actual { background: var(--pm-sur); }
@@ -3320,24 +3273,21 @@
     margin-right: 6px; vertical-align: middle;
   }
 
-  /* ===== 캘린더 (승인 탭) ===== */
+  /* ===== 캘린더 ===== */
   .ev-cal {
     border: 1px solid var(--border); border-radius: 10px;
     background: var(--bg-elev); padding: 12px; margin-bottom: 12px;
   }
   .ev-cal-head {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
   }
   .ev-cal-title {
-    font-size: 14px; font-weight: 700; color: var(--chart-white);
-    font-family: var(--mono);
+    font-size: 14px; font-weight: 700; color: var(--chart-white); font-family: var(--mono);
   }
   .ev-cal-arrow {
     background: transparent; border: 1px solid var(--border);
     color: var(--chart-white); padding: 4px 12px; cursor: pointer;
-    border-radius: 6px; font-family: var(--mono); font-size: 14px;
-    font-weight: 700;
+    border-radius: 6px; font-family: var(--mono); font-size: 14px; font-weight: 700;
   }
   .ev-cal-arrow:hover { background: rgba(255,255,255,0.05); border-color: var(--chart-strong); }
   .ev-cal-wkrow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 4px; }
@@ -3361,21 +3311,14 @@
   }
   .ev-cal-day.in-month { color: var(--chart-white); background: rgba(255,255,255,0.05); cursor: pointer; }
   .ev-cal-day.in-month:hover { background: rgba(255,255,255,0.10); }
-  .ev-cal-day.today {
-    border-color: var(--chart-strong); background: rgba(94,234,212,0.12);
-  }
-  .ev-cal-day.selected {
-    border-color: var(--chart-white); background: rgba(255,255,255,0.15);
-  }
+  .ev-cal-day.today { border-color: var(--chart-strong); background: rgba(94,234,212,0.12); }
+  .ev-cal-day.selected { border-color: var(--chart-white); background: rgba(255,255,255,0.15); }
   .ev-cal-day.blank { background: transparent; }
   .ev-cal-day .dnum { font-weight: 700; font-size: 11px; line-height: 1; }
   @media (min-width: 1025px) {
     .ev-cal-day .dnum { font-size: 12px; }
   }
-  .ev-cal-day .dots {
-    display: flex; gap: 2px; flex-wrap: wrap;
-    align-self: flex-start; margin-top: 2px;
-  }
+  .ev-cal-day .dots { display: flex; gap: 2px; flex-wrap: wrap; align-self: flex-start; margin-top: 2px; }
   .ev-cal-day .dot { width: 5px; height: 5px; border-radius: 50%; }
   .ev-cal-day .dot.high   { background: #ef4444; }
   .ev-cal-day .dot.medium { background: #facc15; }
@@ -3392,8 +3335,7 @@
   }
   .ev-cal-legend {
     display: flex; gap: 12px; margin-top: 10px;
-    font-size: 11px; color: var(--fg-muted); font-family: var(--mono);
-    flex-wrap: wrap;
+    font-size: 11px; color: var(--fg-muted); font-family: var(--mono); flex-wrap: wrap;
   }
   .ev-cal-legend .lg-item { display: flex; align-items: center; gap: 4px; }
   .ev-cal-legend .lg-item .dot { width: 7px; height: 7px; border-radius: 50%; }
@@ -3748,11 +3690,13 @@
   .h2-holdings-block { display: none; }
   @media (min-width: 1100px) {
     .h2-holdings-block { display: block; margin-bottom: 14px; }
+    /* 신규 3카드가 대체 — 기존 요약/구 리스트는 PC 넓은 폭에서만 숨김 */
     section.d-tab[data-tab="positions"] > .d-tab-pad > .hold-summary,
     section.d-tab[data-tab="positions"] > .d-tab-pad > .d-positions,
     section.d-tab[data-tab="positions"] > .d-tab-pad > .d-tab-section-title[data-h2-hide="1"] { display: none; }
   }
 
+  /* 3 요약 카드 */
   .h2-sum-grid {
     display: grid; grid-template-columns: 1fr 1fr 1fr;
     gap: 10px; margin-bottom: 14px;
@@ -3779,6 +3723,7 @@
     color: var(--fg-muted);
   }
 
+  /* PM 필터 칩 */
   .h2-chips {
     display: flex; flex-wrap: wrap; gap: 6px;
     margin-bottom: 12px;
@@ -3811,6 +3756,7 @@
   }
   .h2-chip.active .count { color: var(--accent); }
 
+  /* 포지션 테이블 + 소스 배지 */
   .h2-source-bar {
     display: flex; align-items: center; justify-content: space-between;
     padding: 4px 2px 10px;
@@ -3911,6 +3857,7 @@
 
   /* ================================================================ */
   /*  v12.2 — 이력 탭 B-layout (≥1100px). <1100px 기본 hidden.           */
+  /*  기존 d-history-list · notif recent 는 ≥1100px 에서 숨김.           */
   /* ================================================================ */
   .h3-history-block { display: none; }
   @media (min-width: 1100px) {
@@ -3919,6 +3866,7 @@
     section.d-tab[data-tab="history"] > .d-tab-pad > .d-history-list { display: none; }
   }
 
+  /* 필터 바 */
   .h3-filter-bar {
     display: flex; flex-direction: column; gap: 8px;
     padding: 10px 12px;
@@ -3968,6 +3916,7 @@
   .h3-mode-badge.sim  { background: rgba(212,165,94,0.12); color: var(--warn);   border: 1px solid var(--warn); }
   .h3-mode-badge.live { background: rgba(94,234,212,0.12); color: var(--accent); border: 1px solid var(--accent); }
 
+  /* 일별 미니바 */
   .h3-daily {
     display: flex; flex-direction: column; gap: 6px;
     padding: 12px;
@@ -4024,13 +3973,16 @@
     margin-top: 2px;
   }
 
+  /* 타임라인 */
   .h3-timeline {
     background: var(--bg-elev);
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
   }
-  .h3-day-group { border-top: 1px solid var(--border); }
+  .h3-day-group {
+    border-top: 1px solid var(--border);
+  }
   .h3-day-group:first-child { border-top: none; }
   .h3-day-head {
     display: flex; align-items: baseline; justify-content: space-between;
@@ -4079,8 +4031,12 @@
     padding: 3px 7px; border-radius: 3px;
     letter-spacing: 0.04em;
   }
-  .h3-trow .side.buy  { background: rgba(94,234,212,0.15); color: var(--positive); }
-  .h3-trow .side.sell { background: rgba(239,107,107,0.15); color: var(--negative); }
+  .h3-trow .side.buy {
+    background: rgba(94,234,212,0.15); color: var(--positive);
+  }
+  .h3-trow .side.sell {
+    background: rgba(239,107,107,0.15); color: var(--negative);
+  }
   .h3-trow .tgt {
     font-family: var(--mono); font-size: 11px;
     color: var(--fg-muted); text-align: right;
@@ -4089,13 +4045,19 @@
   .h3-trow .sig {
     font-family: var(--mono); font-size: 11px;
     color: var(--fg); text-align: right;
-    min-width: 44px; font-weight: 600;
+    min-width: 44px;
+    font-weight: 600;
   }
-  .h3-trow.skipped { opacity: 0.55; }
-  .h3-trow.skipped .sig { color: var(--fg-dim); }
+  .h3-trow.skipped {
+    opacity: 0.55;
+  }
+  .h3-trow.skipped .sig {
+    color: var(--fg-dim);
+  }
 
   .h3-empty {
-    padding: 30px 20px; text-align: center;
+    padding: 30px 20px;
+    text-align: center;
     color: var(--fg-muted);
     background: var(--bg-elev);
     border: 1px solid var(--border);
@@ -4124,8 +4086,10 @@
 
   /* ================================================================ */
   /*  v12.3 — 승인 탭 B-layout (≥1100px). <1100px 기본 unchanged.        */
+  /*  대기 카드 강조 · 달력/처리이력 2열. 승인/거절 버튼 동작 무손.       */
   /* ================================================================ */
   @media (min-width: 1100px) {
+    /* 대기 승인 카드 강조 보더 (m-approval-card 재사용) */
     section.d-tab[data-tab="approval"] .m-approval-card {
       border-left: 3px solid var(--warn);
       background: linear-gradient(135deg, rgba(212,165,94,0.06) 0%, var(--bg-elev) 60%);
@@ -4136,6 +4100,9 @@
       border-left-color: var(--accent);
       background: linear-gradient(135deg, rgba(94,234,212,0.05) 0%, var(--bg-elev) 60%);
     }
+    /* 승인/거절 버튼 클릭은 카드 자체 클릭보다 우선하도록 stopPropagation JS 로 처리 */
+
+    /* 2열 배치 — 달력 | 처리 이력 */
     .h4-two-col {
       display: grid;
       grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
@@ -4149,6 +4116,7 @@
     .h4-two-col { display: block; }
   }
 
+  /* 대기 승인 카드 최상단 강조 배지 */
   .h4-pending-badge {
     display: inline-flex; align-items: center; gap: 4px;
     font-family: var(--mono); font-size: 10px; font-weight: 700;
@@ -4163,6 +4131,7 @@
     border-color: var(--border);
   }
 
+  /* 처리 이력 (v12.3 스타일) — 상태 배지 */
   .h4-hist-row {
     display: grid; grid-template-columns: auto 1fr auto;
     gap: 10px; padding: 9px 12px;
@@ -4217,10 +4186,12 @@
 
   /* ================================================================ */
   /*  v12.5 — 설정 탭 B-layout (≥1100px). <1100px 기본 unchanged.        */
+  /*  4그룹 2컬럼 (연결 · 운용 파라미터 · 개발 · 시스템).                 */
   /* ================================================================ */
   .h5-settings-block { display: none; }
   @media (min-width: 1100px) {
     .h5-settings-block { display: block; margin-bottom: 14px; }
+    /* 기존 d-settings-grid 는 4그룹 재편 시 숨김 (v12.5 블록으로 대체) */
     section.d-tab[data-tab="settings"] > .d-tab-pad > .d-settings-grid { display: none; }
     .h5-grid {
       display: grid;
@@ -4283,6 +4254,7 @@
   .h5-row .v.warn  { color: var(--warn); }
   .h5-row .v.off   { color: var(--fg-dim); font-weight: 500; }
 
+  /* 백엔드 URL 입력 (기존 저장 함수 재사용) */
   .h5-url-wrap {
     display: flex; gap: 8px;
     margin-top: 10px;
@@ -4313,6 +4285,7 @@
     padding: 1px 5px; border-radius: 3px;
   }
 
+  /* 시스템 그룹 액션 버튼 (리포트 · 헌법) */
   .h5-actions {
     display: grid; grid-template-columns: 1fr 1fr;
     gap: 8px; margin-top: 6px;
@@ -4334,6 +4307,7 @@
     color: var(--accent);
   }
 
+  /* PM 자본 배분 리스트 (op_params 내부) */
   .h5-pm-list {
     display: flex; flex-direction: column; gap: 4px;
     margin-top: 4px;
@@ -4349,7 +4323,9 @@
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--fg-dim);
   }
-  .h5-pm-item .name { color: var(--fg); }
+  .h5-pm-item .name {
+    color: var(--fg);
+  }
   .h5-pm-item .name .en {
     color: var(--fg-muted); font-size: 11px; margin-left: 4px;
   }
@@ -4357,6 +4333,7 @@
     font-family: var(--mono); font-weight: 600; color: var(--fg-strong);
   }
 
+  /* 생략된 항목 안내 (op_params 하단) */
   .h5-omitted {
     margin-top: 12px; padding: 8px 10px;
     background: var(--bg-deep);
@@ -4377,7 +4354,7 @@
 <div class="cover-shell">
   <div class="cover-top">
     <span class="vela-mark">Ve<span class="accent">l</span>a</span>
-    <div class="live-row"><span class="live-dot"></span><span data-bind="header-day">D—</span></div>
+    <div class="live-row"><span class="live-dot"></span>D47</div>
   </div>
 
   <div class="cover-center">
@@ -4853,7 +4830,7 @@
         </div>
         <div class="m-settings-row">
           <div class="key">Phase</div>
-          <div><span class="val muted">페이퍼 <span data-bind="header-day">D—</span></span></div>
+          <div><span class="val muted">페이퍼 D47</span></div>
         </div>
         <div class="m-settings-row">
           <div class="key">운영 헌법</div>
@@ -4957,7 +4934,7 @@
 
       <div class="m-section-title">정보</div>
       <div class="m-settings-group">
-        <div class="m-settings-row"><div class="key">개시</div><div><span class="val muted" data-bind="system-started-at">—</span></div></div>
+        <div class="m-settings-row"><div class="key">개시</div><div><span class="val muted">2026.03.18</span></div></div>
         <div class="m-settings-row"><div class="key">제작</div><div><span class="val muted">Juns</span></div></div>
       </div>
 
@@ -5020,7 +4997,7 @@
     <div class="d-mast-left">
       <span class="vela-mark">Ve<span class="accent">l</span>a</span>
       <span class="word">Quantum Nexus</span>
-      <span class="d-mast-meta"><span data-bind="header-day">D—</span> · 개시 <span data-bind="system-started-at">—</span> · 격리계좌 ····XXXX</span>
+      <span class="d-mast-meta">D47 · 개시 2026.03.18 · 격리계좌 ····XXXX</span>
     </div>
     <div class="d-mast-right">
       <div class="item"><span class="mode" data-bind="mode-label">—</span></div>
@@ -5146,7 +5123,6 @@
   <div class="d-stack">
 
     <!-- 그룹 1 (상태/시장신호등) → H1·H4 와 중복으로 삭제됨 -->
-
     <!-- 그룹 2 (방어 6선판) → 보유 탭으로 이동 -->
 
     <!-- ── 그룹 3 · 매매 (계층3 → 이력 탭으로 이동, Recovery 만 유지) ── -->
@@ -5219,7 +5195,7 @@
       <div class="d-card">
         <div class="d-card-head">
           <div class="d-card-title">벤치마크 비교 · 누적</div>
-          <div class="d-card-meta">개시 → <span data-bind="header-day">D—</span></div>
+          <div class="d-card-meta">개시 → D47</div>
         </div>
         <svg class="d-bench-chart" viewBox="0 0 600 110" preserveAspectRatio="none">
           <line x1="30" y1="20" x2="590" y2="20" stroke="#222"/>
@@ -5617,6 +5593,7 @@
 
       <!-- v12.2 — 이력 탭 B-layout (≥1100px). 필터·미니바·타임라인. -->
       <div class="h3-history-block" data-bind="h3-history-block">
+        <!-- 필터 바 -->
         <div class="h3-filter-bar">
           <div class="h3-filter-row">
             <span class="h3-filter-label">PM</span>
@@ -5641,6 +5618,7 @@
           </div>
         </div>
 
+        <!-- 일별 미니바 (최근 14일) -->
         <div class="h3-daily">
           <div class="h3-daily-head">
             <span class="h3-daily-title">최근 14일 매매
@@ -5655,6 +5633,7 @@
           <div class="h3-daily-labels" data-bind="h3-daily-labels"></div>
         </div>
 
+        <!-- 타임라인 -->
         <div class="d-tab-section-title" style="margin-top:8px;">
           타임라인
           <button type="button" class="nx-help-btn" data-help="timeline" aria-label="타임라인 도움말">?</button>
@@ -5780,6 +5759,7 @@
       <div class="h5-settings-block" data-bind="h5-settings-block">
         <div class="h5-grid">
 
+          <!-- 그룹 1 — 연결 -->
           <div class="h5-card">
             <div class="h5-card-head">
               <div class="h5-card-title">연결
@@ -5814,6 +5794,7 @@
             </div>
           </div>
 
+          <!-- 그룹 2 — 운용 파라미터 (읽기전용) -->
           <div class="h5-card">
             <div class="h5-card-head">
               <div class="h5-card-title">운용 파라미터 · 읽기전용
@@ -5828,6 +5809,7 @@
             </div>
           </div>
 
+          <!-- 그룹 3 — 개발 (개발로그 · 토큰) -->
           <div class="h5-card full">
             <div class="h5-card-head">
               <div class="h5-card-title">개발
@@ -5840,6 +5822,7 @@
             </div>
           </div>
 
+          <!-- 그룹 4 — 시스템 -->
           <div class="h5-card">
             <div class="h5-card-head">
               <div class="h5-card-title">시스템
@@ -5877,6 +5860,7 @@
             </div>
           </div>
 
+          <!-- 대시보드 버전 히스토리 (참고용, full width) -->
           <div class="h5-card full">
             <div class="h5-card-head">
               <div class="h5-card-title">대시보드 버전 히스토리
@@ -6163,13 +6147,9 @@
       _setBinds('mode-label', String(data.system.mode || '—'));
 
       // ----- 폰 헤더 메타 — D{day_in_phase} · {system.version} · SW v{CACHE_VERSION} -----
-      // D-day 와 개시일 — 단일 출처: data.system.started_at (백엔드 자동 계산 day_in_phase)
       var dayN = (data.system && typeof data.system.day_in_phase === 'number')
         ? data.system.day_in_phase : null;
       _setBinds('header-day', dayN === null ? 'D—' : 'D' + dayN);
-      var startedIso = (data.system && data.system.started_at) || '';
-      var startedTxt = startedIso ? startedIso.slice(0, 10).replace(/-/g, '.') : '—';
-      _setBinds('system-started-at', startedTxt);
       var sysVer = String((data.system && data.system.version) || '');
       window.__nexusSysVersion = sysVer || null;
       _setBinds('header-sys-ver', sysVer || 'v—');
@@ -7069,7 +7049,9 @@
         (cash != null ? '$' + Number(cash).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—');
       _setBinds('hold-split', splitTxt);
 
-      // PM 자본배분 바 — v12.4: window.NEXUS_PM_META 순회, 하드코딩 3 PM 제거.
+      // PM 자본배분 바 — v12.4: window.NEXUS_PM_META 순회, 하드코딩 3 PM 목록 제거.
+      //   pm_allocation 배열은 백엔드가 활성 PM 만 담아 반환 (5~7 자동).
+      //   색은 inline (PM_META.color), CSS 클래스 .pm-* 는 legacy 호환용으로만 유지.
       var pmHost = document.querySelector('[data-bind="hold-pm-list"]');
       if (pmHost) {
         var rows = port.pm_allocation || [];
@@ -8648,7 +8630,7 @@
         _clearStaleBanner();
       }
     }
-    // v12.5 이하 호환 shim
+    // v12.5 이하 호환 shim — 다른 호출 지점 있으면 무해하게 매핑
     function _clearMirrorBanner() { _clearOfflineBanner(); }
 
     // =========================================================
@@ -8674,11 +8656,10 @@
       if (det) return det;
       return e.tokens ? String(e.tokens) : '';
     }
-    // 자동 집계 (tokens_actual) — 큰 숫자 K/M 포맷 + 입출력 분해 + 추정 비용
     function _formatN(n) {
       n = Number(n || 0);
-      if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
-      if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+      if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
       return String(n);
     }
     function _formatUsdEst(v) {
@@ -9440,7 +9421,7 @@
     }
 
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/dashboard/nexus-sw.js', { scope: '/dashboard/' })
+      navigator.serviceWorker.register('./nexus-sw.js', { scope: './' })
         .then(function(reg) {
           console.info('[Vela] Service Worker 등록 · scope:', reg.scope);
           // 등록 직후 즉시 1회 update — 새 빌드 빨리 감지
@@ -9750,22 +9731,16 @@
 
 <!-- ============================================================ -->
 <!--  NexusCharts — Chart.js 안전 래퍼 + 게이지 SVG                -->
-<!--  - Chart.js 로드 실패 시 graceful (window.__nexusChartJsFailed) -->
-<!--  - 데이터 부족 시 "수집 중" placeholder                       -->
-<!--  - 30초 polling 마다 applyDashboard 가 trigger                -->
 <!-- ============================================================ -->
 <script>
 (function() {
   var COLORS = {
-    up:     '#22c55e',
-    down:   '#ef4444',
-    strong: '#5eead4',
-    white:  '#f4f6f7',
-    muted:  '#9a9a96',
-    grid:   'rgba(255,255,255,0.06)',
+    up: '#22c55e', down: '#ef4444', strong: '#5eead4',
+    white: '#f4f6f7', muted: '#9a9a96', grid: 'rgba(255,255,255,0.06)',
   };
   var PERIOD_DAYS = { '15D': 15, '1M': 30, '3M': 90, 'ALL': 0 };
-  // v12.4 — PM 이름/색은 window.NEXUS_PM_META 단일 소스 (7 PM 대응).
+  // v12.4 — PM 이름/색은 v12.0 IIFE 의 window.NEXUS_PM_META 를 단일 소스로 사용.
+  //   여기 로컬 캐시 없음. NEXUS_PM_META 미로드 시 short/key fallback.
   function _pmKey(p) {
     return p && (p.key || p.persona_key || (p.short || '').toLowerCase().replace(/\s+/g,'_'));
   }
@@ -9788,7 +9763,6 @@
       .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
-  // ---- Chart.js 가용성 + 안전 래퍼 ----
   function isChartReady() {
     return !window.__nexusChartJsFailed && typeof window.Chart === 'function';
   }
@@ -9796,18 +9770,15 @@
     return '$' + Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   }
 
-  // ---- NAV 라인 차트 ----
-  var navCharts = {};   // canvasId → Chart instance
+  var navCharts = {};
   var navPeriods = { 'nav-chart': 'ALL', 'nav-chart-pc': 'ALL' };
 
   function renderNavChart(canvasId, perf) {
     var canvas = document.getElementById(canvasId === 'nav-chart' ? 'nx-nav-chart' : 'nx-nav-chart-pc');
-    var host   = canvas ? canvas.parentElement : null;
+    var host = canvas ? canvas.parentElement : null;
     if (!canvas || !host) return;
     var series = (perf && Array.isArray(perf.nav_series)) ? perf.nav_series : [];
     var days = series.length;
-
-    // Chart.js 미로드 또는 데이터 점 0개 — 안내 표시
     if (!isChartReady() || days < 1) {
       destroyChart(canvasId);
       host.innerHTML = '<div class="nx-chart-empty">' +
@@ -9815,7 +9786,6 @@
         '<div>3점 이상 모이면 곡선 표시</div></div>';
       return;
     }
-    // 호스트가 다른 콘텐츠로 바뀐 적 있으면 canvas 복원
     if (!host.querySelector('canvas')) {
       host.innerHTML = '<canvas id="' + canvas.id + '" class="nx-chart-canvas' +
         (canvas.id.indexOf('-pc') >= 0 ? ' tall' : '') + '" aria-label="NAV 추이 차트"></canvas>';
@@ -9824,7 +9794,6 @@
     var period = navPeriods[canvasId] || 'ALL';
     var maxDays = PERIOD_DAYS[period] || 0;
     var sliced = maxDays > 0 ? series.slice(-maxDays) : series.slice();
-
     var labels = sliced.map(function(p){ return (p.date || '').slice(5); });
     var data = sliced.map(function(p){ return Number(p.nav_usd || 0); });
 
@@ -9837,17 +9806,12 @@
     try {
       navCharts[canvasId] = new Chart(canvas.getContext('2d'), {
         type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'NAV (USD)',
-            data: data,
-            borderColor: COLORS.strong,
-            backgroundColor: 'rgba(94,234,212,0.10)',
-            fill: true, tension: 0.25, pointRadius: days <= 30 ? 3 : 0,
-            pointHoverRadius: 5, borderWidth: 2,
-          }],
-        },
+        data: { labels: labels, datasets: [{
+          label: 'NAV (USD)', data: data,
+          borderColor: COLORS.strong, backgroundColor: 'rgba(94,234,212,0.10)',
+          fill: true, tension: 0.25, pointRadius: days <= 30 ? 3 : 0,
+          pointHoverRadius: 5, borderWidth: 2,
+        }] },
         options: {
           responsive: true, maintainAspectRatio: false,
           interaction: { intersect: false, mode: 'index' },
@@ -9872,20 +9836,23 @@
     }
   }
 
-  // ---- PM 배분 도넛 (Chart.js doughnut) ----
   var pmDonuts = {};
-  // v12.4 — 하드코딩 3 PM 제거 → data.team_desk.desks 순회 (활성 PM 자동).
+  // v12.4 — 하드코딩 3 PM 목록 제거 → data.team_desk.desks 순회.
+  //   부재 시 legacy portfolio.pm_allocation 폴백. 현금은 aegis_line.cash_pct
+  //   (없으면 cash_floor_target_pct). 활성 PM 개수만큼 자동 조각 (mint/pulse 포함).
+  //   합이 100 아니면 현금 슬라이스로 보정 표시.
   function renderPmDonut(canvasId, portfolio, snapshot) {
     snapshot = snapshot || window.nexusBackendData || {};
     var canvas = document.getElementById(canvasId);
-    var host   = canvas ? canvas.parentElement : null;
+    var host = canvas ? canvas.parentElement : null;
     if (!canvas || !host) return;
 
+    // 1) PM 배열 — 최우선 team_desk.desks (백엔드 get_enabled_personas 결과).
     var desks = (snapshot.team_desk && Array.isArray(snapshot.team_desk.desks))
       ? snapshot.team_desk.desks : [];
     var aegisLine = (snapshot.team_desk && snapshot.team_desk.aegis_line) || {};
 
-    var pmRows = [];
+    var pmRows = [];  // { key, name, pct }
     if (desks.length > 0) {
       desks.forEach(function(d) {
         var key = d.persona_key || (d.persona_label || '').toLowerCase();
@@ -9897,6 +9864,7 @@
         });
       });
     } else if (portfolio && Array.isArray(portfolio.pm_allocation)) {
+      // legacy 폴백 — pm_allocation.target_pct
       portfolio.pm_allocation.forEach(function(p) {
         var key = _pmKey(p);
         if (!key) return;
@@ -9908,6 +9876,7 @@
       });
     }
 
+    // 2) 현금 조각 — aegis_line.cash_pct 우선, 없으면 cash_floor_target_pct.
     var cashPct = (aegisLine.cash_pct != null)
       ? Number(aegisLine.cash_pct)
       : ((portfolio && portfolio.cash_floor_target_pct != null)
@@ -9915,8 +9884,7 @@
 
     if (!isChartReady() || pmRows.length === 0) {
       destroyChart(canvasId);
-      host.innerHTML = '<div class="nx-chart-empty">' +
-        '<div class="big">PM 배분 수집 중</div></div>';
+      host.innerHTML = '<div class="nx-chart-empty"><div class="big">PM 배분 수집 중</div></div>';
       return;
     }
     if (!host.querySelector('canvas')) {
@@ -9924,9 +9892,11 @@
       canvas = document.getElementById(canvasId);
     }
 
-    // 합 100 검증 — 초과/부족 시 현금 조각으로 보정.
+    // 3) 합 100 검증 — 부족분/초과분은 현금 조각으로 보정 표시.
     var pmSum = pmRows.reduce(function(s, r) { return s + r.pct; }, 0);
-    if (Math.abs(pmSum + cashPct - 100) > 0.5) {
+    var totalRaw = pmSum + cashPct;
+    if (Math.abs(totalRaw - 100) > 0.5) {
+      // 보정: 현금이 부족한 만큼 늘리거나 남는 만큼 줄임.
       cashPct = Math.max(0, 100 - pmSum);
     }
 
@@ -9934,7 +9904,7 @@
     var data   = pmRows.map(function(r) { return r.pct; }).concat([cashPct]);
     var bg     = pmRows.map(function(r) { return _pmColor(r.key); }).concat([_pmColor('cash')]);
 
-    // HTML 범례 (Chart.js 내장 대신 — PC 글자 색 보장)
+    // HTML 범례 (Chart.js 내장 대신)
     _renderPmLegend(canvasId, labels, data, bg);
 
     if (pmDonuts[canvasId]) {
@@ -9947,18 +9917,13 @@
     try {
       pmDonuts[canvasId] = new Chart(canvas.getContext('2d'), {
         type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{ data: data, backgroundColor: bg, borderColor: '#0a0a0a', borderWidth: 2 }],
-        },
+        data: { labels: labels, datasets: [{ data: data, backgroundColor: bg, borderColor: '#0a0a0a', borderWidth: 2 }] },
         options: {
           responsive: true, maintainAspectRatio: false, cutout: '62%',
           plugins: {
-            legend: { display: false },  // HTML 범례로 대체
-            tooltip: {
-              backgroundColor: 'rgba(20,20,20,0.95)', titleColor: COLORS.white, bodyColor: COLORS.white,
-              callbacks: { label: function(c){ return c.label + ': ' + c.parsed.toFixed(1) + '%'; } },
-            },
+            legend: { display: false },
+            tooltip: { backgroundColor: 'rgba(20,20,20,0.95)', titleColor: COLORS.white, bodyColor: COLORS.white,
+              callbacks: { label: function(c){ return c.label + ': ' + c.parsed.toFixed(1) + '%'; } } },
           },
         },
       });
@@ -9970,7 +9935,6 @@
     var legendId = canvasId + '-legend';
     var el = document.getElementById(legendId);
     if (!el) {
-      // host 외부 형제 div 가 없으면 host 다음 형제로 생성
       var host = document.getElementById(canvasId === 'nx-pm-donut' ? 'nx-pm-donut-host' : 'nx-pm-donut-host-pc');
       if (!host) return;
       el = document.createElement('div');
@@ -9992,12 +9956,10 @@
     if (pmDonuts[canvasId]) { try { pmDonuts[canvasId].destroy(); } catch (e) {} delete pmDonuts[canvasId]; }
   }
 
-  // ---- 리스크 게이지 (SVG 원형, Chart.js dep 없음) ----
   function gaugeSvg(value, max, fillClass, valueText, label, subText) {
     var pct = Math.max(0, Math.min(1, max > 0 ? value / max : 0));
-    var circ = 2 * Math.PI * 30; // r=30
+    var circ = 2 * Math.PI * 30;
     var dashOffset = circ * (1 - pct);
-    // 숫자 길이에 따라 SVG 폰트 자동 축소 (정중앙 정렬 유지)
     var txt = String(valueText == null ? '—' : valueText);
     var fontSize = txt.length >= 6 ? 11 : (txt.length >= 5 ? 12 : 13);
     return (
@@ -10022,26 +9984,18 @@
     var def = data.defense || {};
     var port = data.portfolio || {};
     var market = data.market || {};
-
-    // 게이지 1: 게이트 통과율 — 시안 고정 (정상 의미)
     var gates = aegis.gates || [];
     var passing = gates.filter(function(g){return g.passing;}).length;
     var total = gates.length || 12;
-
-    // 게이지 2: VIX (0-40) — 보라 고정 (별도 신호 카테고리)
     var vix = market.vix;
     var vixVal = (vix == null) ? '—' : Number(vix).toFixed(1);
     var vixSub = (vix == null) ? '수집 중'
       : (vix <= 18 ? '평온' : (vix <= 25 ? '보통' : (vix <= 30 ? '긴장' : '위험')));
-
-    // 게이지 3: 현금 비중 — 파랑 고정
     var nav = Number((data.nav && data.nav.value_usd) || 0);
     var cash = Number(port.cash_usd || 0);
     var cashPct = (nav > 0) ? (cash / nav * 100) : 0;
     var cashFloor = Number(port.cash_floor_target_pct || 10);
     var cashVal = nav > 0 ? cashPct.toFixed(1) + '%' : '—';
-
-    // 게이지 4: MDD — 상태색 (안전 초록 / 주의 황 / 위험 빨강)
     var mdd = (def.current_mdd_pct != null) ? Number(def.current_mdd_pct) : null;
     var mddAbs = (mdd != null) ? Math.abs(mdd) : 0;
     var mddClass = (mdd == null) ? 'gauge-fill-info'
@@ -10049,27 +10003,21 @@
     var mddVal = (mdd == null) ? '—' : (mdd >= 0 ? '+' : '') + mdd.toFixed(2) + '%';
     var mddSub = (mdd == null) ? '데이터 없음'
       : (mddAbs <= 3 ? '안전' : (mddAbs <= 7 ? '주의' : '위험'));
-
     var html =
       gaugeSvg(passing, total, 'gauge-fill-gate', passing + '/' + total, '게이트', '통과') +
       gaugeSvg(Math.min(vix == null ? 0 : vix, 40), 40, 'gauge-fill-vix', vixVal, 'VIX', vixSub) +
       gaugeSvg(cashPct, 100, 'gauge-fill-cash', cashVal, '현금', 'floor ' + cashFloor + '%') +
       gaugeSvg(Math.min(mddAbs, 10), 10, mddClass, mddVal, 'MDD', mddSub);
-
     ['nx-gauge-wrap-mobile', 'nx-gauge-wrap-pc'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.innerHTML = html;
     });
   }
 
-  // ---- 시장 등락 화살표·색 (스파크라인 데이터 없음 — 큰 % 표시만) ----
   function renderMarketDeltas(data) {
-    var market = data.market || {};
-    var fx = (data.nav && data.nav.fx) || {};
-    function paint(cls, bind) {
+    function paint(bind) {
       var el = document.querySelector('[data-bind="' + bind + '"]');
       if (!el) return;
-      // 텍스트는 기존 renderer 가 채움 — 우리는 클래스만 토글
       var txt = (el.textContent || '').trim();
       var v = parseFloat(txt.replace('%','').replace(/[+▲▼]/g, ''));
       el.classList.remove('delta-up','delta-down','delta-flat');
@@ -10078,12 +10026,11 @@
       else if (v < -0.01) el.classList.add('delta-down');
       else el.classList.add('delta-flat');
     }
-    paint('spy', 'm-mkt-spy-d');
-    paint('qqq', 'm-mkt-qqq-d');
-    paint('fx', 'fx-usdkrw-d');
+    paint('m-mkt-spy-d');
+    paint('m-mkt-qqq-d');
+    paint('fx-usdkrw-d');
   }
 
-  // ---- NAV 기간 탭 클릭 ----
   document.addEventListener('click', function(e) {
     var btn = e.target.closest('.nx-chart-tab[data-period]');
     if (!btn) return;
@@ -10100,7 +10047,6 @@
   var EV_TYPE_LABEL = { fomc: 'FOMC', indicator: '경제지표', earnings: '실적 발표' };
   var EV_IMP_LABEL = { high: '중요', medium: '보통', low: '참고' };
   var EV_WEEKDAY_KO = ['일','월','화','수','목','금','토'];
-  // 경제 지표·이벤트 설명 (event.detail 코드 또는 event.type 매핑)
   var EV_DESC = {
     CPI:    '소비자물가지수 — 인플레이션 핵심 지표. Fed 의 금리 경로에 직접 영향.',
     PCE:    '개인소비지출 물가 — Fed 가 선호하는 인플레이션 지표. 코어 PCE 주시.',
@@ -10117,20 +10063,10 @@
     return EV_DESC[code] || '경제지표 발표 — 시장 변동성 주의.';
   }
   var calState = { ym: null, selDay: null };
-
   function _padN(n) { return n < 10 ? '0' + n : '' + n; }
-  function _ymToday() {
-    var d = new Date();
-    return d.getFullYear() + '-' + _padN(d.getMonth()+1);
-  }
-  function _ymdToday() {
-    var d = new Date();
-    return d.getFullYear() + '-' + _padN(d.getMonth()+1) + '-' + _padN(d.getDate());
-  }
-  function _parseYm(ym) {
-    var p = String(ym).split('-');
-    return { year: +p[0], month: (+p[1]) - 1 };
-  }
+  function _ymToday() { var d = new Date(); return d.getFullYear() + '-' + _padN(d.getMonth()+1); }
+  function _ymdToday() { var d = new Date(); return d.getFullYear() + '-' + _padN(d.getMonth()+1) + '-' + _padN(d.getDate()); }
+  function _parseYm(ym) { var p = String(ym).split('-'); return { year: +p[0], month: (+p[1]) - 1 }; }
   function _shiftYm(ym, delta) {
     var p = _parseYm(ym);
     var d = new Date(p.year, p.month + delta, 1);
@@ -10151,18 +10087,11 @@
     return 'D+' + (-n);
   }
   function _renderDayDetail(byDate, ymd) {
-    if (!ymd) {
-      return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트 상세가 보입니다.</div></div>';
-    }
+    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트 상세가 보입니다.</div></div>';
     var evs = byDate[ymd] || [];
     var wd = _weekdayKo(ymd);
     var dateHead = ymd + ' (' + wd + ')';
-    if (!evs.length) {
-      return '<div class="ev-cal-detail">' +
-        '<div class="ev-cal-detail-date">' + dateHead + '</div>' +
-        '<div class="ev-cal-detail-empty">이날엔 이벤트 없음</div>' +
-      '</div>';
-    }
+    if (!evs.length) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + '</div><div class="ev-cal-detail-empty">이날엔 이벤트 없음</div></div>';
     var cardsHtml = evs.map(function(e) {
       var imp = e.importance || 'low';
       var type = e.type || 'indicator';
@@ -10183,20 +10112,15 @@
         '<div class="ev-cal-detail-desc">' + _escapeHtmlNC(desc) + '</div>' +
       '</div>';
     }).join('');
-    return '<div class="ev-cal-detail">' +
-      '<div class="ev-cal-detail-date">' + dateHead + ' · ' + evs.length + '건</div>' +
-      cardsHtml +
-    '</div>';
+    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + ' · ' + evs.length + '건</div>' + cardsHtml + '</div>';
   }
   function renderCalendar(eventsData) {
     if (!calState.ym) calState.ym = _ymToday();
     var events = (eventsData && Array.isArray(eventsData.events)) ? eventsData.events : [];
     var todayYmd = _ymdToday();
     var p = _parseYm(calState.ym);
-    var firstWeekday = new Date(p.year, p.month, 1).getDay(); // 0=Sun
+    var firstWeekday = new Date(p.year, p.month, 1).getDay();
     var daysInMonth = new Date(p.year, p.month + 1, 0).getDate();
-
-    // 날짜별 그룹핑
     var byDate = {};
     events.forEach(function(e) {
       var dt = (e.date || '').slice(0, 10);
@@ -10204,73 +10128,58 @@
       if (!byDate[dt]) byDate[dt] = [];
       byDate[dt].push(e);
     });
-
     var cells = [];
     for (var i = 0; i < firstWeekday; i++) cells.push({ blank: true });
     for (var dnum = 1; dnum <= daysInMonth; dnum++) {
       var ymd = p.year + '-' + _padN(p.month + 1) + '-' + _padN(dnum);
-      cells.push({
-        day: dnum, ymd: ymd,
-        events: byDate[ymd] || [],
-        isToday: ymd === todayYmd,
-      });
+      cells.push({ day: dnum, ymd: ymd, events: byDate[ymd] || [], isToday: ymd === todayYmd });
     }
     while (cells.length % 7 !== 0) cells.push({ blank: true });
-
     var titleStr = p.year + '년 ' + (p.month + 1) + '월';
     var wkLabels = ['일','월','화','수','목','금','토'];
-    var headHtml =
-      '<div class="ev-cal-head">' +
-        '<button type="button" class="ev-cal-arrow" data-cal-act="prev" aria-label="이전 달">←</button>' +
-        '<div class="ev-cal-title">' + titleStr + '</div>' +
-        '<button type="button" class="ev-cal-arrow" data-cal-act="next" aria-label="다음 달">→</button>' +
-      '</div>';
-    var wkHtml = '<div class="ev-cal-wkrow">' +
-      wkLabels.map(function(w, i) {
-        var cls = i === 0 ? ' sun' : (i === 6 ? ' sat' : '');
-        return '<div class="wk' + cls + '">' + w + '</div>';
-      }).join('') +
+    var headHtml = '<div class="ev-cal-head">' +
+      '<button type="button" class="ev-cal-arrow" data-cal-act="prev" aria-label="이전 달">←</button>' +
+      '<div class="ev-cal-title">' + titleStr + '</div>' +
+      '<button type="button" class="ev-cal-arrow" data-cal-act="next" aria-label="다음 달">→</button>' +
     '</div>';
-    var gridHtml = '<div class="ev-cal-grid">' +
-      cells.map(function(c) {
-        if (c.blank) return '<div class="ev-cal-day blank"></div>';
-        var classes = ['ev-cal-day', 'in-month'];
-        if (c.isToday) classes.push('today');
-        if (calState.selDay === c.ymd) classes.push('selected');
-        if (c.events.length) classes.push('has-events');
-        var hasFomc = c.events.some(function(e) { return e.type === 'fomc'; });
-        var dots = c.events.slice(0, 4).map(function(e) {
-          return '<span class="dot ' + (e.importance || 'low') + '"></span>';
-        }).join('');
-        return '<div class="' + classes.join(' ') + '" data-cal-day="' + c.ymd + '" role="button" tabindex="0">' +
-          (hasFomc ? '<span class="fomc-badge">F</span>' : '') +
-          '<span class="dnum">' + c.day + '</span>' +
-          (dots ? '<div class="dots">' + dots + '</div>' : '') +
-        '</div>';
-      }).join('') +
-    '</div>';
-    var legendHtml =
-      '<div class="ev-cal-legend">' +
-        '<span class="lg-item"><span class="dot high"></span>중요</span>' +
-        '<span class="lg-item"><span class="dot medium"></span>보통</span>' +
-        '<span class="lg-item"><span class="dot low"></span>참고</span>' +
-        '<span class="lg-item"><span class="f">F</span>FOMC</span>' +
+    var wkHtml = '<div class="ev-cal-wkrow">' + wkLabels.map(function(w, i) {
+      var cls = i === 0 ? ' sun' : (i === 6 ? ' sat' : '');
+      return '<div class="wk' + cls + '">' + w + '</div>';
+    }).join('') + '</div>';
+    var gridHtml = '<div class="ev-cal-grid">' + cells.map(function(c) {
+      if (c.blank) return '<div class="ev-cal-day blank"></div>';
+      var classes = ['ev-cal-day', 'in-month'];
+      if (c.isToday) classes.push('today');
+      if (calState.selDay === c.ymd) classes.push('selected');
+      if (c.events.length) classes.push('has-events');
+      var hasFomc = c.events.some(function(e) { return e.type === 'fomc'; });
+      var dots = c.events.slice(0, 4).map(function(e) {
+        return '<span class="dot ' + (e.importance || 'low') + '"></span>';
+      }).join('');
+      return '<div class="' + classes.join(' ') + '" data-cal-day="' + c.ymd + '" role="button" tabindex="0">' +
+        (hasFomc ? '<span class="fomc-badge">F</span>' : '') +
+        '<span class="dnum">' + c.day + '</span>' +
+        (dots ? '<div class="dots">' + dots + '</div>' : '') +
       '</div>';
-    // 이 달 이벤트 요약
+    }).join('') + '</div>';
+    var legendHtml = '<div class="ev-cal-legend">' +
+      '<span class="lg-item"><span class="dot high"></span>중요</span>' +
+      '<span class="lg-item"><span class="dot medium"></span>보통</span>' +
+      '<span class="lg-item"><span class="dot low"></span>참고</span>' +
+      '<span class="lg-item"><span class="f">F</span>FOMC</span>' +
+    '</div>';
     var monthCount = 0;
     Object.keys(byDate).forEach(function(dt) {
       if (dt.indexOf(p.year + '-' + _padN(p.month + 1)) === 0) monthCount += byDate[dt].length;
     });
     var summaryHtml = '<div class="ev-cal-summary">이 달 ' + monthCount + '건 · 다가오는 이벤트 ' + events.length + '건</div>';
     var detailHtml = _renderDayDetail(byDate, calState.selDay);
-
     var html = headHtml + wkHtml + gridHtml + legendHtml + summaryHtml + detailHtml;
     ['ev-cal-mobile', 'ev-cal-pc'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.innerHTML = html;
     });
   }
-  // 캘린더 클릭 — 이전/다음 달 + 날짜 선택
   document.addEventListener('click', function(e) {
     var nav = e.target.closest('[data-cal-act]');
     if (nav) {
@@ -10289,7 +10198,6 @@
     }
   });
 
-  // ---- public hook (applyDashboard 끝에서 호출) ----
   window.NexusCharts = {
     refresh: function(data) {
       try {
@@ -10305,18 +10213,13 @@
       }
     },
   };
-
-  // Chart.js 로드 완료 후 — 이미 받은 snapshot 으로 즉시 1회 렌더
   function tryInitialDraw() {
     if (window.nexusBackendData) {
       try { window.NexusCharts.refresh(window.nexusBackendData); } catch (e) {}
     }
   }
-  if (document.readyState === 'complete') {
-    setTimeout(tryInitialDraw, 200);
-  } else {
-    window.addEventListener('load', function(){ setTimeout(tryInitialDraw, 200); });
-  }
+  if (document.readyState === 'complete') setTimeout(tryInitialDraw, 200);
+  else window.addEventListener('load', function(){ setTimeout(tryInitialDraw, 200); });
 })();
 </script>
 
@@ -10341,6 +10244,9 @@
 (function() {
   'use strict';
 
+  // -----------------------------------------------------------------
+  // PM 색·이름 매핑 — 7 PM 확장 준비 (mint · pulse 포함)
+  // -----------------------------------------------------------------
   var PM_META = {
     night_watch: { ko: '박세진', en: 'Night Watch', short: 'NW',    color: '#5eead4' },
     tide:        { ko: '한도현', en: 'Tide',        short: 'Tide',  color: '#a78bfa' },
@@ -10354,6 +10260,7 @@
     cash:        { ko: '현금',   en: 'Cash',        short: 'Cash',  color: '#4b5563' },
   };
   // v12.4 — 다른 IIFE (NexusCharts · renderHoldingsSummary) 에서도 재사용.
+  //   7 PM 확장을 여러 곳에서 하드코딩하지 않도록 단일 소스.
   window.NEXUS_PM_META = PM_META;
 
   function _esc(s) {
@@ -10374,6 +10281,9 @@
     return PM_META[key] || { ko: '?', en: key || '?', short: key || '?', color: '#666' };
   }
 
+  // -----------------------------------------------------------------
+  // 사이드바 렌더러 — enabled personas 기반 (data.team_desk.desks)
+  // -----------------------------------------------------------------
   function renderPcSidebar(data) {
     var hosts = document.querySelectorAll('[data-bind="pc-b-sidebar"]');
     if (!hosts.length) return;
@@ -10382,6 +10292,8 @@
       ? data.team_desk.desks : [];
     var aegisLine = (data && data.team_desk && data.team_desk.aegis_line) || {};
 
+    // 활성 PM 목록 = team_desk.desks (백엔드 get_enabled_personas 결과 반영).
+    //   빈 상태(초기 로딩) 폴백: team 배열의 active 항목.
     var rows = [];
     if (desks.length > 0) {
       desks.forEach(function(d) {
@@ -10392,7 +10304,10 @@
         var status = d.last_eval_at ? '평가' : '대기';
         var oneLiner = d.one_liner || (d.watchlist && d.watchlist.length
           ? d.watchlist.length + '종목 감시' : '데이터 수집 중');
-        rows.push({ key: key, meta: meta, cap: cap, status: status, task: oneLiner, idle: false });
+        rows.push({
+          key: key, meta: meta, cap: cap,
+          status: status, task: oneLiner, idle: false,
+        });
       });
     } else if (team.length > 0) {
       team.forEach(function(t) {
@@ -10410,6 +10325,7 @@
       });
     }
 
+    // 현금 행 (마지막) — aegis_line.cash_pct 사용
     var cashPct = (aegisLine.cash_pct != null) ? Number(aegisLine.cash_pct) : null;
     var cashFloor = aegisLine.cash_floor_pct || 10;
 
@@ -10431,6 +10347,7 @@
           '<span class="status-tag">' + _esc(r.status + ' · ' + r.task) + '</span>' +
         '</div>';
     });
+    // 현금
     var cashMeta = _pmMeta('cash');
     html +=
       '<div class="pc-b-pm-row cash" data-pm-key="cash" tabindex="-1" ' +
@@ -10446,6 +10363,7 @@
       '</div>';
 
     hosts.forEach(function(h) {
+      // 제목 + 카운트 유지, 아래 리스트만 갱신
       var title = h.querySelector('.pc-b-sb-title');
       h.innerHTML = '';
       if (title) h.appendChild(title);
@@ -10453,13 +10371,19 @@
       wrap.innerHTML = html;
       while (wrap.firstChild) h.appendChild(wrap.firstChild);
     });
+    // 카운트
     document.querySelectorAll('[data-bind="pc-b-sb-count"]').forEach(function(el) {
       el.textContent = rows.length + (cashPct != null ? '+1' : '');
     });
   }
 
+  // -----------------------------------------------------------------
+  // 상세 패널 엔진 — openDetailPanel(type, key)
+  // -----------------------------------------------------------------
   var _panelState = { open: false, type: null, key: null };
+
   function _snap() { return window.nexusBackendData || {}; }
+
   function _setPanel(title, sub, bodyHtml) {
     var t = document.querySelector('[data-bind="pc-b-panel-title"]');
     var s = document.querySelector('[data-bind="pc-b-panel-sub"]');
@@ -10482,6 +10406,7 @@
     })[0] || {};
     var sys = data.system_status || {};
     var sysP = sys[key] || {};
+
     var cap = d ? d.capital_weight_pct : team.capital_weight_pct;
     var role = team.role_desc || team.role || d && d.one_liner || '—';
     var burn = sysP.burn_rate_pct != null ? _fmtPct(sysP.burn_rate_pct) :
@@ -10490,6 +10415,7 @@
     var uni = d && d.watchlist ? d.watchlist.length : (sysP.tickers_tracked || 0);
     var decisions = sysP.decisions_count || 0;
 
+    // 신호 TOP10
     var watch = (d && Array.isArray(d.watchlist)) ? d.watchlist.slice(0, 10) : [];
     var sigRows = watch.length === 0
       ? '<div class="empty">watchlist 데이터 없음</div>'
@@ -10505,6 +10431,7 @@
           '</div>';
         }).join('');
 
+    // 최근 결정 5건 — layer3.recent_would_trades 필터
     var l3 = ((data.layer3 && data.layer3.recent_would_trades) || [])
       .filter(function(w){
         var pk = w.persona_key || w.persona || '';
@@ -10515,7 +10442,7 @@
       : l3.map(function(w) {
           var t = w.ts || w.timestamp || w.at || '';
           return '<div class="desc-row">' +
-            '<span class="ts">' + _esc(String(t).replace('T',' ').slice(0, 16)) + '</span>' +
+            '<span class="ts">' + _esc(t.replace('T',' ').slice(0, 16)) + '</span>' +
             _esc((w.symbol || '?') + ' ' + (w.action || 'sim') + ' — ' +
                   (w.rationale || w.reason || '경제성 통과')) +
           '</div>';
@@ -10544,6 +10471,7 @@
         '<div class="sec-h">최근 결정 · 5건</div>' +
         decRows +
       '</div>';
+
     _setPanel(meta.ko + ' · ' + meta.en, meta.short + ' PM 상세', body);
   }
 
@@ -10553,6 +10481,7 @@
     var nav = data.nav || {};
     var defense = data.defense || {};
     var days = perf.days_recorded || (perf.nav_series && perf.nav_series.length) || 0;
+
     var body =
       '<div class="sec">' +
         '<div class="kv">' +
@@ -10616,6 +10545,7 @@
     var gateHtml = gates.length === 0
       ? '<div class="empty">Aegis 데이터 없음</div>'
       : gates.map(function(g) {
+          var st = g.passing ? 'pos' : 'neg';
           return '<div class="list-row">' +
             '<span class="sym">' + _esc('G' + g.num + ' ' + (g.name || '')) + '</span>' +
             '<span class="val">' + _esc(g.current_value || '—') + '</span>' +
@@ -10775,7 +10705,7 @@
     _setPanel(tk, real ? '실보유 포지션' : 'sim 가상 포지션', body);
   }
 
-  // v12.3 — 승인 상세 패널
+  // v12.3 — 승인 상세 패널 (approvals.pending 또는 .history 매칭)
   function _renderApprovalPanel(id) {
     var data = _snap();
     var ap = data.approvals || {};
@@ -10811,9 +10741,11 @@
                 : (found.news_count != null ? found.news_count : null);
     var news = Array.isArray(found.news_items) ? found.news_items
             : (Array.isArray(found.news) ? found.news : []);
+
     var status = found.status || 'pending';
     var statusLabel = { pending: '대기', approved: '승인', rejected: '반려', expired: '만료' };
     var statusColor = { pending: 'var(--warn)', approved: 'var(--positive)', rejected: 'var(--negative)', expired: 'var(--fg-muted)' };
+
     var kvHtml =
       '<div class="kv">' +
         '<span class="k">종목</span><span class="v">' + _esc(found.symbol || '?') + '</span>' +
@@ -10829,6 +10761,7 @@
         '<span class="k">상태</span>' +
         '<span class="v" style="font-family:var(--sans);color:' + (statusColor[status] || 'var(--fg)') + ';">' + _esc(statusLabel[status] || status) + '</span>' +
       '</div>';
+
     var reasonHtml = '';
     if (found.reason) {
       reasonHtml =
@@ -10837,6 +10770,7 @@
           '<div class="desc-row">' + _esc(String(found.reason)) + '</div>' +
         '</div>';
     }
+
     var newsHtml = '';
     if (news.length > 0) {
       newsHtml =
@@ -10858,8 +10792,10 @@
           '<div class="empty">뉴스 목록 스냅샷 밖 — Pathfinder 원본에서 확인 가능</div>' +
         '</div>';
     }
+
     var actionHtml = '';
     if (!inHist && status === 'pending') {
+      // 기존 nexusApprovalDecide 재사용 (동작 로직 무손)
       actionHtml =
         '<div class="sec">' +
           '<div class="sec-h">결재</div>' +
@@ -10878,7 +10814,10 @@
           '</div>' +
         '</div>';
     }
-    var body = '<div class="sec">' + kvHtml + '</div>' + reasonHtml + newsHtml + actionHtml;
+
+    var body =
+      '<div class="sec">' + kvHtml + '</div>' +
+      reasonHtml + newsHtml + actionHtml;
     _setPanel(
       (found.symbol || '?') + ' · ' + (typeLabel[found.type] || found.type || 'proposal'),
       inHist ? '결재 완료' : '승인 대기',
@@ -10886,6 +10825,7 @@
     );
   }
 
+  // v12.3 — 이벤트 상세 패널 (달력 날짜 클릭)
   function _renderEventPanel(dateOrId) {
     var data = _snap();
     var events = ((data.events || {}).events) || [];
@@ -10922,7 +10862,8 @@
     _setPanel(key, day.length + '건 이벤트', body);
   }
 
-  // v12.2 — 거래 상세 패널
+  // v12.2 — 거래 상세 패널 (recent_would_trades id 기반)
+  //   trade id = ts + '#' + ticker. 스냅샷에서 매칭 실패 시 "—" 로 표시.
   function _renderTradePanel(tradeId) {
     var data = _snap();
     var trades = (data.layer3 && data.layer3.recent_would_trades) || [];
@@ -10943,6 +10884,7 @@
     var gateOk = !!t.gate_pass;
     var executed = !!t.executed;
     var mode = t.mode || (executed ? 'live' : 'sim');
+
     function _f(v, d) {
       if (v === null || v === undefined) return '—';
       if (typeof v === 'number') return Number(v).toFixed(d == null ? 2 : d);
@@ -10951,7 +10893,9 @@
     function _pctOrDash(v) {
       return (v === null || v === undefined) ? '—' : Number(v).toFixed(2) + '%';
     }
+
     var sig = (t.signal_value != null) ? t.signal_value : t.signal_strength;
+
     var kvHtml =
       '<div class="kv">' +
         '<span class="k">담당 PM</span>' +
@@ -10970,6 +10914,7 @@
         '<span class="k">실행</span><span class="v" style="color:' + (executed ? 'var(--accent)' : 'var(--fg-muted)') + ';">' + (executed ? '체결' : 'sim — 미체결') + '</span>' +
         '<span class="k">모드</span><span class="v" style="font-family:var(--sans);color:var(--warn);">' + _esc(mode) + '</span>' +
       '</div>';
+
     var reasonHtml = '';
     if (t.reason) {
       reasonHtml =
@@ -10984,8 +10929,15 @@
           '<div class="desc-row">' + _esc(String(t.rationale)) + '</div>' +
         '</div>';
     }
-    var body = '<div class="sec">' + kvHtml + '</div>' + reasonHtml;
-    _setPanel((t.ticker || '—') + ' · ' + sideKo, mode + ' 거래 상세', body);
+
+    var body =
+      '<div class="sec">' + kvHtml + '</div>' +
+      reasonHtml;
+    _setPanel(
+      (t.ticker || '—') + ' · ' + sideKo,
+      mode + ' 거래 상세',
+      body
+    );
   }
 
   window.openDetailPanel = function(type, key) {
@@ -10995,6 +10947,7 @@
     var back = document.querySelector('.pc-b-panel-backdrop');
     if (panel) panel.hidden = false;
     if (back)  back.hidden = false;
+
     try {
       if (type === 'pm')             _renderPmPanel(key);
       else if (type === 'nav')       _renderNavPanel();
@@ -11009,7 +10962,10 @@
     } catch (e) {
       _setPanel('오류', '', '<div class="empty">렌더 실패: ' + _esc(e && e.message || e) + '</div>');
     }
-    requestAnimationFrame(function() { document.body.classList.add('pc-b-panel-open'); });
+    // 애니메이션은 다음 frame 에 클래스 붙여야 정상 트리거
+    requestAnimationFrame(function() {
+      document.body.classList.add('pc-b-panel-open');
+    });
   };
   window.closeDetailPanel = function() {
     _panelState.open = false;
@@ -11022,6 +10978,7 @@
     }, 260);
   };
 
+  // 닫기 이벤트 — ✕ · 바깥 · ESC
   document.addEventListener('click', function(ev) {
     var closer = ev.target.closest('[data-pc-b-close]');
     if (closer) { ev.preventDefault(); window.closeDetailPanel(); return; }
@@ -11054,6 +11011,10 @@
     });
   });
 
+  // -----------------------------------------------------------------
+  // ? 도움말 엔진 — HELP_TEXTS + openHelpSheet
+  //   패널을 공유 (같은 pc-b-panel 재사용) — 코드·CSS 재활용
+  // -----------------------------------------------------------------
   var HELP_TEXTS = {
     nav:        '순자산가치(NAV). 시작일 이후 자산 합계. 아래 곡선은 일별 종가 기록.',
     market:     '전 세계 주요 지표. SPY/QQQ는 미국 증시, VIX는 변동성 지수, USD/KRW는 환율.',
@@ -11110,25 +11071,53 @@
                        '상태줄에는 마지막 평가 시각(KST)만 소프트로 표시.',
   };
   window.HELP_TEXTS = HELP_TEXTS;
+
   var HELP_TITLES = {
-    nav: 'NAV — 순자산가치', market: '시장 지표', risk: '리스크 관리', desk: '운용진',
-    aegis: 'Aegis', pm_util: '소진율', signal: '매매 신호', mdd: 'MDD',
-    gate: 'Aegis 게이트', journal: '일지', discovery: '발굴 · 승인', story: '한 줄 이야기',
-    performance: '성과', countdown: '개장 카운트다운', trade_flow: '매매 흐름',
-    portfolio: '자산 배분', events: '캘린더',
-    position: '보유 · 실계좌', pnl: '평가손익', pm_owner: '담당 PM',
-    sim_position: 'sim 가상 포지션', defense_lines: '방어 6선',
-    timeline: '거래 타임라인', daily_bar: '일별 매매 집계', trade_detail: '거래 상세',
-    skip_reason: '계층3 스킵', mode_badge: 'sim / live 모드',
-    approval_queue: '승인 대기', discovery_score: '발굴 점수',
-    event_calendar: '이벤트 달력', approval_history: '처리 이력',
-    backend_url: '백엔드 연결', op_params: '운용 파라미터',
-    buy_threshold: '매수 임계값', pm_cap: 'PM 자본 배분',
-    rebalancer_status: '리밸런서 상태', dev_log: '개발 로그',
-    token_usage: '토큰 사용량', sw_version: 'SW 버전',
+    nav: 'NAV — 순자산가치',
+    market: '시장 지표',
+    risk: '리스크 관리',
+    desk: '운용진',
+    aegis: 'Aegis',
+    pm_util: '소진율',
+    signal: '매매 신호',
+    mdd: 'MDD',
+    gate: 'Aegis 게이트',
+    journal: '일지',
+    discovery: '발굴 · 승인',
+    story: '한 줄 이야기',
+    performance: '성과',
+    countdown: '개장 카운트다운',
+    trade_flow: '매매 흐름',
+    portfolio: '자산 배분',
+    events: '캘린더',
+    position: '보유 · 실계좌',
+    pnl: '평가손익',
+    pm_owner: '담당 PM',
+    sim_position: 'sim 가상 포지션',
+    defense_lines: '방어 6선',
+    timeline: '거래 타임라인',
+    daily_bar: '일별 매매 집계',
+    trade_detail: '거래 상세',
+    skip_reason: '계층3 스킵',
+    mode_badge: 'sim / live 모드',
+    approval_queue: '승인 대기',
+    discovery_score: '발굴 점수',
+    event_calendar: '이벤트 달력',
+    approval_history: '처리 이력',
+    backend_url: '백엔드 연결',
+    op_params: '운용 파라미터',
+    buy_threshold: '매수 임계값',
+    pm_cap: 'PM 자본 배분',
+    rebalancer_status: '리밸런서 상태',
+    dev_log: '개발 로그',
+    token_usage: '토큰 사용량',
+    sw_version: 'SW 버전',
     // v12.6 — 상태 배너 3종
-    offline_banner: '오프라인 배너', stale_warn: '갱신 지연', market_closed: '장외 표시',
+    offline_banner: '오프라인 배너',
+    stale_warn: '갱신 지연',
+    market_closed: '장외 표시',
   };
+
   function openHelpSheet(k) {
     var text = HELP_TEXTS[k] || '설명 준비 중.';
     var title = HELP_TITLES[k] || '도움말';
@@ -11139,10 +11128,21 @@
     if (back)  back.hidden = false;
     _setPanel(title, '도움말',
       '<div class="sec"><div class="desc-row">' + _esc(text) + '</div></div>');
-    requestAnimationFrame(function() { document.body.classList.add('pc-b-panel-open'); });
+    requestAnimationFrame(function() {
+      document.body.classList.add('pc-b-panel-open');
+    });
   }
   window.openHelpSheet = openHelpSheet;
 
+  // 카드 헤더에 ? 자동 부착 — data-help 속성이 없는 곳은 스킵.
+  //   객체 한 줄 추가만으로 확장 가능한 명명: 아래 SELECTOR_MAP 을 확장.
+  var HELP_SELECTOR_MAP = [
+    { sel: '.nx-perf-label',   key: 'nav' },
+    { sel: '.nx-mkt-title',    key: 'market' },
+    { sel: '.nx-aegis-head',   key: 'aegis' },
+    { sel: '.nx-story-main',   key: 'story' },
+    { sel: '.nx-section-title', key: null }, // 텍스트로 매핑
+  ];
   function _autoAttachHelp() {
     document.querySelectorAll('.nx-perf-label').forEach(function(el) {
       if (el.querySelector('.nx-help-btn')) return;
@@ -11156,9 +11156,11 @@
     });
     document.querySelectorAll('.nx-aegis-head').forEach(function(el) {
       if (el.querySelector('.nx-help-btn')) return;
+      // 자식 첫 텍스트 뒤에 삽입
       el.insertAdjacentHTML('beforeend',
         ' <button type="button" class="nx-help-btn" data-help="aegis" aria-label="Aegis 도움말">?</button>');
     });
+    // .nx-section-title — 텍스트로 매핑
     var titleMap = {
       '운용진 데스크': 'desk',
       '일지 · 최근 8건': 'journal',
@@ -11173,6 +11175,7 @@
       el.insertAdjacentHTML('beforeend',
         ' <button type="button" class="nx-help-btn" data-help="' + k + '" aria-label="' + k + ' 도움말">?</button>');
     });
+    // 위 아래 대시보드 카드 헤더 커버 — nx-story
     document.querySelectorAll('.nx-story-pc .nx-story-main').forEach(function(el) {
       if (el.querySelector('.nx-help-btn')) return;
       el.insertAdjacentHTML('beforeend',
@@ -11180,17 +11183,24 @@
     });
   }
 
+  // -----------------------------------------------------------------
+  // NAV/시장/리스크/발굴 카드 자동 오프너 부착
+  //  각 카드 헤더에 data-open-panel 속성 없으면 붙여준다.
+  // -----------------------------------------------------------------
   function _autoAttachOpeners() {
+    // NAV 카드 → 헤더 클릭으로 NAV 상세
     document.querySelectorAll('.nx-perf-head').forEach(function(el) {
       if (el.hasAttribute('data-open-panel')) return;
       el.setAttribute('data-open-panel', 'nav');
       el.style.cursor = 'pointer';
     });
+    // 시장 카드
     document.querySelectorAll('.nx-mkt-card').forEach(function(el) {
       if (el.hasAttribute('data-open-panel')) return;
       el.setAttribute('data-open-panel', 'market');
       el.style.cursor = 'pointer';
     });
+    // Aegis 카드 → risk 상세
     document.querySelectorAll('.nx-aegis-card').forEach(function(el) {
       if (el.hasAttribute('data-open-panel')) return;
       el.setAttribute('data-open-panel', 'risk');
@@ -11200,8 +11210,10 @@
 
   // -----------------------------------------------------------------
   // v12.1 — 보유 탭 렌더러 (PM 칩 필터 + sim/실 구분 테이블)
+  //   필터 상태는 사용자 세션 내 유지 — refresh 시 초기화 안 함.
   // -----------------------------------------------------------------
-  var _holdingsFilter = 'all';
+  var _holdingsFilter = 'all';  // 'all' | persona_key
+
   function _pmKeyFromPos(p) {
     if (!p) return null;
     return p.pm_key || p.persona_key || p.persona || null;
@@ -11210,7 +11222,10 @@
     if (!w) return null;
     return w.persona_key || w.persona || null;
   }
+
   function _aggregateSimPositions(l3trades) {
+    // sim 가상 포지션 집계: buy 개수 - sell 개수 > 0 인 ticker.
+    //   실 수량/평단은 계산 불가 — '—' 로 두고 결정 수 · 최근 신호 · 담당 PM 만 노출.
     var byTicker = {};
     (l3trades || []).forEach(function(w) {
       var tk = (w.ticker || w.symbol || '').toUpperCase();
@@ -11227,15 +11242,20 @@
       var b = byTicker[tk];
       if (b.buys - b.sells <= 0) return;
       arr.push({
-        symbol: tk, _sim: true, pm_key: b.pm_key,
-        _decisions: b.trades.length, _latest: b.trades[0],
+        symbol: tk,
+        _sim: true,
+        pm_key: b.pm_key,
+        _decisions: b.trades.length,
+        _latest: b.trades[0],
       });
     });
     return arr;
   }
+
   function _renderHoldingsChips(activePersonas) {
     var host = document.querySelector('[data-bind="h2-chips"]');
     if (!host) return;
+    // 항상 [전체] 먼저, 활성 PM 순서대로. counts 전달됨.
     var chips = [{ key: 'all', label: '전체', ko: '', color: 'var(--accent)', count: activePersonas.reduce(function(s, p){return s + (p.count || 0);}, 0) }];
     activePersonas.forEach(function(p) {
       chips.push({ key: p.key, label: p.meta.ko, ko: p.meta.en, color: p.meta.color, count: p.count });
@@ -11250,10 +11270,14 @@
       '</button>';
     }).join('');
   }
+
   function _renderHoldingsTable(rows, isSim) {
     var host = document.querySelector('[data-bind="h2-table-host"]');
     if (!host) return;
-    if (!rows.length) { host.innerHTML = ''; return; }
+    if (!rows.length) {
+      host.innerHTML = '';
+      return;
+    }
     var rowsHtml = rows.map(function(r) {
       var tk = r.symbol;
       var pmKey = _pmKeyFromPos(r);
@@ -11263,12 +11287,15 @@
           _esc(pmMeta.short) + '</span>'
         : '<span class="pm-cell"><span class="swatch"></span>—</span>';
       if (r._sim) {
+        // sim: 계산 불가 필드는 — 로. 결정 수 · 최근 신호 표시.
         var latest = r._latest || {};
         var exp = (latest.net_expected_pct != null) ? Number(latest.net_expected_pct).toFixed(2) + '%' : '—';
         return '<tr class="sim" data-h2-tk="' + _esc(tk) + '" data-h2-pm="' + _esc(pmKey || '') + '">' +
           '<td><span class="sym">' + _esc(tk) + '</span></td>' +
           '<td>' + pmHtml + '</td>' +
-          '<td class="num">—</td><td class="num">—</td><td class="num">—</td>' +
+          '<td class="num">—</td>' +
+          '<td class="num">—</td>' +
+          '<td class="num">—</td>' +
           '<td class="num neut">' + _esc(exp) + '</td>' +
           '<td class="num">' + r._decisions + '회</td>' +
         '</tr>';
@@ -11293,17 +11320,22 @@
         '<td class="num">' + (w != null ? Number(w).toFixed(2) + '%' : '—') + '</td>' +
       '</tr>';
     }).join('');
+
     host.innerHTML =
       '<table class="h2-table">' +
         '<thead><tr>' +
-          '<th>종목</th><th>담당 PM</th>' +
-          '<th class="num">수량</th><th class="num">평단</th><th class="num">현재가</th>' +
+          '<th>종목</th>' +
+          '<th>담당 PM</th>' +
+          '<th class="num">수량</th>' +
+          '<th class="num">평단</th>' +
+          '<th class="num">현재가</th>' +
           '<th class="num">' + (isSim ? '기대' : '손익') + '</th>' +
           '<th class="num">' + (isSim ? '결정' : '비중') + '</th>' +
         '</tr></thead>' +
         '<tbody>' + rowsHtml + '</tbody>' +
       '</table>';
   }
+
   function _renderHoldingsEmptyState(nav, portfolio) {
     var host = document.querySelector('[data-bind="h2-table-host"]');
     if (!host) return;
@@ -11318,6 +11350,7 @@
         '<div class="cash-line">현금 (전액) ' + cashTxt + '</div>' +
       '</div>';
   }
+
   function renderPcHoldingsV12(data) {
     var block = document.querySelector('[data-bind="h2-holdings-block"]');
     if (!block) return;
@@ -11333,19 +11366,29 @@
     var srcLabel = '', srcCls = 'empty', srcBadgeTxt = '—';
 
     if (positions.length > 0) {
-      isSim = false; srcCls = 'real'; srcBadgeTxt = '실계좌';
+      // 실계좌
+      isSim = false;
+      srcCls = 'real';
+      srcBadgeTxt = '실계좌';
       srcLabel = '포지션 ' + positions.length + '건 · 실계좌 잔고';
     } else {
+      // sim 폴백
       var sim = _aggregateSimPositions(l3trades);
       if (sim.length > 0) {
-        rows = sim; isSim = true; srcCls = 'sim'; srcBadgeTxt = 'sim — 가상';
+        rows = sim;
+        isSim = true;
+        srcCls = 'sim';
+        srcBadgeTxt = 'sim — 가상';
         srcLabel = 'sim 가상 포지션 ' + sim.length + '건 · 실보유 0';
       } else {
-        rows = []; srcCls = 'empty'; srcBadgeTxt = '대기';
+        rows = [];
+        srcCls = 'empty';
+        srcBadgeTxt = '대기';
         srcLabel = '포지션 0 · 다음 평가 KST 22:30';
       }
     }
 
+    // 3 카드 (실계좌 있으면 실측 값, sim 이면 '—' 또는 sim 표시)
     var totalMV = 0, totalPnl = 0, havePnl = false;
     rows.forEach(function(p) {
       if (p._sim) return;
@@ -11359,10 +11402,14 @@
       ? '—'
       : (totalPnl >= 0 ? '+' : '−') + '$' + Math.abs(totalPnl).toLocaleString('en-US', {maximumFractionDigits: 0});
     var pnlCls = isSim || !havePnl ? '' : (totalPnl >= 0 ? 'pos' : 'neg');
-    var pnlSub = isSim ? 'sim — 실 손익 없음' : (havePnl ? '평단 대비' : '—');
+    var pnlSub = isSim
+      ? 'sim — 실 손익 없음'
+      : (havePnl ? '평단 대비' : '—');
+
     var navUsd = Number(nav.value_usd || 0);
+    var cashUsd = Number(portfolio.cash_usd != null ? portfolio.cash_usd : (aegisLine.cash_pct != null && navUsd ? (aegisLine.cash_pct / 100 * navUsd) : 0));
     var cashPct = (aegisLine.cash_pct != null) ? Number(aegisLine.cash_pct)
-                  : (navUsd > 0 && portfolio.cash_usd != null ? (portfolio.cash_usd / navUsd * 100) : null);
+                  : (navUsd > 0 ? (cashUsd / navUsd * 100) : null);
     var cashFloor = aegisLine.cash_floor_pct || portfolio.cash_floor_target_pct || 10;
 
     var t = document.querySelector('[data-bind="h2-total-value"]');
@@ -11373,16 +11420,23 @@
     var cs = document.querySelector('[data-bind="h2-cash-sub"]');
     if (t)  t.textContent = totalTxt;
     if (ts) ts.textContent = isSim ? 'sim — 계산 불가' : '평가액 · USD';
-    if (p) { p.textContent = pnlTxt; p.className = 'v ' + pnlCls; }
+    if (p) {
+      p.textContent = pnlTxt;
+      p.className = 'v ' + pnlCls;
+    }
     if (ps) ps.textContent = pnlSub;
     if (c)  c.textContent = (cashPct == null ? '—' : Number(cashPct).toFixed(1) + '%');
     if (cs) cs.textContent = '하한 ' + cashFloor + '%';
 
+    // 소스 라벨/배지
     var sl = document.querySelector('[data-bind="h2-source-label"]');
     var sb = document.querySelector('[data-bind="h2-source-badge"]');
     if (sl) sl.textContent = srcLabel;
     if (sb) { sb.textContent = srcBadgeTxt; sb.className = 'h2-source-badge ' + srcCls; }
 
+    // PM 칩 — 활성 PM = 현재 rows 에서 나타난 PM 만.
+    //   실계좌면 broker positions 의 pm_key. sim 이면 sim 결정의 persona_key.
+    //   count = 해당 PM 소유 포지션 수.
     var counts = {};
     rows.forEach(function(r) {
       var k = _pmKeyFromPos(r) || 'unknown';
@@ -11394,16 +11448,22 @@
     activePms.sort(function(a, b){ return b.count - a.count; });
     _renderHoldingsChips(activePms);
 
+    // 필터 적용
     var filtered = rows;
     if (_holdingsFilter !== 'all') {
       filtered = rows.filter(function(r) {
         return (_pmKeyFromPos(r) || 'unknown') === _holdingsFilter;
       });
     }
-    if (rows.length === 0) _renderHoldingsEmptyState(nav, portfolio);
-    else _renderHoldingsTable(filtered, isSim);
+
+    if (rows.length === 0) {
+      _renderHoldingsEmptyState(nav, portfolio);
+    } else {
+      _renderHoldingsTable(filtered, isSim);
+    }
   }
 
+  // 위임 클릭: 칩 · 행
   document.addEventListener('click', function(ev) {
     var chip = ev.target.closest('[data-h2-filter]');
     if (chip) {
@@ -11421,17 +11481,22 @@
   });
 
   // -----------------------------------------------------------------
-  // v12.2 — 이력 탭 렌더러 (필터·미니바·타임라인)
+  // v12.2 — 이력 탭 렌더러 (필터 · 일별 미니바 · 타임라인)
+  //   상태는 IIFE 스코프 — refresh 시 초기화 안 함. 스크롤 위치는 브라우저 유지.
   // -----------------------------------------------------------------
-  var _historyFilter = { pm: 'all', type: 'all', period: '30' };
+  var _historyFilter = { pm: 'all', type: 'all', period: '30' };  // days or 'all'
 
   function _tsMs(ts) {
     if (!ts) return 0;
     var s = String(ts);
+    // naive ISO (KST assumed) → 브라우저 로컬 파싱
     var d = new Date(s.indexOf('T') >= 0 ? s : s.replace(' ', 'T'));
     return d.getTime() || 0;
   }
-  function _dayKey(ts) { return ts ? String(ts).slice(0, 10) : ''; }
+  function _dayKey(ts) {
+    if (!ts) return '';
+    return String(ts).slice(0, 10);  // YYYY-MM-DD
+  }
   function _timeShort(ts) {
     if (!ts) return '—';
     var s = String(ts);
@@ -11446,7 +11511,10 @@
     var wd = ['일','월','화','수','목','금','토'][d.getDay()];
     return k.slice(5) + ' (' + wd + ')';
   }
-  function _tradeId(t) { return (t.ts || '') + '#' + (t.ticker || t.symbol || ''); }
+
+  function _tradeId(t) {
+    return (t.ts || '') + '#' + (t.ticker || t.symbol || '');
+  }
 
   function _renderHistoryPmChips(activePms, total) {
     var host = document.querySelector('[data-bind="h3-pm-chips"]');
@@ -11468,6 +11536,7 @@
     var barsHost = document.querySelector('[data-bind="h3-daily-bars"]');
     var labelsHost = document.querySelector('[data-bind="h3-daily-labels"]');
     if (!barsHost || !labelsHost) return;
+    // 오늘 KST 기준 최근 14일
     var today = new Date();
     var days = [];
     for (var i = 13; i >= 0; i--) {
@@ -11520,6 +11589,7 @@
         '</div>';
       return;
     }
+    // 날짜별 그룹
     var groups = {};
     filtered.forEach(function(t) {
       var k = _dayKey(t.ts) || '—';
@@ -11568,16 +11638,20 @@
     var mode = (data.layer3 && data.layer3.mode) ||
                (trades.some(function(t){return t.executed;}) ? 'live' : 'sim');
 
+    // 모드 배지
     var mb = document.querySelector('[data-bind="h3-mode-badge"]');
     if (mb) {
+      // 도움말 버튼 유지
       var helpBtn = mb.querySelector('.nx-help-btn');
       mb.className = 'h3-mode-badge ' + (mode === 'live' ? 'live' : 'sim');
       mb.firstChild && (mb.firstChild.nodeValue = mode + ' ');
       if (helpBtn && !mb.contains(helpBtn)) mb.appendChild(helpBtn);
     }
 
+    // 일별 미니바는 전체 rolling window 사용 (필터와 무관)
     _renderDailyBars(trades);
 
+    // PM 별 카운트 (필터에 사용) — 유형·기간 무관 전체 기준
     var pmCounts = {};
     trades.forEach(function(t) {
       var k = t.persona_key || t.persona || 'unknown';
@@ -11589,6 +11663,7 @@
     activePms.sort(function(a, b){ return b.count - a.count; });
     _renderHistoryPmChips(activePms, trades.length);
 
+    // 필터 적용 (PM · 유형 · 기간)
     var nowMs = Date.now();
     var cutoffMs = _historyFilter.period === 'all' ? 0
       : nowMs - (Number(_historyFilter.period) * 86400 * 1000);
@@ -11607,6 +11682,7 @@
       }
       return true;
     });
+    // 최신순 정렬
     filtered.sort(function(a, b) { return _tsMs(b.ts) - _tsMs(a.ts); });
 
     var meta = document.querySelector('[data-bind="h3-timeline-meta"]');
@@ -11615,10 +11691,12 @@
     _renderTimeline(filtered);
   }
 
+  // 필터 · 행 · 초기화 클릭 위임
   // -----------------------------------------------------------------
   // v12.5 — 설정 탭 렌더러 (4그룹 · 운용 파라미터 읽기전용)
-  //   기존 nexusSaveBackendUrl · nexusOpenBriefingModal · nexusOpenMandateModal 무손.
-  //   운용 파라미터: 스냅샷에 없는 필드는 항목 자체 생략.
+  //   기존 nexusSaveBackendUrl · nexusOpenBriefingModal · nexusOpenMandateModal
+  //   호출 함수는 무변경. 여기서는 표시만.
+  //   운용 파라미터: 스냅샷에 없는 필드는 항목 자체 생략 (하드코딩 금지).
   // -----------------------------------------------------------------
   function _fmtSyncAge(lastSync) {
     if (!lastSync) return '—';
@@ -11673,6 +11751,7 @@
     setBind('h5-last-sync', _fmtSyncAge(backend.lastSync), backend.lastSync ? 'ok' : 'muted');
     setBind('h5-conn-meta', backend.mode || (backend.url ? 'direct' : '—'));
 
+    // FX 캐시
     var fxAge = (data.nav && data.nav.fx_age_sec);
     if (fxAge != null) {
       var mins = Math.round(Number(fxAge) / 60);
@@ -11681,20 +11760,23 @@
       setBind('h5-fx-cache', '—', 'muted');
     }
 
-    // 그룹 2 — 운용 파라미터
+    // 그룹 2 — 운용 파라미터 (읽기전용, 스냅샷 실측만)
     var host = document.querySelector('[data-bind="h5-op-params-list"]');
     if (host) {
       var rows = [];
+      // 트레이딩 모드 (system.mode) — 항상 있음
       if (sys.mode) {
-        rows.push({ k: '트레이딩 모드', v: sys.mode,
-          cls: (sys.mode === 'simulate' ? 'warn' : 'ok') });
+        rows.push({ k: '트레이딩 모드', help: null,
+          v: sys.mode, cls: (sys.mode === 'simulate' ? 'warn' : 'ok') });
       }
+      // 계층3 모드 · 루프
       if (l3.mode || l3.loop_running != null) {
         var l3mode = l3.mode || '—';
         var loopTxt = l3.loop_running ? 'loop 실행' : (l3.loop_running === false ? 'loop 정지' : '');
         rows.push({ k: '계층3 모드', v: l3mode + (loopTxt ? ' · ' + loopTxt : ''),
           cls: l3.loop_running ? 'ok' : 'muted' });
       }
+      // 매수 · 매도 신호 임계값
       if (l3.buy_signal_threshold != null) {
         rows.push({ k: '매수 임계값', help: 'buy_threshold',
           v: Number(l3.buy_signal_threshold).toFixed(2), cls: '' });
@@ -11710,10 +11792,12 @@
         rows.push({ k: '알림 일일 한도',
           v: (l3.notify_sent_today || 0) + ' / ' + l3.notify_daily_cap, cls: 'muted' });
       }
+      // 현금 하한
       if (aegisLine.cash_floor_pct != null) {
         rows.push({ k: '현금 하한',
           v: Number(aegisLine.cash_floor_pct).toFixed(0) + '%', cls: '' });
       }
+      // Aegis MDD / VIX 임계
       if (aegisLine.soft_mdd_pct != null) {
         rows.push({ k: 'Soft MDD',
           v: Number(aegisLine.soft_mdd_pct).toFixed(0) + '%', cls: 'muted' });
@@ -11738,6 +11822,7 @@
         '</div>';
       }).join('');
 
+      // PM 자본 배분 (data.team_desk.desks)
       var pmHtml = '';
       if (desks.length > 0) {
         pmHtml = '<div class="h5-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px;">' +
@@ -11766,6 +11851,7 @@
         '</div>';
       }
 
+      // 생략된 항목 안내 (스냅샷에 없어서 표시 못한 것)
       var omitted = [];
       if (l3.per_pm_buy_cap == null) omitted.push('per_pm_buy_cap');
       if (l3.cooldown_minutes == null && sys.cooldown_minutes == null) omitted.push('신규 진입 cooldown');
@@ -11796,7 +11882,9 @@
     setBind('h5-sys-gates', aegEnforced + ' / ' + aegTotal + ' enforce');
     setBind('h5-sys-meta', 'D' + (sys.day_in_phase != null ? sys.day_in_phase : '—'));
 
-    // 개발 로그 미러
+    // 개발 로그 카드 — 기존 dev-log wrapper 는 backend fetch 로 채움.
+    //   여기 h5- 컨테이너에도 같은 데이터 복사 (기존 렌더러가 #d-dev-log 를 채우면
+    //   그 innerHTML 을 미러링). 렌더러가 없으면 empty 상태 유지.
     var srcDev = document.getElementById('d-dev-log');
     var dstDev = document.getElementById('d-dev-log-h5');
     if (srcDev && dstDev && srcDev.innerHTML && srcDev.innerHTML.indexOf('불러오는 중') < 0) {
@@ -11805,17 +11893,20 @@
   }
 
   // -----------------------------------------------------------------
-  // v12.3 — 승인 탭 렌더러 (배지 · 처리 이력 · 카드 클릭)
-  //   nexusApprovalDecide 는 변경 없음.
+  // v12.3 — 승인 탭 렌더러 (배지 · 처리 이력 스타일)
+  //   nexusApprovalDecide 는 변경 없음. 카드 자체 클릭 → 상세 패널만.
   // -----------------------------------------------------------------
   function renderPcApprovalV12(data) {
     var ap = data.approvals || { pending_count: 0, pending: [], history: [] };
     var pendingCnt = (ap.pending && ap.pending.length) || ap.pending_count || 0;
+    // 배지 (승인 대기 섹션 옆)
     var badge = document.querySelector('[data-bind="h4-pending-badge"]');
     if (badge) {
       badge.textContent = pendingCnt > 0 ? '대기 ' + pendingCnt : '대기 0';
       badge.className = 'h4-pending-badge' + (pendingCnt === 0 ? ' zero' : '');
     }
+    // 처리 이력 카드 스타일 (h4-hist-wrap 안에 이미 approval-history 가 렌더됨).
+    //   기존 renderPcApprovalTab 이 nx-journal-row 로 렌더한 뒤 우리가 h4- 스타일로 재구성.
     var histHost = document.querySelector('[data-bind="approval-history"]');
     if (histHost) {
       var history = ap.history || [];
@@ -11837,10 +11928,12 @@
         }).join('');
       }
     }
+    // 대기 카드 자체 클릭 시 상세 패널 오픈 — 승인/거절 버튼은 stopPropagation.
     document.querySelectorAll('section.d-tab[data-tab="approval"] .m-approval-card[data-proposal-id]').forEach(function(card) {
       if (card._h4Bound) return;
       card._h4Bound = true;
       card.addEventListener('click', function(ev) {
+        // 버튼 클릭이면 무시
         if (ev.target.closest('button')) return;
         var id = card.getAttribute('data-proposal-id');
         if (id) window.openDetailPanel('approval', id);
@@ -11848,6 +11941,7 @@
     });
   }
 
+  // 위임 클릭: 처리 이력 행 · 달력 날짜
   document.addEventListener('click', function(ev) {
     var histRow = ev.target.closest('[data-h4-approval-id]');
     if (histRow) {
@@ -11855,9 +11949,12 @@
       if (id) window.openDetailPanel('approval', id);
       return;
     }
+    // 달력 날짜: 기존 handler 가 selDay 를 갱신하고 재렌더 — 우리는 그 후 패널을 오픈만.
+    //   기존 handler 는 별개 IIFE 에 있으므로 이 리스너가 별도로 호출된다.
     var dayCell = ev.target.closest('[data-cal-day]');
     if (dayCell) {
       var d = dayCell.getAttribute('data-cal-day');
+      // 이벤트가 있는 날만 패널 오픈
       var data = _snap();
       var events = ((data.events || {}).events) || [];
       var has = events.some(function(e) { return (e.date || '').slice(0, 10) === d; });
@@ -11873,6 +11970,7 @@
     if (ty) {
       ev.preventDefault();
       _historyFilter.type = ty.getAttribute('data-h3-type');
+      // active 클래스 갱신
       var siblings = ty.parentElement.querySelectorAll('[data-h3-type]');
       siblings.forEach(function(x){ x.classList.remove('active'); });
       ty.classList.add('active');
@@ -11904,6 +12002,10 @@
     }
   });
 
+  // -----------------------------------------------------------------
+  // 초기화 & refresh hook — 기존 30s refresh 가 window.nexusBackendData 을
+  //   갱신할 때마다 사이드바 재렌더. 패널이 열려있으면 유지.
+  // -----------------------------------------------------------------
   function refreshFromSnapshot() {
     var data = window.nexusBackendData || {};
     try { renderPcSidebar(data); } catch (e) { console.warn('[pc-b] sidebar', e); }
@@ -11913,6 +12015,7 @@
     try { renderPcSettingsV12(data); } catch (e) { console.warn('[pc-b] settings', e); }
     try { _autoAttachHelp(); }   catch (e) { console.warn('[pc-b] help', e); }
     try { _autoAttachOpeners(); } catch (e) { console.warn('[pc-b] openers', e); }
+    // 패널이 열려있고 데이터에 의존하는 뷰면 재렌더 — but do not force-close
     if (_panelState.open && _panelState.type && _panelState.type !== 'help') {
       try {
         if (_panelState.type === 'pm')             _renderPmPanel(_panelState.key);
@@ -11929,6 +12032,7 @@
   }
   window.__pcBRefreshFromSnapshot = refreshFromSnapshot;
 
+  // 주기적으로 snapshot 미러 감시 — refresh 완료 순간을 놓치지 않음
   var _lastSyncTs = 0;
   setInterval(function() {
     var b = window.nexusBackend;
@@ -11938,6 +12042,8 @@
       refreshFromSnapshot();
     }
   }, 1500);
+
+  // 최초 즉시 시도
   if (document.readyState !== 'loading') {
     refreshFromSnapshot();
   } else {

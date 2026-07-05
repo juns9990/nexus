@@ -35,48 +35,15 @@
 //         네트워크 실패로 분류하여 캐시 셸 폴백으로 빠지게 수정.
 //         (Tailscale serve 가 PC 백엔드 다운 시 502 반환 → 기존엔 fetch promise 가
 //          resolve 되어 .catch 미실행 → 폰에 502 그대로 노출되던 버그)
-// v11.1 — 설정 탭에 백엔드 URL 입력칸 카드 추가 (모바일/PC 양쪽).
-//          기존 nexus_backend_url localStorage 메커니즘 재사용. 새 빌드 캐시 무효화.
-// v11.0 — Phase A: GitHub Pages 분리 빌드. 셸 자산 경로 /dashboard/ → /nexus/.
-//          PC 백엔드 직결 + Firestore 폴백 로직은 무손 (이미 양쪽 와이어드).
 // v10.3 — Phase 2.13: Firestore mirror 폴백 + 오프라인 배너 (dashboard.html)
-// v11.2 — 설정 탭 "개발 로그" 카드 + /dev-log API (표시 전용, 매매 무관)
-// v11.3 — dev_log entry tokens_detail 구조 + 카드 "추정" 명시 렌더
-// v11.4 — 홈 정리: 카운트다운/Aegis 셀 중복 제거, 방어판→보유, 계층3→이력, 액션→설정
-// v11.5 — Chart.js 도입: NAV 라인 + PM 도넛 + 리스크 게이지 + 색·글씨 통일
-// v11.6 — 캘린더 그리드 + 게이지 SVG 텍스트 정중앙 + 게이지 색 분리 + PM 한국 이름·색 통일
-// v11.7 — PC 도넛 범례 HTML 화 (흰색) + 달력 컴팩트 + 상세 풍부 + D-day 리스트 제거
-// v11.8 — 개발 로그 자동 토큰 집계 (PC 백엔드 /dev-log 에서 enrich)
-// v12.0 — PC 리뉴얼 1차: B안 사이드바 레이아웃(≥1100px) + 공용 상세 패널
-//         + ? 도움말 엔진. 표시 계층만, 매매·Aegis·미러 로직 무변경.
-//         모바일(<1100px) 세로 레이아웃은 무손 — PC 전용 미디어쿼리로 격리.
-// v12.1 — PC 리뉴얼 2차: 보유 탭 B-layout. 3 요약 카드 + PM 필터 칩 + 포지션
-//         테이블(실계좌/sim 구분 배지) + 방어 6선 ? 도움말. openDetailPanel
-//         에 'position' 타입 추가. HELP_TEXTS 확장 (position · pnl · pm_owner
-//         · sim_position · defense_lines). 백엔드 무손.
-// v12.2 — PC 리뉴얼 3차: 이력 탭 B-layout. PM/유형/기간 3필터 · 일별 미니바(14D)
-//         · 날짜 그룹 타임라인 · sim/live 모드 배지. openDetailPanel에 'trade'
-//         타입 추가. HELP_TEXTS 확장 (timeline · daily_bar · trade_detail ·
-//         skip_reason · mode_badge). 계층3 카드 위치 유지 + ? 부착. 백엔드 무손.
-// v12.3 — PC 리뉴얼 4차: 승인 탭 B-layout. 대기 승인 카드 최상단 강조 + 2열
-//         (달력|처리 이력) + 카드 클릭 상세 패널. openDetailPanel에 'approval'·
-//         'event' 타입 추가. nexusApprovalDecide 동작 무손 (버튼 stopPropagation).
-//         HELP_TEXTS 확장 (approval_queue · discovery_score · event_calendar ·
-//         approval_history). 백엔드 무손.
-// v12.4 — 보유 탭 PM 도넛 7 PM 대응: 하드코딩 3 PM 목록 (박세진/한도현/김선우)
-//         제거 → data.team_desk.desks 순회. NexusCharts.COLORS.pm / PM_NAMES /
-//         renderHoldingsSummary 의 PM_KO/PM_EN/PM_COLOR 맵 모두 삭제.
-//         단일 소스로 window.NEXUS_PM_META (v12.0 정의) 재사용. mint·pulse 활성
-//         시 자동 6~7조각. 합 100 검증 → 현금 조각 보정. hold-pm-row 색은
-//         CSS 클래스 대신 inline background (data-driven). 백엔드 무손.
-// v12.5 — PC 리뉴얼 5차 (최종): 설정 탭 B-layout. 4그룹 2컬럼 재편 (연결 · 운용
-//         파라미터 · 개발 · 시스템) + 대시보드 버전 히스토리. "운용 파라미터"
-//         카드 신설 (읽기전용, 스냅샷 실측만 표시 — 없는 필드는 항목 자체 생략,
-//         하드코딩 금지). nexusSaveBackendUrl · nexusOpenBriefingModal ·
-//         nexusOpenMandateModal 동작 무손 (배치만 변경). HELP_TEXTS 확장 8키
-//         (backend_url · op_params · buy_threshold · pm_cap · rebalancer_status
-//         · dev_log · token_usage · sw_version → 39키). 백엔드 무손.
-// v12.6 — 오프라인 배너 오탐 수정. 판정 신호 분리.
+// v10.9 — 설정 탭 "개발 로그" 카드 + /dev-log API (표시 전용, 매매 무관)
+// v10.10 — dev_log entry tokens_detail 구조 + 카드 "추정" 명시 렌더
+// v10.11 — 홈 정리: 카운트다운/Aegis 셀 중복 제거, 방어판→보유, 계층3→이력, 액션→설정
+// v10.12 — Chart.js 도입: NAV 라인 + PM 도넛 + 리스크 게이지 + 색·글씨 통일
+// v10.13 — 캘린더 그리드 + 게이지 SVG 텍스트 정중앙 + 게이지 색 분리 + PM 한국 이름·색 통일
+// v10.14 — PC 도넛 범례 HTML 화 (흰색) + 달력 컴팩트 + 상세 풍부 + D-day 리스트 제거
+// v10.15 — 개발 로그 자동 토큰 집계: Claude Code JSONL → tokens_actual + 추정 비용
+// v10.16 — 오프라인 배너 오탐 수정 (deploy v12.6 대응). 판정 신호 분리.
 //         이전: mirror 폴백(백엔드 정상)에서도 "오프라인 — 마지막 갱신 N분 전
 //         (PC 꺼짐)" 배너가 상시 표시 → 장외·주말엔 스냅숏이 안 변하는 것을
 //         'PC 꺼짐' 으로 오탐. 이후: (1) offline 배너 = 직결+미러 fetch 모두
@@ -86,18 +53,23 @@
 //         주말 = 배너 없음, 상태줄 "장외 · 마지막 평가 hh:mm" 소프트 표기.
 //         HELP_TEXTS 확장 3키 (offline_banner · stale_warn · market_closed).
 //         표시 계층만, 백엔드/매매/미러 fetch 로직 무변경.
-const CACHE_VERSION = 'v12.6';
+// v10.17 — NAV 폴백 오탐 수정 (20260705). broker 미연결 시 dashboard.py 가
+//         가짜 ₩1천만 KRW 를 반환하던 것을 status=awaiting_broker + value_usd
+//         null 로 교체. 프론트 NAV 렌더 두 곳(applyDashboard, _renderHoldings
+//         Empty) 에서 KRW 분기 제거 + "브로커 연결 대기" 안내. 매매·Aegis·
+//         방어 로직 무변경 (표시 계층만). 캐시 무효화 위해 버전 bump.
+const CACHE_VERSION = 'v10.17';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.
-const REQUIRED_SHELL = '/nexus/dashboard.html';
+const REQUIRED_SHELL = '/dashboard/';
 
 // 부속 자산 — best-effort. 셸만 있으면 앱은 떠서 Firestore 폴백 동작.
 const OPTIONAL_ASSETS = [
-  '/nexus/nexus-manifest.json',
-  '/nexus/nexus-icon-192.png',
-  '/nexus/nexus-icon-512.png',
-  '/nexus/nexus-icon-maskable.png',
+  '/dashboard/nexus-manifest.json',
+  '/dashboard/nexus-icon-192.png',
+  '/dashboard/nexus-icon-512.png',
+  '/dashboard/nexus-icon-maskable.png',
 ];
 
 // =========================================================
@@ -128,9 +100,9 @@ function isHtmlRequest(request, url) {
   if (request.mode === 'navigate') return true;
   const accept = request.headers.get('accept') || '';
   if (accept.indexOf('text/html') >= 0) return true;
-  // nexus 진입 경로 (확장자 없음)
+  // dashboard 진입 경로 (확장자 없음)
   const p = url.pathname;
-  if (p === '/nexus' || p === '/nexus/') return true;
+  if (p === '/dashboard' || p === '/dashboard/') return true;
   if (p.endsWith('.html')) return true;
   return false;
 }
@@ -138,7 +110,7 @@ function isHtmlRequest(request, url) {
 // 정적 자산: PNG·SVG·manifest·sw.js·아이콘 등 (확장자 기반)
 function isStaticAsset(url) {
   const p = url.pathname;
-  if (p.indexOf('/nexus/nexus-') === 0) return true;
+  if (p.indexOf('/dashboard/nexus-') === 0) return true;
   return /\.(png|svg|jpg|jpeg|gif|webp|ico|css|js|woff2?|ttf|otf|json)$/i.test(p);
 }
 
@@ -302,16 +274,18 @@ function networkFirstHtml(request, url) {
     // 네트워크 실패 — 캐시 셸로 폴백 (오프라인 진입 시 최소 화면)
     return caches.match(request).then(function(cached) {
       if (cached) return cached;
-      if (url.pathname.indexOf('/nexus') === 0) {
-        return caches.match(REQUIRED_SHELL).then(function(shell) {
+      if (url.pathname.indexOf('/dashboard') === 0) {
+        return caches.match('/dashboard/').then(function(shell) {
           if (shell) return shell;
           // 안전망(v10.6 패치 B): 캐시에 셸이 없으면 지금 한 번 더 받아 채운다.
-          // GitHub Pages 단순 정적 호스팅이라 백엔드와 무관하게 셸은 거의 항상 응답.
-          return fetch(REQUIRED_SHELL, { cache: 'reload' }).then(function(rescue) {
+          // 실패한 deep path 와 별개로 '/dashboard/' 는 응답할 수도 있음
+          // (PC 가 막 살아났거나 다른 라우트만 끊긴 경우). 받아지면 캐시 채워두고
+          // 같이 반환 → 다음 진입은 즉시 떨어짐. 그래도 실패면 offline 503.
+          return fetch('/dashboard/', { cache: 'reload' }).then(function(rescue) {
             if (rescue && rescue.ok) {
               const copy = rescue.clone();
               caches.open(CACHE_NAME).then(function(cache) {
-                cache.put(REQUIRED_SHELL, copy).catch(function() {});
+                cache.put('/dashboard/', copy).catch(function() {});
               });
               return rescue;
             }

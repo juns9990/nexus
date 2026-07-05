@@ -4184,6 +4184,166 @@
     font-family: var(--mono); font-size: 11px; color: var(--fg-dim);
   }
 
+  /* ================================================================ */
+  /*  v12.5 — 설정 탭 B-layout (≥1100px). <1100px 기본 unchanged.        */
+  /*  4그룹 2컬럼 (연결 · 운용 파라미터 · 개발 · 시스템).                 */
+  /* ================================================================ */
+  .h5-settings-block { display: none; }
+  @media (min-width: 1100px) {
+    .h5-settings-block { display: block; margin-bottom: 14px; }
+    /* 기존 d-settings-grid 는 4그룹 재편 시 숨김 (v12.5 블록으로 대체) */
+    section.d-tab[data-tab="settings"] > .d-tab-pad > .d-settings-grid { display: none; }
+    .h5-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .h5-grid > .h5-card.full { grid-column: 1 / -1; }
+  }
+  @media (max-width: 1099px) {
+    .h5-grid { display: block; }
+  }
+
+  .h5-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .h5-card-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .h5-card-title {
+    font-size: 12px; font-weight: 700;
+    color: var(--fg); letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: flex; align-items: center;
+  }
+  .h5-card-meta {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-muted);
+  }
+  .h5-row {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    align-items: baseline;
+  }
+  .h5-row:first-of-type { border-top: none; padding-top: 0; }
+  .h5-row .k {
+    color: var(--fg-muted);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .h5-row .desc {
+    color: var(--fg-dim); font-size: 11px;
+    grid-column: 2 / 3;
+  }
+  .h5-row .v {
+    font-family: var(--mono); font-weight: 600; color: var(--fg-strong);
+    text-align: right;
+  }
+  .h5-row .v.muted { color: var(--fg-muted); font-weight: 500; }
+  .h5-row .v.ok    { color: var(--positive); }
+  .h5-row .v.warn  { color: var(--warn); }
+  .h5-row .v.off   { color: var(--fg-dim); font-weight: 500; }
+
+  /* 백엔드 URL 입력 (기존 저장 함수 재사용) */
+  .h5-url-wrap {
+    display: flex; gap: 8px;
+    margin-top: 10px;
+  }
+  .h5-url-wrap input {
+    flex: 1; padding: 8px 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--fg); font-family: var(--mono); font-size: 12px;
+    outline: none;
+  }
+  .h5-url-wrap input:focus { border-color: var(--accent); }
+  .h5-url-wrap button {
+    padding: 8px 14px;
+    background: var(--accent); color: #000;
+    font-family: var(--sans); font-weight: 700; font-size: 12px;
+    border: none; border-radius: 4px; cursor: pointer;
+  }
+  .h5-url-wrap button:hover { background: #4dd0b9; }
+  .h5-url-hint {
+    margin-top: 6px;
+    font-size: 11px; color: var(--fg-muted);
+  }
+  .h5-url-hint code {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--fg); background: var(--bg-card);
+    padding: 1px 5px; border-radius: 3px;
+  }
+
+  /* 시스템 그룹 액션 버튼 (리포트 · 헌법) */
+  .h5-actions {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-top: 6px;
+  }
+  .h5-actions button {
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    color: var(--fg); font-family: var(--sans);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .h5-actions button:hover {
+    background: var(--bg-card);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* PM 자본 배분 리스트 (op_params 내부) */
+  .h5-pm-list {
+    display: flex; flex-direction: column; gap: 4px;
+    margin-top: 4px;
+  }
+  .h5-pm-item {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 12px;
+    align-items: center;
+  }
+  .h5-pm-item .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--fg-dim);
+  }
+  .h5-pm-item .name {
+    color: var(--fg);
+  }
+  .h5-pm-item .name .en {
+    color: var(--fg-muted); font-size: 11px; margin-left: 4px;
+  }
+  .h5-pm-item .pct {
+    font-family: var(--mono); font-weight: 600; color: var(--fg-strong);
+  }
+
+  /* 생략된 항목 안내 (op_params 하단) */
+  .h5-omitted {
+    margin-top: 12px; padding: 8px 10px;
+    background: var(--bg-deep);
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    font-size: 11px; color: var(--fg-muted);
+    line-height: 1.55;
+  }
+  .h5-omitted b { color: var(--fg); font-weight: 600; }
+
 </style>
 </head>
 <body>
@@ -5594,6 +5754,131 @@
   <!-- ===== SETTINGS TAB ===== -->
   <section class="d-tab" data-tab="settings">
     <div class="d-tab-pad">
+
+      <!-- v12.5 — 설정 탭 4그룹 2컬럼 (≥1100px). 좁은 화면은 기존 d-settings-grid 유지. -->
+      <div class="h5-settings-block" data-bind="h5-settings-block">
+        <div class="h5-grid">
+
+          <!-- 그룹 1 — 연결 -->
+          <div class="h5-card">
+            <div class="h5-card-head">
+              <div class="h5-card-title">연결
+                <button type="button" class="nx-help-btn" data-help="backend_url" aria-label="백엔드 URL 도움말">?</button>
+              </div>
+              <div class="h5-card-meta" data-bind="h5-conn-meta">—</div>
+            </div>
+            <div class="h5-row">
+              <span class="k">현재 저장 URL</span>
+              <span class="v muted" id="cfg-backend-url-h5" style="font-family:var(--mono);font-size:11px;word-break:break-all;">설정 필요</span>
+            </div>
+            <div class="h5-row">
+              <span class="k">연결 상태</span>
+              <span class="v muted" id="cfg-backend-state-h5">mock 모드</span>
+            </div>
+            <div class="h5-row">
+              <span class="k">마지막 갱신</span>
+              <span class="v" data-bind="h5-last-sync">—</span>
+            </div>
+            <div class="h5-row">
+              <span class="k">환율 캐시</span>
+              <span class="v" data-bind="h5-fx-cache">—</span>
+            </div>
+            <div class="h5-url-wrap">
+              <input id="cfg-backend-input-h5" type="url" autocapitalize="off" autocomplete="off" spellcheck="false"
+                     placeholder="https://msdn.tail63441d.ts.net"
+                     oninput="(function(v){var d=document.getElementById('cfg-backend-input-d');if(d)d.value=v;})(this.value)">
+              <button type="button" onclick="var d=document.getElementById('cfg-backend-input-d');var h=document.getElementById('cfg-backend-input-h5');if(d&&h)d.value=h.value;window.nexusSaveBackendUrl && window.nexusSaveBackendUrl()">저장</button>
+            </div>
+            <div class="h5-url-hint">
+              예) <code>http://100.x.y.z:8443</code> · 저장 후 자동 새로고침
+            </div>
+          </div>
+
+          <!-- 그룹 2 — 운용 파라미터 (읽기전용) -->
+          <div class="h5-card">
+            <div class="h5-card-head">
+              <div class="h5-card-title">운용 파라미터 · 읽기전용
+                <button type="button" class="nx-help-btn" data-help="op_params" aria-label="파라미터 도움말">?</button>
+              </div>
+              <div class="h5-card-meta">스냅샷 실측</div>
+            </div>
+            <div data-bind="h5-op-params-list">
+              <div class="h5-row">
+                <span class="k">데이터 수집 중…</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 그룹 3 — 개발 (개발로그 · 토큰) -->
+          <div class="h5-card full">
+            <div class="h5-card-head">
+              <div class="h5-card-title">개발
+                <button type="button" class="nx-help-btn" data-help="dev_log" aria-label="개발 로그 도움말">?</button>
+              </div>
+              <div class="h5-card-meta">Claude Code · JSONL 읽기 전용</div>
+            </div>
+            <div class="dev-log-wrap" id="d-dev-log-h5" style="background:transparent;border:none;padding:0;margin:0;">
+              <div class="dev-log-empty">불러오는 중...</div>
+            </div>
+          </div>
+
+          <!-- 그룹 4 — 시스템 -->
+          <div class="h5-card">
+            <div class="h5-card-head">
+              <div class="h5-card-title">시스템
+                <button type="button" class="nx-help-btn" data-help="sw_version" aria-label="시스템 도움말">?</button>
+              </div>
+              <div class="h5-card-meta" data-bind="h5-sys-meta">—</div>
+            </div>
+            <div class="h5-row">
+              <span class="k">대시보드 버전</span>
+              <span class="v" data-bind="h5-sys-version">—</span>
+            </div>
+            <div class="h5-row">
+              <span class="k">Phase</span>
+              <span class="v" data-bind="h5-sys-phase">—</span>
+            </div>
+            <div class="h5-row">
+              <span class="k">브로커</span>
+              <span class="v" data-bind="h5-sys-broker">—</span>
+            </div>
+            <div class="h5-row">
+              <span class="k">SW 캐시 버전</span>
+              <span class="v muted" data-bind="h5-sw-version">—</span>
+            </div>
+            <div class="h5-row">
+              <span class="k">Aegis 게이트</span>
+              <span class="v" data-bind="h5-sys-gates">—</span>
+            </div>
+            <div class="h5-actions">
+              <button type="button" onclick="window.nexusOpenBriefingModal && window.nexusOpenBriefingModal()">
+                <span>📨</span> 일일 리포트
+              </button>
+              <button type="button" onclick="window.nexusOpenMandateModal && window.nexusOpenMandateModal()">
+                <span>📜</span> 운영 헌법
+              </button>
+            </div>
+          </div>
+
+          <!-- 대시보드 버전 히스토리 (참고용, full width) -->
+          <div class="h5-card full">
+            <div class="h5-card-head">
+              <div class="h5-card-title">대시보드 버전 히스토리
+                <button type="button" class="nx-help-btn" data-help="sw_version" aria-label="버전 도움말">?</button>
+              </div>
+              <div class="h5-card-meta">최근 5차 리뉴얼</div>
+            </div>
+            <div class="h5-row"><span class="k">v12.0</span><span class="desc">홈 탭 — B안 사이드바 · 상세 패널 · ? 도움말</span><span class="v muted">2026-07-05</span></div>
+            <div class="h5-row"><span class="k">v12.1</span><span class="desc">보유 탭 — 3 요약 카드 · PM 필터 · 실계좌/sim 배지</span><span class="v muted">2026-07-05</span></div>
+            <div class="h5-row"><span class="k">v12.2</span><span class="desc">이력 탭 — 필터 · 14일 미니바 · 타임라인 · sim/live 모드</span><span class="v muted">2026-07-05</span></div>
+            <div class="h5-row"><span class="k">v12.3</span><span class="desc">승인 탭 — 대기 카드 강조 · 2열 (달력 | 처리 이력)</span><span class="v muted">2026-07-05</span></div>
+            <div class="h5-row"><span class="k">v12.4</span><span class="desc">PM 도넛 7 PM 대응 — 하드코딩 3 PM 제거 · NEXUS_PM_META 단일 소스</span><span class="v muted">2026-07-05</span></div>
+            <div class="h5-row"><span class="k">v12.5</span><span class="desc">설정 탭 — 4그룹 재편 + 운용 파라미터 (신설, 읽기전용)</span><span class="v ok">현재</span></div>
+          </div>
+
+        </div>
+      </div>
+
       <div class="d-settings-grid">
 
         <!-- 시스템 -->
@@ -10660,6 +10945,15 @@
     discovery_score:   '발굴 점수. 언급 수·뉴스 밀도·모멘텀·희소성 등 가중치 합산 (0~1). 높을수록 우선.',
     event_calendar:    'FOMC·경제지표·실적 발표 일정. 붉은 점=중요, 노란=보통, 파란=참고. F 배지는 FOMC.',
     approval_history:  '결재 완료 이력. 승인/반려/만료(24h). 항목 터치 시 당시 근거·라우팅 PM 확인.',
+    // v12.5 — 설정 탭
+    backend_url:       'PC 백엔드(FastAPI) 접속 URL. Tailscale HTTPS 또는 사설 IP:8443. 저장 시 자동 새로고침.',
+    op_params:         '운용 파라미터 (읽기 전용). 스냅샷/설정에서 실측된 값만 표시. 수정은 백엔드 config에서.',
+    buy_threshold:     '매수 신호 임계값. 신호 강도가 이 값 이상이면 계층3 후보. 낮을수록 진입 완화.',
+    pm_cap:            'PM별 자본 배분 비율. 합계는 100%에서 현금 하한을 뺀 만큼.',
+    rebalancer_status: '리밸런서 상태. 켜져 있으면 tolerance 이탈 시 자동 복귀 매매. 스냅샷에 없으면 확인 불가.',
+    dev_log:           '개발 로그. Claude Code JSONL 세션 요약. 읽기 전용 · 토큰 사용량 자동 집계.',
+    token_usage:       '토큰 사용량. 입력·캐시·출력 별 집계. 추정치 (JSONL rollup).',
+    sw_version:        'Service Worker 캐시 버전. 셸 정적 자산 캐시 관리. 새 SW 로드 시 자동 reload.',
   };
   window.HELP_TEXTS = HELP_TEXTS;
 
@@ -10695,6 +10989,14 @@
     discovery_score: '발굴 점수',
     event_calendar: '이벤트 달력',
     approval_history: '처리 이력',
+    backend_url: '백엔드 연결',
+    op_params: '운용 파라미터',
+    buy_threshold: '매수 임계값',
+    pm_cap: 'PM 자본 배분',
+    rebalancer_status: '리밸런서 상태',
+    dev_log: '개발 로그',
+    token_usage: '토큰 사용량',
+    sw_version: 'SW 버전',
   };
 
   function openHelpSheet(k) {
@@ -11272,6 +11574,206 @@
 
   // 필터 · 행 · 초기화 클릭 위임
   // -----------------------------------------------------------------
+  // v12.5 — 설정 탭 렌더러 (4그룹 · 운용 파라미터 읽기전용)
+  //   기존 nexusSaveBackendUrl · nexusOpenBriefingModal · nexusOpenMandateModal
+  //   호출 함수는 무변경. 여기서는 표시만.
+  //   운용 파라미터: 스냅샷에 없는 필드는 항목 자체 생략 (하드코딩 금지).
+  // -----------------------------------------------------------------
+  function _fmtSyncAge(lastSync) {
+    if (!lastSync) return '—';
+    var d = (lastSync instanceof Date) ? lastSync : new Date(lastSync);
+    var t = d.getTime();
+    if (!t) return '—';
+    var age = Math.round((Date.now() - t) / 1000);
+    if (age < 60) return age + '초 전';
+    if (age < 3600) return Math.round(age / 60) + '분 전';
+    return Math.round(age / 3600) + '시간 전';
+  }
+
+  function renderPcSettingsV12(data) {
+    var block = document.querySelector('[data-bind="h5-settings-block"]');
+    if (!block) return;
+
+    var sys = data.system || {};
+    var l3  = data.layer3 || {};
+    var ssBlock = data.system_status || {};
+    var teamDesk = data.team_desk || {};
+    var aegisLine = teamDesk.aegis_line || {};
+    var desks = Array.isArray(teamDesk.desks) ? teamDesk.desks : [];
+    var aeg = data.aegis || {};
+    var aegD = data.aegis_detail || {};
+
+    // 그룹 1 — 연결
+    var backend = window.nexusBackend || {};
+    var urlEl = document.getElementById('cfg-backend-url-h5');
+    var stateEl = document.getElementById('cfg-backend-state-h5');
+    if (urlEl) {
+      urlEl.textContent = backend.url || '설정 필요';
+      urlEl.className = 'v ' + (backend.url ? '' : 'muted');
+    }
+    if (stateEl) {
+      if (backend.connected) {
+        stateEl.textContent = '연결됨';
+        stateEl.className = 'v ok';
+      } else if (backend.url) {
+        stateEl.textContent = '재시도 중';
+        stateEl.className = 'v warn';
+      } else {
+        stateEl.textContent = 'mock 모드';
+        stateEl.className = 'v muted';
+      }
+    }
+    var setBind = function(name, txt, cls) {
+      var el = document.querySelector('[data-bind="' + name + '"]');
+      if (!el) return;
+      el.textContent = txt;
+      if (cls != null) el.className = 'v ' + cls;
+    };
+    setBind('h5-last-sync', _fmtSyncAge(backend.lastSync), backend.lastSync ? 'ok' : 'muted');
+    setBind('h5-conn-meta', backend.mode || (backend.url ? 'direct' : '—'));
+
+    // FX 캐시
+    var fxAge = (data.nav && data.nav.fx_age_sec);
+    if (fxAge != null) {
+      var mins = Math.round(Number(fxAge) / 60);
+      setBind('h5-fx-cache', mins < 1 ? Number(fxAge).toFixed(0) + '초' : mins + '분', 'ok');
+    } else {
+      setBind('h5-fx-cache', '—', 'muted');
+    }
+
+    // 그룹 2 — 운용 파라미터 (읽기전용, 스냅샷 실측만)
+    var host = document.querySelector('[data-bind="h5-op-params-list"]');
+    if (host) {
+      var rows = [];
+      // 트레이딩 모드 (system.mode) — 항상 있음
+      if (sys.mode) {
+        rows.push({ k: '트레이딩 모드', help: null,
+          v: sys.mode, cls: (sys.mode === 'simulate' ? 'warn' : 'ok') });
+      }
+      // 계층3 모드 · 루프
+      if (l3.mode || l3.loop_running != null) {
+        var l3mode = l3.mode || '—';
+        var loopTxt = l3.loop_running ? 'loop 실행' : (l3.loop_running === false ? 'loop 정지' : '');
+        rows.push({ k: '계층3 모드', v: l3mode + (loopTxt ? ' · ' + loopTxt : ''),
+          cls: l3.loop_running ? 'ok' : 'muted' });
+      }
+      // 매수 · 매도 신호 임계값
+      if (l3.buy_signal_threshold != null) {
+        rows.push({ k: '매수 임계값', help: 'buy_threshold',
+          v: Number(l3.buy_signal_threshold).toFixed(2), cls: '' });
+      }
+      if (l3.sell_signal_threshold != null) {
+        rows.push({ k: '매도 임계값', help: 'buy_threshold',
+          v: Number(l3.sell_signal_threshold).toFixed(2), cls: '' });
+      }
+      if (l3.safety_multiplier != null) {
+        rows.push({ k: '안전배수', v: '×' + Number(l3.safety_multiplier).toFixed(1), cls: '' });
+      }
+      if (l3.notify_daily_cap != null) {
+        rows.push({ k: '알림 일일 한도',
+          v: (l3.notify_sent_today || 0) + ' / ' + l3.notify_daily_cap, cls: 'muted' });
+      }
+      // 현금 하한
+      if (aegisLine.cash_floor_pct != null) {
+        rows.push({ k: '현금 하한',
+          v: Number(aegisLine.cash_floor_pct).toFixed(0) + '%', cls: '' });
+      }
+      // Aegis MDD / VIX 임계
+      if (aegisLine.soft_mdd_pct != null) {
+        rows.push({ k: 'Soft MDD',
+          v: Number(aegisLine.soft_mdd_pct).toFixed(0) + '%', cls: 'muted' });
+      }
+      if (aegisLine.hard_mdd_pct != null) {
+        rows.push({ k: 'Hard MDD',
+          v: Number(aegisLine.hard_mdd_pct).toFixed(0) + '%', cls: 'warn' });
+      }
+      if (aegisLine.vix_threshold != null) {
+        rows.push({ k: 'VIX 한도',
+          v: Number(aegisLine.vix_threshold).toFixed(0), cls: 'muted' });
+      }
+
+      var rowsHtml = rows.map(function(r) {
+        var helpBtn = r.help
+          ? ' <button type="button" class="nx-help-btn" data-help="' + r.help + '" aria-label="' + r.k + ' 도움말">?</button>'
+          : '';
+        return '<div class="h5-row">' +
+          '<span class="k">' + _esc(r.k) + helpBtn + '</span>' +
+          '<span></span>' +
+          '<span class="v ' + (r.cls || '') + '">' + _esc(r.v) + '</span>' +
+        '</div>';
+      }).join('');
+
+      // PM 자본 배분 (data.team_desk.desks)
+      var pmHtml = '';
+      if (desks.length > 0) {
+        pmHtml = '<div class="h5-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px;">' +
+          '<span class="k">PM 자본 배분' +
+            ' <button type="button" class="nx-help-btn" data-help="pm_cap" aria-label="PM 자본 도움말">?</button>' +
+          '</span>' +
+          '<span></span>' +
+          '<span class="v muted">' + desks.length + ' PM</span>' +
+        '</div>' +
+        '<div class="h5-pm-list">' +
+          desks.map(function(d) {
+            var key = d.persona_key || '';
+            var meta = (window.NEXUS_PM_META && window.NEXUS_PM_META[key]) || null;
+            var color = meta ? meta.color : 'var(--fg-dim)';
+            var ko = meta ? meta.ko : (d.persona_label || key);
+            var en = meta ? meta.en : '';
+            var pct = (d.capital_weight_pct != null) ? Number(d.capital_weight_pct).toFixed(0) + '%' : '—';
+            return '<div class="h5-pm-item">' +
+              '<span class="dot" style="background:' + color + ';"></span>' +
+              '<span class="name">' + _esc(ko) +
+                (en ? '<span class="en">(' + _esc(en) + ')</span>' : '') +
+              '</span>' +
+              '<span class="pct">' + pct + '</span>' +
+            '</div>';
+          }).join('') +
+        '</div>';
+      }
+
+      // 생략된 항목 안내 (스냅샷에 없어서 표시 못한 것)
+      var omitted = [];
+      if (l3.per_pm_buy_cap == null) omitted.push('per_pm_buy_cap');
+      if (l3.cooldown_minutes == null && sys.cooldown_minutes == null) omitted.push('신규 진입 cooldown');
+      if (l3.tolerance_pct == null && data.rebalancer == null) omitted.push('밴드 tolerance');
+      if (data.rebalancer == null) omitted.push('rebalancer.enabled');
+
+      var omittedHtml = '';
+      if (omitted.length > 0) {
+        omittedHtml =
+          '<div class="h5-omitted"><b>스냅샷 미노출 · 생략:</b> ' +
+          _esc(omitted.join(' · ')) +
+          '<br><span style="color:var(--fg-dim);">백엔드가 이 필드를 스냅샷에 노출하면 여기에 자동 표시.</span></div>';
+      }
+
+      host.innerHTML = (rowsHtml || '<div class="h5-row"><span class="k">데이터 수집 중…</span></div>') +
+        pmHtml + omittedHtml;
+    }
+
+    // 그룹 4 — 시스템
+    setBind('h5-sys-version', sys.version || '—');
+    setBind('h5-sys-phase', sys.phase ? ('Phase ' + sys.phase) : '—');
+    setBind('h5-sys-broker',
+      (ssBlock.ibkr ? (ssBlock.ibkr.mode + (ssBlock.ibkr.connected ? ' · 연결' : ' · 단절')) : '—'),
+      (ssBlock.ibkr && ssBlock.ibkr.connected) ? 'ok' : 'muted');
+    setBind('h5-sw-version', window.__nexusSwVersion || '—');
+    var aegEnforced = aeg.gate_count_enforced || aegD.gate_count_enforced || 12;
+    var aegTotal = aeg.gate_count || aegD.gate_count_total || 15;
+    setBind('h5-sys-gates', aegEnforced + ' / ' + aegTotal + ' enforce');
+    setBind('h5-sys-meta', 'D' + (sys.day_in_phase != null ? sys.day_in_phase : '—'));
+
+    // 개발 로그 카드 — 기존 dev-log wrapper 는 backend fetch 로 채움.
+    //   여기 h5- 컨테이너에도 같은 데이터 복사 (기존 렌더러가 #d-dev-log 를 채우면
+    //   그 innerHTML 을 미러링). 렌더러가 없으면 empty 상태 유지.
+    var srcDev = document.getElementById('d-dev-log');
+    var dstDev = document.getElementById('d-dev-log-h5');
+    if (srcDev && dstDev && srcDev.innerHTML && srcDev.innerHTML.indexOf('불러오는 중') < 0) {
+      dstDev.innerHTML = srcDev.innerHTML;
+    }
+  }
+
+  // -----------------------------------------------------------------
   // v12.3 — 승인 탭 렌더러 (배지 · 처리 이력 스타일)
   //   nexusApprovalDecide 는 변경 없음. 카드 자체 클릭 → 상세 패널만.
   // -----------------------------------------------------------------
@@ -11391,6 +11893,7 @@
     try { renderPcHoldingsV12(data); } catch (e) { console.warn('[pc-b] holdings', e); }
     try { renderPcHistoryV12(data); } catch (e) { console.warn('[pc-b] history', e); }
     try { renderPcApprovalV12(data); } catch (e) { console.warn('[pc-b] approval', e); }
+    try { renderPcSettingsV12(data); } catch (e) { console.warn('[pc-b] settings', e); }
     try { _autoAttachHelp(); }   catch (e) { console.warn('[pc-b] help', e); }
     try { _autoAttachOpeners(); } catch (e) { console.warn('[pc-b] openers', e); }
     // 패널이 열려있고 데이터에 의존하는 뷰면 재렌더 — but do not force-close

@@ -69,7 +69,14 @@
 //         단일 소스로 window.NEXUS_PM_META (v12.0 정의) 재사용. mint·pulse 활성
 //         시 자동 6~7조각. 합 100 검증 → 현금 조각 보정. hold-pm-row 색은
 //         CSS 클래스 대신 inline background (data-driven). 백엔드 무손.
-const CACHE_VERSION = 'v12.4';
+// v12.5 — PC 리뉴얼 5차 (최종): 설정 탭 B-layout. 4그룹 2컬럼 재편 (연결 · 운용
+//         파라미터 · 개발 · 시스템) + 대시보드 버전 히스토리. "운용 파라미터"
+//         카드 신설 (읽기전용, 스냅샷 실측만 표시 — 없는 필드는 항목 자체 생략,
+//         하드코딩 금지). nexusSaveBackendUrl · nexusOpenBriefingModal ·
+//         nexusOpenMandateModal 동작 무손 (배치만 변경). HELP_TEXTS 확장 8키
+//         (backend_url · op_params · buy_threshold · pm_cap · rebalancer_status
+//         · dev_log · token_usage · sw_version → 39키). 백엔드 무손.
+const CACHE_VERSION = 'v12.5';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

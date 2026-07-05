@@ -5873,7 +5873,8 @@
             <div class="h5-row"><span class="k">v12.2</span><span class="desc">이력 탭 — 필터 · 14일 미니바 · 타임라인 · sim/live 모드</span><span class="v muted">2026-07-05</span></div>
             <div class="h5-row"><span class="k">v12.3</span><span class="desc">승인 탭 — 대기 카드 강조 · 2열 (달력 | 처리 이력)</span><span class="v muted">2026-07-05</span></div>
             <div class="h5-row"><span class="k">v12.4</span><span class="desc">PM 도넛 7 PM 대응 — 하드코딩 3 PM 제거 · NEXUS_PM_META 단일 소스</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.5</span><span class="desc">설정 탭 — 4그룹 재편 + 운용 파라미터 (신설, 읽기전용)</span><span class="v ok">현재</span></div>
+            <div class="h5-row"><span class="k">v12.5</span><span class="desc">설정 탭 — 4그룹 재편 + 운용 파라미터 (신설, 읽기전용)</span><span class="v muted">2026-07-05</span></div>
+            <div class="h5-row"><span class="k">v12.6</span><span class="desc">오프라인 배너 오탐 수정 — 판정 신호 분리 (offline / stale / market_closed)</span><span class="v ok">현재</span></div>
           </div>
 
         </div>
@@ -6054,7 +6055,13 @@
       // mode: 'direct'(Tailscale ok) | 'mirror'(Firestore 폴백) | 'offline'(둘 다 실패) | null(초기)
       mode: null,
       mirrorAt: null,           // mirror 문서 mirror_pushed_at_utc (Date)
-      mirrorBannerTimer: null,  // "N분 전" 카운터 갱신용
+      mirrorBannerTimer: null,  // (v12.5 이하 잔여) — v12.6 이후 미사용
+      // v12.6 — 오프라인/신선도 판정 분리
+      fetchFailCount: 0,        // 직결+미러 모두 실패 연속 횟수 (히스테리시스: >=2 발동)
+      lastSuccessAt: null,      // 마지막 fetch 성공 시각 (direct 또는 mirror)
+      snapshotAt: null,         // 스냅숏 자체 시각 (system.timestamp/mirror_pushed_at_utc)
+      offlineBannerTimer: null,
+      staleBannerTimer: null,
     };
 
     // 같은 origin에서 서빙되면 자동 감지 (FastAPI /dashboard/)
@@ -6635,6 +6642,7 @@
         document.querySelectorAll('[data-bind-class="nx-status-dot"]').forEach(function(el){
           el.className = dotCls;
         });
+        _syncMarketClosedHelp(false);
         return;
       }
       if (_nxState.reconnecting) {
@@ -6646,6 +6654,7 @@
         document.querySelectorAll('[data-bind-class="nx-status-dot"]').forEach(function(el){
           el.className = dotCls;
         });
+        _syncMarketClosedHelp(false);
         return;
       }
       if (!_nxState.brokerOk) {
@@ -6656,13 +6665,22 @@
         since = min > 0 ? ('재연결 시도 ' + min + '분째') : ('재연결 시도 ' + sec + '초째');
         dotCls = 'nx-dot alert';
       } else if (_nxState.lastEvalAt) {
-        var elapsed = Math.max(0, Math.floor((now - _nxState.lastEvalAt) / 1000));
-        var minE = Math.floor(elapsed / 60);
-        var secE = elapsed % 60;
-        label = '가동 중';
-        if (minE > 0) since = '마지막 평가 ' + minE + '분 ' + secE + '초 전';
-        else since = '마지막 평가 ' + secE + '초 전';
-        dotCls = 'nx-dot ok';
+        // v12.6 — 장외/주말은 스냅숏 age 로 판단하지 않고 '장외 · hh:mm' 소프트 표기
+        var offSession = !_isUsRegularSession(new Date(now));
+        if (offSession) {
+          var hh = _kstTimeShort(new Date(_nxState.lastEvalAt).toISOString());
+          label = '장외';
+          since = '마지막 평가 ' + hh;
+          dotCls = 'nx-dot dim';
+        } else {
+          var elapsed = Math.max(0, Math.floor((now - _nxState.lastEvalAt) / 1000));
+          var minE = Math.floor(elapsed / 60);
+          var secE = elapsed % 60;
+          label = '가동 중';
+          if (minE > 0) since = '마지막 평가 ' + minE + '분 ' + secE + '초 전';
+          else since = '마지막 평가 ' + secE + '초 전';
+          dotCls = 'nx-dot ok';
+        }
       } else {
         label = '대기 중';
         since = '평가 기록 없음';
@@ -6672,6 +6690,21 @@
       _setBinds('nx-status-since', since);
       document.querySelectorAll('[data-bind-class="nx-status-dot"]').forEach(function(el){
         el.className = dotCls;
+      });
+      _syncMarketClosedHelp(label === '장외');
+    }
+
+    // v12.6 — 장외일 때만 상태줄에 market_closed ? 부착. 아니면 제거.
+    function _syncMarketClosedHelp(showIt) {
+      document.querySelectorAll('.nx-status-bar').forEach(function(bar){
+        var help = bar.querySelector('.nx-help-btn[data-help="market_closed"]');
+        if (showIt && !help) {
+          bar.insertAdjacentHTML('beforeend',
+            ' <button type="button" class="nx-help-btn" data-help="market_closed" ' +
+            'aria-label="장외 도움말" style="margin-left:6px;">?</button>');
+        } else if (!showIt && help) {
+          help.remove();
+        }
       });
     }
 
@@ -8496,45 +8529,108 @@
       }
     }
 
-    // ---------------- Phase 2.13: Firestore mirror 폴백 ----------------
-    // 직결(Tailscale)을 우선. 직결 실패 시 nexus_mirror/latest 읽어 마지막 스냅샷 표시.
-    // window.__nexusFirestore 는 페이지 끝의 <script type="module"> 에서 노출.
-    function _clearMirrorBanner() {
-      if (backend.mirrorBannerTimer) {
-        clearInterval(backend.mirrorBannerTimer);
-        backend.mirrorBannerTimer = null;
-      }
-      var b = document.getElementById('nexus-banner');
-      if (b && b.dataset.kind === 'offline') b.remove();
-    }
-    function _renderMirrorBanner() {
-      var at = backend.mirrorAt;
-      var mins = at ? Math.max(0, Math.round((Date.now() - at.getTime()) / 60000)) : null;
-      var ago = (mins === null) ? '?' : (mins < 1 ? '방금' : (mins + '분 전'));
-      var msg = '⚠ 오프라인 — 마지막 갱신 ' + ago + ' (PC 꺼짐)';
-      var b = document.getElementById('nexus-banner');
-      if (b && b.dataset.kind === 'offline') {
-        b.textContent = msg;
+    // ---------------- v12.6: 오프라인/신선도 배너 분리 ----------------
+    // 판정 신호 분리:
+    //   • offline 배너 = fetchFailCount >= 2 (연속 fetch 실패)
+    //     ─ fetch 성공(direct 또는 mirror) 1회면 즉시 해제 (히스테리시스)
+    //   • stale  배너 = 장중(미국 정규 세션) + 스냅숏 age > 5분
+    //     ─ 장외/주말은 스냅숏이 안 변하는 정상 상태 → 배너 없음
+    //   • mock/mirror 표시는 오프라인 판정의 근거 아님
+    function _renderPersistBanner(kind, msg, bg) {
+      var existing = document.getElementById('nexus-banner');
+      if (existing && existing.dataset.kind !== kind) existing.remove();
+      existing = document.getElementById('nexus-banner');
+      if (existing && existing.dataset.kind === kind) {
+        var span = existing.querySelector('[data-role="msg"]');
+        if (span) span.textContent = msg;
+        else existing.textContent = msg;
         return;
       }
-      if (b) b.remove();
-      b = document.createElement('div');
+      var b = document.createElement('div');
       b.id = 'nexus-banner';
-      b.dataset.kind = 'offline';
+      b.dataset.kind = kind;
       b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:200;' +
-        'background:rgba(217,119,6,0.95);color:#fff;font-family:var(--sans);' +
+        'background:' + bg + ';color:#fff;font-family:var(--sans);' +
         'font-size:12px;font-weight:600;padding:8px 16px;text-align:center;' +
         'backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,0.2);';
-      b.textContent = msg;
+      var helpKey = (kind === 'offline') ? 'offline_banner' :
+                    (kind === 'stale')   ? 'stale_warn' : null;
+      var help = helpKey
+        ? ' <button type="button" class="nx-help-btn" data-help="' + helpKey +
+          '" aria-label="배너 도움말" ' +
+          'style="border-color:rgba(255,255,255,0.7);color:#fff;margin-left:8px;">?</button>'
+        : '';
+      b.innerHTML = '<span data-role="msg"></span>' + help;
+      b.querySelector('[data-role="msg"]').textContent = msg;
       document.body.appendChild(b);
     }
+    function _clearBannerKind(kind) {
+      var b = document.getElementById('nexus-banner');
+      if (b && b.dataset.kind === kind) b.remove();
+    }
     function _showOfflineBanner() {
-      _renderMirrorBanner();
-      if (!backend.mirrorBannerTimer) {
-        // 60초마다 "N분 전" 카운터 갱신
-        backend.mirrorBannerTimer = setInterval(_renderMirrorBanner, 60000);
+      var hh = backend.lastSuccessAt
+        ? _kstTimeShort(backend.lastSuccessAt.toISOString()) : '—';
+      _renderPersistBanner('offline',
+        '⚠ 오프라인 — 백엔드 응답 없음 · 마지막 성공 ' + hh,
+        'rgba(217,119,6,0.95)');
+      if (!backend.offlineBannerTimer) {
+        backend.offlineBannerTimer = setInterval(function(){
+          if (backend.fetchFailCount >= 2) _showOfflineBanner();
+        }, 60000);
       }
     }
+    function _clearOfflineBanner() {
+      if (backend.offlineBannerTimer) {
+        clearInterval(backend.offlineBannerTimer);
+        backend.offlineBannerTimer = null;
+      }
+      _clearBannerKind('offline');
+    }
+    function _showStaleBanner(mins) {
+      var t = (mins == null) ? '?' : (mins < 1 ? '방금' : (mins + '분 전'));
+      _renderPersistBanner('stale',
+        '⚠ 갱신 지연 — 마지막 평가 ' + t,
+        'rgba(202,138,4,0.92)');
+      if (!backend.staleBannerTimer) {
+        backend.staleBannerTimer = setInterval(function(){
+          var age = _snapshotAgeMin();
+          if (age !== null && age > 5 && _isUsRegularSession(new Date())) {
+            _showStaleBanner(age);
+          } else {
+            _clearStaleBanner();
+          }
+        }, 60000);
+      }
+    }
+    function _clearStaleBanner() {
+      if (backend.staleBannerTimer) {
+        clearInterval(backend.staleBannerTimer);
+        backend.staleBannerTimer = null;
+      }
+      _clearBannerKind('stale');
+    }
+    function _snapshotAgeMin() {
+      if (!backend.snapshotAt) return null;
+      return Math.max(0, Math.round((Date.now() - backend.snapshotAt.getTime()) / 60000));
+    }
+    function _updateFreshnessBanner(data) {
+      var ts = (data && (
+        data.mirror_pushed_at_utc ||
+        (data.system && data.system.timestamp) ||
+        (data.defense && data.defense.last_eval_at)
+      )) || null;
+      backend.snapshotAt = ts ? new Date(ts) : null;
+      var age = _snapshotAgeMin();
+      var inSession = _isUsRegularSession(new Date());
+      if (inSession && age !== null && age > 5) {
+        _showStaleBanner(age);
+      } else {
+        _clearStaleBanner();
+      }
+    }
+    // v12.5 이하 호환 shim — 다른 호출 지점 있으면 무해하게 매핑
+    function _clearMirrorBanner() { _clearOfflineBanner(); }
 
     // =========================================================
     // 개발 로그 (표시 전용, 매매 무관) — /dev-log fetch + render
@@ -8685,12 +8781,15 @@
       }
       var dashboard = await fetchBackend('/dashboard/api/snapshot');
       if (dashboard) {
-        // 직결 성공 — 폴백 모드였다면 배너 정리
+        // 직결 성공 = fetch 성공 → 오프라인 배너 즉시 해제 (히스테리시스 복구)
         backend.connected = true;
         backend.mode = 'direct';
         backend.lastSync = new Date();
-        _clearMirrorBanner();
+        backend.lastSuccessAt = new Date();
+        backend.fetchFailCount = 0;
+        _clearOfflineBanner();
         applyDashboard(dashboard);
+        _updateFreshnessBanner(dashboard);
         updateSettingsUI();
         fetchAndRenderDevLog();
         return;
@@ -8705,24 +8804,29 @@
         mirror = null;
       }
       if (mirror) {
-        // mirror 데이터로 표시 + 오프라인 배너
+        // mirror 도 fetch 성공 — 백엔드는 살아있고 직결만 안 됨. 오프라인 아님.
         var pushedAt = mirror.mirror_pushed_at_utc ||
                        (mirror.system && mirror.system.timestamp) || null;
         backend.mode = 'mirror';
         backend.connected = true;     // applyDashboard 가 깨지지 않게 true 유지
         backend.lastSync = new Date();
+        backend.lastSuccessAt = new Date();
         backend.mirrorAt = pushedAt ? new Date(pushedAt) : null;
+        backend.fetchFailCount = 0;
+        _clearOfflineBanner();        // v12.6 — 미러 성공 시 오프라인 배너 금지
         applyDashboard(mirror);
-        _showOfflineBanner();
+        _updateFreshnessBanner(mirror);
         updateSettingsUI();
         return;
       }
-      // 폴백도 실패
+      // 직결·미러 모두 실패 — 연속 실패 카운트만 증가. 2회 이상에서만 배너 발동.
       backend.connected = false;
       backend.mode = 'offline';
-      _clearMirrorBanner();
+      backend.fetchFailCount = (backend.fetchFailCount || 0) + 1;
+      if (backend.fetchFailCount >= 2) {
+        _showOfflineBanner();
+      }
       updateSettingsUI();
-      showBanner('⚠ 백엔드 연결 실패 — mock 데이터 표시 중. 설정 탭에서 URL 확인.', 'error');
     }
 
     // 백엔드 URL 설정 모달 (설정 탭에서 호출, prompt 폴백)
@@ -10954,6 +11058,16 @@
     dev_log:           '개발 로그. Claude Code JSONL 세션 요약. 읽기 전용 · 토큰 사용량 자동 집계.',
     token_usage:       '토큰 사용량. 입력·캐시·출력 별 집계. 추정치 (JSONL rollup).',
     sw_version:        'Service Worker 캐시 버전. 셸 정적 자산 캐시 관리. 새 SW 로드 시 자동 reload.',
+    // v12.6 — 상태 배너 3종
+    offline_banner:    '오프라인 배너 — 백엔드 응답이 연속 2회 실패했을 때만 뜬다. ' +
+                       'Tailscale 직결과 Firestore 미러 둘 다 실패한 경우에만 발동. ' +
+                       'fetch 성공(직결·미러 어느 쪽이든) 1회면 즉시 해제.',
+    stale_warn:        '갱신 지연 경고 — 미국 정규장(대략 KST 22:30~05:00) 진행 중인데 ' +
+                       '스냅숏이 5분 넘게 안 바뀌었을 때만 뜬다. 백엔드 통신은 되지만 ' +
+                       '평가 파이프라인이 늦어지는 상태를 알린다. 장외/주말엔 나오지 않는다.',
+    market_closed:     '장외 표시 — 미국 정규장이 열리지 않은 시간대(주말·평일 야간). ' +
+                       '스냅숏이 갱신되지 않는 게 정상이라 오프라인/지연 배너 판정에서 제외된다. ' +
+                       '상태줄에는 마지막 평가 시각(KST)만 소프트로 표시.',
   };
   window.HELP_TEXTS = HELP_TEXTS;
 
@@ -10997,6 +11111,10 @@
     dev_log: '개발 로그',
     token_usage: '토큰 사용량',
     sw_version: 'SW 버전',
+    // v12.6 — 상태 배너 3종
+    offline_banner: '오프라인 배너',
+    stale_warn: '갱신 지연',
+    market_closed: '장외 표시',
   };
 
   function openHelpSheet(k) {

@@ -76,7 +76,17 @@
 //         nexusOpenMandateModal 동작 무손 (배치만 변경). HELP_TEXTS 확장 8키
 //         (backend_url · op_params · buy_threshold · pm_cap · rebalancer_status
 //         · dev_log · token_usage · sw_version → 39키). 백엔드 무손.
-const CACHE_VERSION = 'v12.5';
+// v12.6 — 오프라인 배너 오탐 수정. 판정 신호 분리.
+//         이전: mirror 폴백(백엔드 정상)에서도 "오프라인 — 마지막 갱신 N분 전
+//         (PC 꺼짐)" 배너가 상시 표시 → 장외·주말엔 스냅숏이 안 변하는 것을
+//         'PC 꺼짐' 으로 오탐. 이후: (1) offline 배너 = 직결+미러 fetch 모두
+//         연속 2회 실패 시에만 발동 ("오프라인 — 백엔드 응답 없음 · 마지막 성공
+//         hh:mm"), fetch 성공 1회면 즉시 해제 (히스테리시스). (2) stale 배너 =
+//         미국 정규장 진행 중 + 스냅숏 age > 5분 (노랑 "갱신 지연"). (3) 장외/
+//         주말 = 배너 없음, 상태줄 "장외 · 마지막 평가 hh:mm" 소프트 표기.
+//         HELP_TEXTS 확장 3키 (offline_banner · stale_warn · market_closed).
+//         표시 계층만, 백엔드/매매/미러 fetch 로직 무변경.
+const CACHE_VERSION = 'v12.6';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

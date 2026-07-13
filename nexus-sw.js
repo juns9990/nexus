@@ -93,7 +93,18 @@
 //         value_krw 분기 제거, status=awaiting_broker면 '브로커 연결 대기'
 //         표시. 매매·Aegis·방어 로직 무변경 (표시 계층만). 캐시 무효화 위해
 //         버전 bump.
-const CACHE_VERSION = 'v12.7';
+// v12.8 — 설정 탭 백엔드 URL 저장 버그 수정 (20260713). ≥1100px h5 레이아웃에서
+//         저장 눌러도 "현재 저장 URL" 이 안 바뀌던 표시 계층 버그.
+//         원인: (1) updateSettingsUI 가 cfg-backend-url-h5 · cfg-backend-state-h5
+//         를 갱신하지 않음. (2) 세 input(mobile · d · h5) 을 모두 backend.url 로
+//         pre-fill 하는데 nexusSaveBackendUrl 은 "첫 번째 값 있는 input" 을 골라
+//         숨은 mobile input 의 옛 URL 이 h5 편집분을 덮음.
+//         수정: (a) h5 URL·state·input 을 updateSettingsUI 에 추가. (b) 저장 시
+//         backend.url 과 다른 값을 우선 (사용자 편집분). (c) localStorage 실패
+//         감지 (setItem→getItem 확인) 후 조용한 실패 대신 배너로 사유 표시.
+//         (d) ?backend=<url> 쿼리 지원 — 주소창만으로 백엔드 교체 가능.
+//         표시·설정 계층만, 매매·Aegis·미러 로직 무변경. 캐시 무효화 위해 bump.
+const CACHE_VERSION = 'v12.8';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

@@ -128,7 +128,23 @@
 //         백엔드 1건: sim_nav_history 신규 (KST 06:00 이후 append) — 다음
 //              차수 sim NAV 곡선용 시계열 축적 시작 (표시는 이번 회차 안 함).
 //         매매·Aegis·미러 로직 무변경. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.0';
+// v13.1 — v13.0 회귀 4건 수정 (20260715).
+//         [원인] renderSimBlock 이 다른 IIFE (line 10578) 소유의 _pmMeta 를
+//         참조 → 크로스 IIFE ReferenceError → applyDashboard chain 폭발 →
+//         window.nexusBackendData = data 미실행 → 이후 refreshFromSnapshot
+//         이 {} 로 도는 데드락 → 홈 NAV / 보유 42 / 이력 미니바 / 승인 달력
+//         전 탭 데이터 소실 (연쇄 지점 하나에서 4증상 유발).
+//         [수정] (a) renderSimBlock 내부에 _pmMetaLocal/_escLocal 지역 헬퍼
+//         (window.NEXUS_PM_META 참조 — v12.4 공식 크로스 IIFE 경로).
+//         (b) applyDashboard 안 window.nexusBackendData = data 를 render
+//         이전으로 이동 (안전망 · v13.0 은 render 뒤 set).
+//         (c) 홈 각 render 를 개별 try/catch — 한 카드 예외가 다음 카드
+//         죽이는 연쇄 재발 방지.
+//         (d) renderPerformanceCard 곡선 직접 draw 복원 (인자로 받은
+//         nav_series 를 _navPeriod 필터해 즉시 draw · window 우회 참조 X).
+//         (e) sim 부재 문구 분리: "필드 없음" vs "값 0건" 구분.
+//         매매·Aegis·미러 무손. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

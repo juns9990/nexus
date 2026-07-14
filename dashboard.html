@@ -6375,26 +6375,27 @@
       renderMobilePositionsTab(data.positions || [], data.nav || {}, data.portfolio || {});
       renderMobileHistoryTab(data.notif || {});
 
-      // ----- Phase 2.13 내러티브 홈 -----
-      renderHeaderStatus(data);
-      renderStoryline(data);
-      renderPerformanceCard(data.performance || {}, data.nav || {});
-      renderTeamDesks(data.team_desk || {});
-      renderAegisCard(data.team_desk && data.team_desk.aegis_line || {}, data.aegis_detail || {});
-      renderJournal(data);
-      renderSimBlock(data.sim_portfolio || null);
-      renderCountdown(data.market_hours || {}, data.defense || {});
+      // ----- 마지막 갱신 (v13.1 이동: render 이전에 set — 이후 render 가
+      //   window.nexusBackendData 를 읽어도 안전. v13.0 은 render 뒤 set 이라
+      //   중간 예외 시 undefined 남아 refresh 폴링이 {} 로 도는 데드락 발생) -----
+      backend.lastSync = new Date();
+      backend.data = data;
+      window.nexusBackendData = data;
+      updateSettingsUI();
+
+      // ----- Phase 2.13 내러티브 홈 (v13.1 각 render 예외 격리) -----
+      try { renderHeaderStatus(data); } catch (e) { console.warn('[home] header', e); }
+      try { renderStoryline(data); } catch (e) { console.warn('[home] storyline', e); }
+      try { renderPerformanceCard(data.performance || {}, data.nav || {}); } catch (e) { console.warn('[home] perf', e); }
+      try { renderTeamDesks(data.team_desk || {}); } catch (e) { console.warn('[home] desk', e); }
+      try { renderAegisCard(data.team_desk && data.team_desk.aegis_line || {}, data.aegis_detail || {}); } catch (e) { console.warn('[home] aegis', e); }
+      try { renderJournal(data); } catch (e) { console.warn('[home] journal', e); }
+      try { renderSimBlock(data.sim_portfolio || null); } catch (e) { console.warn('[home] simblock', e); }
+      try { renderCountdown(data.market_hours || {}, data.defense || {}); } catch (e) { console.warn('[home] countdown', e); }
       // cover-tile 포지션 카운트
       var posCnt = Array.isArray(data.positions)
         ? data.positions.filter(function(p){return p && p.quantity;}).length : 0;
       _setBinds('pos-count', posCnt + ' 보유');
-
-      // ----- 마지막 갱신 -----
-      backend.lastSync = new Date();
-      backend.data = data;
-      // 빠른 행동 모달 등 IIFE 외부에서 마지막 snapshot 접근용 미러
-      window.nexusBackendData = data;
-      updateSettingsUI();
 
       // ----- 차트 (NAV·도넛·게이지·시장 등락색) -----
       if (window.NexusCharts && typeof window.NexusCharts.refresh === 'function') {
@@ -6979,14 +6980,14 @@
         ? ('기록중 ' + days + '일차 · 시작 ' + perf.started_at)
         : '기록 시작 전 — 첫 장마감(KST 06:00) 후부터';
       _setBinds('nx-perf-foot', startedTxt);
-      // 곡선 (모바일 + PC 두 SVG) — 현재 선택된 기간 (_navPeriod) 필터
-      if (typeof _rerenderNavCurve === 'function') {
-        _rerenderNavCurve();
-      } else {
-        var series = Array.isArray(perf.nav_series) ? perf.nav_series : [];
-        _drawNavCurve('nx-perf-line', series);
-        _drawNavCurve('nx-perf-line-pc', series);
-      }
+      // 곡선 (모바일 + PC 두 SVG) — v13.1: 직접 필터 후 draw. 원본은 IIFE
+      //   외부 window.nexusBackendData 를 우회 참조해 초기 순서 이슈 있었음.
+      //   여기서는 인자로 받은 perf.nav_series 를 _navPeriod 로 필터해 즉시 draw.
+      var series = Array.isArray(perf.nav_series) ? perf.nav_series : [];
+      var period = (typeof _navPeriod === 'string') ? _navPeriod : 'ALL';
+      var filtered = (typeof _filterNavSeries === 'function') ? _filterNavSeries(series, period) : series;
+      _drawNavCurve('nx-perf-line', filtered);
+      _drawNavCurve('nx-perf-line-pc', filtered);
     }
 
     function _drawNavCurve(elId, series) {
@@ -7156,11 +7157,28 @@
 
     function renderSimBlock(sp) {
       // v13.0 — 홈: sim virtual_nav 카드 + PM 랭킹 (return_pct 정렬)
+      // v13.1 — 크로스 IIFE 참조 수정: _pmMeta 는 별개 IIFE (line 10578) 소유.
+      //   window.NEXUS_PM_META 를 통해 접근 (v12.4 이후 window 노출 공식 경로).
+      //   폴백 없으면 예외 → applyDashboard chain 폭발 → 전 탭 데이터 소실 재발.
+      var _pmMetaLocal = function(key) {
+        var m = (window.NEXUS_PM_META || {})[key];
+        return m || { ko: key || '?', en: key || '?', short: key || '?', color: '#666' };
+      };
+      var _escLocal = function(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+      };
       var hostV = document.querySelectorAll('[data-bind="nx-sim-vnav"]');
       var hostR = document.querySelectorAll('[data-bind="nx-sim-rank"]');
       if (!hostV.length && !hostR.length) return;
-      if (!sp || !sp.virtual_nav) {
-        hostV.forEach(function(h){ h.innerHTML = '<div class="nx-sim-empty">sim 원장 부재</div>'; });
+      if (!sp) {
+        hostV.forEach(function(h){ h.innerHTML = '<div class="nx-sim-empty">sim_portfolio 필드 없음</div>'; });
+        hostR.forEach(function(h){ h.innerHTML = '<div class="nx-sim-empty">—</div>'; });
+        return;
+      }
+      if (!sp.virtual_nav) {
+        hostV.forEach(function(h){ h.innerHTML = '<div class="nx-sim-empty">virtual_nav 값 0건</div>'; });
         hostR.forEach(function(h){ h.innerHTML = '<div class="nx-sim-empty">—</div>'; });
         return;
       }
@@ -7189,13 +7207,13 @@
       // PM 랭킹
       var pmSum = sp.pm_summary || {};
       var rows = Object.keys(pmSum).map(function(k){
-        var s = pmSum[k]; var m = _pmMeta(k);
+        var s = pmSum[k]; var m = _pmMetaLocal(k);
         return { key: k, meta: m, ret: Number(s.return_pct || 0), pnl: Number(s.total_pnl_usd || 0), inv: Number(s.invested_usd || 0), util: Number(s.utilization_pct || 0), open: Number(s.positions_open || 0) };
       });
       rows.sort(function(a, b){ return b.ret - a.ret; });
       var rankHtml = '<div class="nx-sim-rank-head">PM 손익 랭킹 · return_pct</div>';
       if (rows.length === 0) {
-        rankHtml += '<div class="nx-sim-empty">pm_summary 부재</div>';
+        rankHtml += '<div class="nx-sim-empty">pm_summary 값 0건</div>';
       } else {
         rankHtml += rows.map(function(r, i){
           var retCls = r.ret >= 0 ? 'pos' : 'neg';
@@ -7204,7 +7222,7 @@
           var pnlSign = r.pnl >= 0 ? '+' : '−';
           return '<div class="nx-sim-rank-row">' +
             '<span class="rk">' + (i + 1) + '</span>' +
-            '<span class="pm"><span class="swatch" style="background:' + _esc(r.meta.color) + '"></span>' + _esc(r.meta.short) + '</span>' +
+            '<span class="pm"><span class="swatch" style="background:' + _escLocal(r.meta.color) + '"></span>' + _escLocal(r.meta.short) + '</span>' +
             '<span class="meta">' + r.open + '종목 · 소진 ' + r.util.toFixed(0) + '%</span>' +
             '<span class="pnl ' + pnlCls + '">' + pnlSign + '$' + Math.abs(r.pnl).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</span>' +
             '<span class="ret ' + retCls + '">' + sign + r.ret.toFixed(2) + '%</span>' +

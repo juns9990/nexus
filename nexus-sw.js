@@ -111,7 +111,24 @@
 //         import + signInAnonymously + onAuthStateChanged 5s 폴백 이식.
 //         PC(Tailscale) 직결 실패 시 폰이 Firestore 미러로 fallback 하도록
 //         복구. 미러 read 계층만, 매매·Aegis·표시 로직 무변경. 캐시 무효화 bump.
-const CACHE_VERSION = 'v12.9';
+// v13.0 — 감사 후속 일괄 반영 (20260715).
+//         [1] 보유 탭 sim_portfolio.positions 원장 직결 (recent_would_trades
+//              폴백은 원장 부재 시에만) — 42 포지션 실 수량·평단·현재가·PnL 노출.
+//         [2] 모바일 보유·이력 탭 소스 교체 (sim ledger + layer3 병합).
+//         [3] 상세 패널 필드명 수정 (_renderNavPanel week_pnl_pct→week_pct 등,
+//              _renderMarketPanel m.spy→spy_last 등).
+//         [4] 홈: sim 성과 카드(virtual_nav) + PM 손익 랭킹(pm_summary) 신설,
+//              "sim 가상" 배지.
+//         [5] 이력 탭 미니바 A안 교체 — 건수→금액(notional_usd) 스택, PM 색.
+//         [5b] sim 체결 섹션 신설 (recent_ledger 20건).
+//         [6] 기간 칩(15D/1M/3M/전체) 핸들러 구현 (nav_series 필터).
+//         [7] 헌법 §4 갱신 (5인→7인 15/15/15/10/10 + mint/pulse 대기).
+//         [8] 버전 히스토리 v12.7~13.0 추가.
+//         [9] d-settings-grid 구 UI 항상 숨김 (h5-settings-block 전 폭).
+//         백엔드 1건: sim_nav_history 신규 (KST 06:00 이후 append) — 다음
+//              차수 sim NAV 곡선용 시계열 축적 시작 (표시는 이번 회차 안 함).
+//         매매·Aegis·미러 로직 무변경. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.0';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

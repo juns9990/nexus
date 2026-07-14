@@ -2911,6 +2911,45 @@
   .nx-aegis-grid .v { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--fg-strong); margin-top: 2px; }
   .nx-aegis-grid .t { font-family: var(--mono); font-size: 9px; color: var(--fg-dim); margin-top: 2px; }
 
+  /* v13.0 — sim 성과 · PM 랭킹 */
+  .nx-sim-badge {
+    display: inline-block; margin-left: 6px; padding: 2px 8px;
+    background: #fbbf2415; color: #fbbf24; border-radius: 10px;
+    font-size: 10px; font-family: var(--mono); vertical-align: middle;
+  }
+  .nx-sim-block {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;
+  }
+  @media (max-width: 720px) {
+    .nx-sim-block { grid-template-columns: 1fr; }
+  }
+  .nx-sim-vnav-card, .nx-sim-rank {
+    padding: 12px; background: #101412; border: 1px solid #1c2320; border-radius: 12px;
+  }
+  .nx-sim-empty { padding: 10px; color: var(--fg-muted); font-size: 12px; text-align: center; }
+  .nx-sim-vnav-head { font-size: 11px; color: var(--fg-muted); margin-bottom: 4px; }
+  .nx-sim-vnav-val { font-family: var(--mono); font-size: 20px; font-weight: 600; color: var(--fg-strong); }
+  .nx-sim-vnav-pct { font-family: var(--mono); font-size: 12px; margin-left: 6px; }
+  .nx-sim-vnav-pct.pos { color: var(--accent); }
+  .nx-sim-vnav-pct.neg { color: var(--negative); }
+  .nx-sim-vnav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+  .nx-sim-vnav-grid > div { padding: 6px; background: #0c0f0e; border-radius: 6px; text-align: center; }
+  .nx-sim-vnav-grid .l { font-size: 9px; color: var(--fg-muted); }
+  .nx-sim-vnav-grid .v { font-family: var(--mono); font-size: 12px; color: var(--fg-strong); margin-top: 2px; }
+  .nx-sim-rank-head { font-size: 11px; color: var(--fg-muted); margin-bottom: 6px; }
+  .nx-sim-rank-row {
+    display: grid; grid-template-columns: 20px 60px 1fr 60px 50px; gap: 8px;
+    padding: 5px 4px; align-items: center; font-size: 11px; border-bottom: 1px solid #15191775;
+  }
+  .nx-sim-rank-row .rk { font-family: var(--mono); color: var(--fg-dim); }
+  .nx-sim-rank-row .pm { display: flex; align-items: center; gap: 4px; color: var(--fg-strong); }
+  .nx-sim-rank-row .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
+  .nx-sim-rank-row .meta { color: var(--fg-muted); font-family: var(--mono); font-size: 10px; }
+  .nx-sim-rank-row .pnl { font-family: var(--mono); text-align: right; }
+  .nx-sim-rank-row .ret { font-family: var(--mono); text-align: right; }
+  .nx-sim-rank-row .pos { color: var(--accent); }
+  .nx-sim-rank-row .neg { color: var(--negative); }
+
   .nx-journal { display: flex; flex-direction: column; gap: 4px; }
   .nx-journal-empty { padding: 14px; color: var(--fg-muted); font-size: 12px; text-align: center; }
   .nx-journal-row {
@@ -3965,6 +4004,35 @@
   .h3-daily-bar[data-count="0"] {
     background: var(--bg-deep);
   }
+  /* v13.0 A안 — 금액·PM색 스택 */
+  .h3-daily-bar.amt-stack {
+    justify-content: center;
+    background: transparent;
+  }
+  .h3-daily-bar.amt-stack .stack-top,
+  .h3-daily-bar.amt-stack .stack-bot {
+    display: flex; flex-direction: column-reverse; align-items: stretch;
+    height: 50%;
+  }
+  .h3-daily-bar.amt-stack .stack-top { justify-content: flex-end; }
+  .h3-daily-bar.amt-stack .stack-bot { justify-content: flex-start; }
+  .h3-daily-bar.amt-stack .seg-pm {
+    width: 100%; min-height: 1px;
+  }
+  .h3-daily-bar.amt-stack .seg-pm.sell { opacity: 0.75; }
+  /* v13.0 — sim ledger 섹션 */
+  .h3-ledger-wrap { display: flex; flex-direction: column; gap: 2px; }
+  .h3-ledger-row {
+    display: grid; grid-template-columns: 80px 70px 60px 70px 80px 1fr; gap: 8px;
+    padding: 5px 8px; align-items: center; font-size: 11px; border-bottom: 1px solid #15191775;
+  }
+  .h3-ledger-row .t { font-family: var(--mono); color: var(--fg-dim); }
+  .h3-ledger-row .sym { font-family: var(--mono); font-weight: 600; color: var(--fg-strong); }
+  .h3-ledger-row .pm { display: flex; align-items: center; gap: 4px; }
+  .h3-ledger-row .pm .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
+  .h3-ledger-row .act.buy { color: var(--accent); font-family: var(--mono); }
+  .h3-ledger-row .act.sell { color: var(--negative); font-family: var(--mono); }
+  .h3-ledger-row .num { font-family: var(--mono); text-align: right; color: var(--fg); }
   .h3-daily-labels {
     display: grid; grid-template-columns: repeat(14, 1fr);
     gap: 4px;
@@ -4188,19 +4256,20 @@
   /*  v12.5 — 설정 탭 B-layout (≥1100px). <1100px 기본 unchanged.        */
   /*  4그룹 2컬럼 (연결 · 운용 파라미터 · 개발 · 시스템).                 */
   /* ================================================================ */
-  .h5-settings-block { display: none; }
-  @media (min-width: 1100px) {
-    .h5-settings-block { display: block; margin-bottom: 14px; }
-    /* 기존 d-settings-grid 는 4그룹 재편 시 숨김 (v12.5 블록으로 대체) */
-    section.d-tab[data-tab="settings"] > .d-tab-pad > .d-settings-grid { display: none; }
-    .h5-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 14px;
-      align-items: start;
-    }
-    .h5-grid > .h5-card.full { grid-column: 1 / -1; }
+  /* v13.0 — h5-settings-block 전 폭 표시, d-settings-grid 구 UI 는 항상 숨김 (죽은 경로 제거) */
+  .h5-settings-block { display: block; margin-bottom: 14px; }
+  section.d-tab[data-tab="settings"] > .d-tab-pad > .d-settings-grid { display: none !important; }
+  .h5-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
   }
+  .h5-grid > .h5-card.full { grid-column: 1 / -1; }
+  @media (max-width: 720px) {
+    .h5-grid { grid-template-columns: 1fr; }
+  }
+  @media (min-width: 1100px) {
   @media (max-width: 1099px) {
     .h5-grid { display: block; }
   }
@@ -4476,6 +4545,15 @@
           <div><div class="l">차단</div><div class="v" data-bind="nx-aegis-blocked">0</div><div class="t">오늘</div></div>
           <div><div class="l">방어</div><div class="v" data-bind="defense-mode">—</div><div class="t" data-bind="defense-meta">—</div></div>
         </div>
+      </div>
+
+      <!-- (5b) v13.0 sim 성과 + PM 랭킹 -->
+      <div class="nx-section-title">sim 성과 <span class="nx-sim-badge">sim 가상</span></div>
+      <div class="nx-sim-block" data-bind="nx-sim-block">
+        <div class="nx-sim-vnav-card" data-bind="nx-sim-vnav">
+          <div class="nx-sim-empty">sim 원장 수집 중…</div>
+        </div>
+        <div class="nx-sim-rank" data-bind="nx-sim-rank"></div>
       </div>
 
       <!-- (6) 일지 타임라인 -->
@@ -5109,6 +5187,15 @@
       </div>
     </div>
 
+    <!-- (5b) v13.0 sim 성과 + PM 랭킹 -->
+    <div class="nx-section-title">sim 성과 <span class="nx-sim-badge">sim 가상</span></div>
+    <div class="nx-sim-block" data-bind="nx-sim-block">
+      <div class="nx-sim-vnav-card" data-bind="nx-sim-vnav">
+        <div class="nx-sim-empty">sim 원장 수집 중…</div>
+      </div>
+      <div class="nx-sim-rank" data-bind="nx-sim-rank"></div>
+    </div>
+
     <!-- (6) 일지 — 카운트다운 제거 (중복) -->
     <div class="nx-section-title">일지 · 최근 8건</div>
     <div class="nx-journal" data-bind="nx-journal">
@@ -5655,6 +5742,15 @@
         <div class="d-history-empty">최근 활동 없음</div>
       </div>
 
+      <!-- v13.0 — sim 체결 (실체결가 · 수량 · notional) -->
+      <div class="d-tab-section-title">
+        sim 체결
+        <span class="d-tab-section-meta" data-bind="h3-ledger-meta">최근 20건</span>
+      </div>
+      <div class="h3-ledger-wrap" data-bind="h3-ledger-wrap">
+        <div class="h3-empty"><div class="big">sim 원장 대기</div></div>
+      </div>
+
       <!-- 계층 3 · 장중 평가 (홈에서 이동 — 깊은 분석은 이력 탭) -->
       <div class="d-tab-section-title">
         계층 3 · 장중 평가
@@ -5874,7 +5970,11 @@
             <div class="h5-row"><span class="k">v12.3</span><span class="desc">승인 탭 — 대기 카드 강조 · 2열 (달력 | 처리 이력)</span><span class="v muted">2026-07-05</span></div>
             <div class="h5-row"><span class="k">v12.4</span><span class="desc">PM 도넛 7 PM 대응 — 하드코딩 3 PM 제거 · NEXUS_PM_META 단일 소스</span><span class="v muted">2026-07-05</span></div>
             <div class="h5-row"><span class="k">v12.5</span><span class="desc">설정 탭 — 4그룹 재편 + 운용 파라미터 (신설, 읽기전용)</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.6</span><span class="desc">오프라인 배너 오탐 수정 — 판정 신호 분리 (offline / stale / market_closed)</span><span class="v ok">현재</span></div>
+            <div class="h5-row"><span class="k">v12.6</span><span class="desc">오프라인 배너 오탐 수정 — 판정 신호 분리 (offline / stale / market_closed)</span><span class="v muted">2026-07-05</span></div>
+            <div class="h5-row"><span class="k">v12.7</span><span class="desc">deploy 체계 복구 — PC 원본이 deploy 를 덮은 혼합 오염 되돌림</span><span class="v muted">2026-07-13</span></div>
+            <div class="h5-row"><span class="k">v12.8</span><span class="desc">설정 탭 백엔드 URL 저장 버그 수정 — h5 레이아웃 표시 계층만</span><span class="v muted">2026-07-14</span></div>
+            <div class="h5-row"><span class="k">v12.9</span><span class="desc">익명인증 코드 이식 — 폰 미러 read 복구</span><span class="v muted">2026-07-15</span></div>
+            <div class="h5-row"><span class="k">v13.0</span><span class="desc">sim_portfolio 원장 직결 (보유·홈·이력) · 상세 패널 필드명 수정 · 미니바 A안 · 기간 칩 · sim NAV 축적 시작</span><span class="v ok">현재</span></div>
           </div>
 
         </div>
@@ -6282,6 +6382,7 @@
       renderTeamDesks(data.team_desk || {});
       renderAegisCard(data.team_desk && data.team_desk.aegis_line || {}, data.aegis_detail || {});
       renderJournal(data);
+      renderSimBlock(data.sim_portfolio || null);
       renderCountdown(data.market_hours || {}, data.defense || {});
       // cover-tile 포지션 카운트
       var posCnt = Array.isArray(data.positions)
@@ -6537,7 +6638,29 @@
       if (!host) return;
       host.innerHTML = '';
       var arr = Array.isArray(positions) ? positions.filter(function(p){return p && (p.quantity || p.qty);}) : [];
-      _setBinds('m-pos-meta', arr.length + ' 보유');
+      // v13.0 — 실계좌 0이고 sim_portfolio.positions 존재 시 원장 사용
+      var isSim = false;
+      if (arr.length === 0) {
+        var sp = (window.nexusBackendData && window.nexusBackendData.sim_portfolio) || null;
+        if (sp && Array.isArray(sp.positions) && sp.positions.length > 0) {
+          arr = sp.positions.map(function(pp) {
+            var pmMeta = _pmMeta(pp.pm);
+            return {
+              symbol: pp.ticker,
+              quantity: pp.shares,
+              avg_cost: pp.avg_cost,
+              market_price: pp.market_price,
+              market_value: pp.market_value_usd,
+              unrealized_pnl: pp.unrealized_pnl_usd,
+              unrealized_pnl_pct: pp.unrealized_pnl_pct,
+              pm_label: 'sim · ' + (pmMeta.short || pp.pm),
+              _sim: true,
+            };
+          });
+          isSim = true;
+        }
+      }
+      _setBinds('m-pos-meta', arr.length + ' 보유' + (isSim ? ' · sim 원장' : ''));
       _setBinds('hold-hint', arr.length ? '카드 탭 → 매수 근거' : '');
       if (arr.length === 0) {
         host.innerHTML = _renderHoldingsEmpty(nav, portfolio);
@@ -6547,32 +6670,66 @@
     }
 
     function renderMobileHistoryTab(notif) {
+      // v13.0 — 소스 병합: sim recent_ledger (실체결) + layer3 recent_would_trades
+      //   (판단) + notif.recent (알림). ts 기준 desc, 상위 30건.
       var host = document.querySelector('[data-bind="m-history-list"]');
       if (!host) return;
       host.innerHTML = '';
-      var arr = Array.isArray(notif.recent) ? notif.recent : [];
-      if (arr.length === 0) {
+      var data = window.nexusBackendData || {};
+      var items = [];
+      // 1) sim 실체결 (fill_price · notional)
+      var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
+      ledger.forEach(function(l) {
+        var pmMeta = _pmMeta(l.pm);
+        items.push({
+          ts: l.ts,
+          type: 'sim ' + (l.action === 'sell' ? '매도' : '매수'),
+          text: (l.ticker || '?') + ' · ' + pmMeta.short + ' · ' + Number(l.shares).toFixed(3) + '주 @ $' +
+                Number(l.fill_price).toFixed(2) + ' ($' + Number(l.notional_usd).toFixed(0) + ')',
+        });
+      });
+      // 2) layer3 판단 (would_trade, 미체결도)
+      var l3 = (data.layer3 && data.layer3.recent_would_trades) || [];
+      l3.forEach(function(w) {
+        var pmMeta = _pmMeta(w.persona_key || w.persona || w.pm);
+        items.push({
+          ts: w.ts,
+          type: '판단 ' + (w.action === 'sell' ? '매도' : '매수'),
+          text: (w.ticker || w.symbol || '?') + ' · ' + pmMeta.short + ' · 신호 ' +
+                (w.signal_strength != null ? Number(w.signal_strength).toFixed(2) : '—') +
+                ' · 기대 ' + (w.net_expected_pct != null ? Number(w.net_expected_pct).toFixed(1) + '%' : '—') +
+                (w.executed === false ? ' (미체결)' : ''),
+        });
+      });
+      // 3) 시스템 알림
+      var nr = Array.isArray(notif && notif.recent) ? notif.recent : [];
+      nr.forEach(function(n) {
+        items.push({
+          ts: n.ts || n.timestamp,
+          type: n.type || '알림',
+          text: n.summary || n.message || '',
+        });
+      });
+      if (items.length === 0) {
         var empty = document.createElement('div');
         empty.className = 'm-history-empty';
         empty.textContent = '최근 활동 없음';
         host.appendChild(empty);
         return;
       }
-      arr.forEach(function(n) {
+      items.sort(function(a, b) {
+        return (new Date(b.ts || 0)).getTime() - (new Date(a.ts || 0)).getTime();
+      });
+      items = items.slice(0, 30);
+      items.forEach(function(n) {
         var row = document.createElement('div');
         row.className = 'm-history-row';
-        // snapshot notif.recent 의 실 필드 키는 'ts' (telegram_notifier).
-        // PC 렌더와 같은 _eventShortTime 헬퍼로 통일 — naive ISO 는 브라우저가
-        // local(KST) 로 해석하므로 폰 로케일 KST 에선 그대로 표시됨.
-        var ts = n.ts || n.timestamp || n.sent_at || n.time;
-        var timeTxt = ts ? _eventShortTime(ts) : '—';
-        var msg = n.summary || n.message || n.text || '(no message)';
-        var type = n.type || n.category || '알림';
+        var timeTxt = n.ts ? _eventShortTime(n.ts) : '—';
         row.innerHTML =
           '<div class="m-history-time">' + _escapeHtml(timeTxt) + '</div>' +
           '<div class="m-history-content">' +
-            '<span class="verb">' + _escapeHtml(String(type)) + '</span>' +
-            '<span class="desc">' + _escapeHtml(String(msg)) + '</span>' +
+            '<span class="verb">' + _escapeHtml(String(n.type)) + '</span>' +
+            '<span class="desc">' + _escapeHtml(String(n.text)) + '</span>' +
           '</div>';
         host.appendChild(row);
       });
@@ -6822,10 +6979,14 @@
         ? ('기록중 ' + days + '일차 · 시작 ' + perf.started_at)
         : '기록 시작 전 — 첫 장마감(KST 06:00) 후부터';
       _setBinds('nx-perf-foot', startedTxt);
-      // 곡선 (모바일 + PC 두 SVG)
-      var series = Array.isArray(perf.nav_series) ? perf.nav_series : [];
-      _drawNavCurve('nx-perf-line', series);
-      _drawNavCurve('nx-perf-line-pc', series);
+      // 곡선 (모바일 + PC 두 SVG) — 현재 선택된 기간 (_navPeriod) 필터
+      if (typeof _rerenderNavCurve === 'function') {
+        _rerenderNavCurve();
+      } else {
+        var series = Array.isArray(perf.nav_series) ? perf.nav_series : [];
+        _drawNavCurve('nx-perf-line', series);
+        _drawNavCurve('nx-perf-line-pc', series);
+      }
     }
 
     function _drawNavCurve(elId, series) {
@@ -6848,6 +7009,42 @@
       });
       el.setAttribute('points', pts.join(' '));
     }
+
+    // v13.0 — 기간 칩 (15D/1M/3M/전체) — nav_series 필터
+    var _navPeriod = 'ALL';
+    function _filterNavSeries(series, period) {
+      if (!Array.isArray(series) || !series.length) return [];
+      if (period === 'ALL') return series;
+      var days = { '15D': 15, '1M': 30, '3M': 90 }[period];
+      if (!days) return series;
+      var cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
+      var cutoffMs = cutoff.getTime();
+      return series.filter(function(s) {
+        var d = new Date(s.date + 'T00:00:00');
+        return d.getTime() >= cutoffMs;
+      });
+    }
+    function _rerenderNavCurve() {
+      var series = (window.nexusBackendData && window.nexusBackendData.performance
+                    && window.nexusBackendData.performance.nav_series) || [];
+      var filtered = _filterNavSeries(series, _navPeriod);
+      _drawNavCurve('nx-perf-line', filtered);
+      _drawNavCurve('nx-perf-line-pc', filtered);
+    }
+    document.addEventListener('click', function(ev) {
+      var chip = ev.target.closest('.nx-chart-tab[data-period]');
+      if (!chip) return;
+      var period = chip.getAttribute('data-period');
+      if (!period) return;
+      _navPeriod = period;
+      // active 클래스 갱신 (같은 target 그룹 내에서)
+      var target = chip.getAttribute('data-target') || 'nav-chart';
+      document.querySelectorAll('.nx-chart-tab[data-target="' + target + '"]').forEach(function(t){
+        t.classList.toggle('active', t.getAttribute('data-period') === period);
+      });
+      _rerenderNavCurve();
+    });
 
     function renderTeamDesks(desk) {
       var hosts = document.querySelectorAll('[data-bind="nx-desk-list"]');
@@ -6955,6 +7152,66 @@
         }).join('');
       }
       hosts.forEach(function(h){ h.innerHTML = html; });
+    }
+
+    function renderSimBlock(sp) {
+      // v13.0 — 홈: sim virtual_nav 카드 + PM 랭킹 (return_pct 정렬)
+      var hostV = document.querySelectorAll('[data-bind="nx-sim-vnav"]');
+      var hostR = document.querySelectorAll('[data-bind="nx-sim-rank"]');
+      if (!hostV.length && !hostR.length) return;
+      if (!sp || !sp.virtual_nav) {
+        hostV.forEach(function(h){ h.innerHTML = '<div class="nx-sim-empty">sim 원장 부재</div>'; });
+        hostR.forEach(function(h){ h.innerHTML = '<div class="nx-sim-empty">—</div>'; });
+        return;
+      }
+      var vn = sp.virtual_nav;
+      var startNav = Number(vn.starting_nav_usd || 0);
+      var curNav = Number(vn.current_nav_usd || 0);
+      var totalPnl = curNav - startNav;
+      var totalPct = startNav > 0 ? (totalPnl / startNav * 100) : 0;
+      var pctCls = totalPct >= 0 ? 'pos' : 'neg';
+      var pctSign = totalPct >= 0 ? '+' : '';
+      var vnavHtml =
+        '<div class="nx-sim-vnav-head">가상 NAV · 시작 $' + Number(startNav).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</div>' +
+        '<div>' +
+          '<span class="nx-sim-vnav-val">$' + Number(curNav).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</span>' +
+          '<span class="nx-sim-vnav-pct ' + pctCls + '">' + pctSign + totalPct.toFixed(2) + '% ' +
+          '(' + pctSign + '$' + Math.abs(totalPnl).toLocaleString('en-US', {maximumFractionDigits: 0}) + ')</span>' +
+        '</div>' +
+        '<div class="nx-sim-vnav-grid">' +
+          '<div><div class="l">투입</div><div class="v">$' + Number(vn.invested_usd || 0).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</div></div>' +
+          '<div><div class="l">현금</div><div class="v">$' + Number(vn.cash_usd || 0).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</div></div>' +
+          '<div><div class="l">미실현</div><div class="v">' + (vn.unrealized_pnl_usd >= 0 ? '+' : '−') + '$' + Math.abs(Number(vn.unrealized_pnl_usd || 0)).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</div></div>' +
+          '<div><div class="l">실현</div><div class="v">' + (vn.realized_pnl_usd >= 0 ? '+' : '−') + '$' + Math.abs(Number(vn.realized_pnl_usd || 0)).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</div></div>' +
+        '</div>';
+      hostV.forEach(function(h){ h.innerHTML = vnavHtml; });
+
+      // PM 랭킹
+      var pmSum = sp.pm_summary || {};
+      var rows = Object.keys(pmSum).map(function(k){
+        var s = pmSum[k]; var m = _pmMeta(k);
+        return { key: k, meta: m, ret: Number(s.return_pct || 0), pnl: Number(s.total_pnl_usd || 0), inv: Number(s.invested_usd || 0), util: Number(s.utilization_pct || 0), open: Number(s.positions_open || 0) };
+      });
+      rows.sort(function(a, b){ return b.ret - a.ret; });
+      var rankHtml = '<div class="nx-sim-rank-head">PM 손익 랭킹 · return_pct</div>';
+      if (rows.length === 0) {
+        rankHtml += '<div class="nx-sim-empty">pm_summary 부재</div>';
+      } else {
+        rankHtml += rows.map(function(r, i){
+          var retCls = r.ret >= 0 ? 'pos' : 'neg';
+          var sign = r.ret >= 0 ? '+' : '';
+          var pnlCls = r.pnl >= 0 ? 'pos' : 'neg';
+          var pnlSign = r.pnl >= 0 ? '+' : '−';
+          return '<div class="nx-sim-rank-row">' +
+            '<span class="rk">' + (i + 1) + '</span>' +
+            '<span class="pm"><span class="swatch" style="background:' + _esc(r.meta.color) + '"></span>' + _esc(r.meta.short) + '</span>' +
+            '<span class="meta">' + r.open + '종목 · 소진 ' + r.util.toFixed(0) + '%</span>' +
+            '<span class="pnl ' + pnlCls + '">' + pnlSign + '$' + Math.abs(r.pnl).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</span>' +
+            '<span class="ret ' + retCls + '">' + sign + r.ret.toFixed(2) + '%</span>' +
+          '</div>';
+        }).join('');
+      }
+      hostR.forEach(function(h){ h.innerHTML = rankHtml; });
     }
 
     function renderCountdown(marketHours, defense) {
@@ -9679,14 +9936,16 @@
       H += '<li>동일 종목 쿨다운 30분 · 신호 변화 Δ ≥ 0.10</li>';
       H += '</ul>';
 
-      H += '<h3>§4 운용진 5인</h3>';
+      H += '<h3>§4 운용진 7인 (v13.0 갱신)</h3>';
       H += '<ul>';
-      H += '<li>Night Watch (박세진) PM-Western <b>50%</b> · cron 22:30</li>';
-      H += '<li>Tide (한도현) PM-Macro <b>30%</b> · cron 22:00</li>';
-      H += '<li>Sur (김선우) PM-LatAm/EM <b>10%</b> · cron 22:00 · EWZ·EWW·EEM·EWC</li>';
-      H += '<li>Aegis (진수호) CRO — 12+3 게이트 + 12 안전장치</li>';
-      H += '<li>Pathfinder (임도진) RA — 뉴스 21:00 / 23:00</li>';
-      H += '<li>현금 floor <b>10%</b></li>';
+      H += '<li>Night Watch (박세진) PM-Western <b>15%</b> · cron ET 09:30</li>';
+      H += '<li>Tide (한도현) PM-Macro <b>15%</b> · cron KST 22:00</li>';
+      H += '<li>Sur (김선우) PM-LatAm/EM <b>15%</b> · cron KST 22:00 · EWZ·EWW·EEM·EWC</li>';
+      H += '<li>Terra (이지훈) PM-Commodities <b>10%</b></li>';
+      H += '<li>Nova (정현우) PM-Semis/AI <b>10%</b></li>';
+      H += '<li>Aegis (진수호) CRO <b>0%</b> — 12+3 게이트 + 12 안전장치</li>';
+      H += '<li>Pathfinder (임도진) RA <b>0%</b> — 뉴스 KST 21:00 / 23:00</li>';
+      H += '<li>현금 floor <b>10%</b> · Mint·Pulse 자리 대기</li>';
       H += '</ul>';
 
       H += '<h3>§6 Aegis 방어</h3>';
@@ -10564,11 +10823,11 @@
           '<span class="v">' + (nav.value_usd != null
               ? '$' + Number(nav.value_usd).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—') + '</span>' +
           '<span class="k">오늘</span>' +
-          '<span class="v ' + (perf.today_pnl_pct >= 0 ? 'pos' : 'neg') + '">' + _fmtPct(perf.today_pnl_pct, true) + '</span>' +
+          '<span class="v ' + ((nav.today_pnl_pct != null && nav.today_pnl_pct >= 0) ? 'pos' : 'neg') + '">' + _fmtPct(nav.today_pnl_pct, true) + '</span>' +
           '<span class="k">이번주</span>' +
-          '<span class="v">' + (perf.week_pnl_pct != null ? _fmtPct(perf.week_pnl_pct, true) : '기록중') + '</span>' +
+          '<span class="v">' + (perf.week_pct != null ? _fmtPct(perf.week_pct, true) : '기록중') + '</span>' +
           '<span class="k">이번달</span>' +
-          '<span class="v">' + (perf.month_pnl_pct != null ? _fmtPct(perf.month_pnl_pct, true) : '기록중') + '</span>' +
+          '<span class="v">' + (perf.month_pct != null ? _fmtPct(perf.month_pct, true) : '기록중') + '</span>' +
           '<span class="k">누적</span>' +
           '<span class="v">' + (perf.cumulative_pct != null ? _fmtPct(perf.cumulative_pct, true) : '기록 시작 전') + '</span>' +
           '<span class="k">MDD</span>' +
@@ -10590,13 +10849,13 @@
       '<div class="sec">' +
         '<div class="kv">' +
           '<span class="k">SPY</span>' +
-          '<span class="v">' + (m.spy != null ? '$' + Number(m.spy).toFixed(2) : '—') + '</span>' +
+          '<span class="v">' + (m.spy_last != null ? '$' + Number(m.spy_last).toFixed(2) : '—') + ' <span class="' + (m.spy_pct >= 0 ? 'pos' : 'neg') + '" style="font-size:11px;">' + (m.spy_pct != null ? _fmtPct(m.spy_pct, true) : '') + '</span></span>' +
           '<span class="k">QQQ</span>' +
-          '<span class="v">' + (m.qqq != null ? '$' + Number(m.qqq).toFixed(2) : '—') + '</span>' +
+          '<span class="v">' + (m.qqq_last != null ? '$' + Number(m.qqq_last).toFixed(2) : '—') + ' <span class="' + (m.qqq_pct >= 0 ? 'pos' : 'neg') + '" style="font-size:11px;">' + (m.qqq_pct != null ? _fmtPct(m.qqq_pct, true) : '') + '</span></span>' +
           '<span class="k">VIX</span>' +
-          '<span class="v">' + (m.vix != null ? Number(m.vix).toFixed(1) : '—') + '</span>' +
+          '<span class="v">' + (m.vix != null ? Number(m.vix).toFixed(1) : '—') + ' <span class="muted" style="font-size:11px;">' + _esc(m.vix_class || '') + '</span></span>' +
           '<span class="k">USD/KRW</span>' +
-          '<span class="v">' + (m.usdkrw != null ? Number(m.usdkrw).toLocaleString() : (data.nav && data.nav.usd_to_krw ? Number(data.nav.usd_to_krw).toLocaleString() : '—')) + '</span>' +
+          '<span class="v">' + (data.nav && data.nav.usd_to_krw ? Number(data.nav.usd_to_krw).toLocaleString('ko-KR', {maximumFractionDigits: 2}) : '—') + '</span>' +
           '<span class="k">10Y 금리</span>' +
           '<span class="v">' + (m.us10y != null ? Number(m.us10y).toFixed(2) + '%' : '—') + '</span>' +
           '<span class="k">DXY</span>' +
@@ -11299,8 +11558,8 @@
   }
 
   function _aggregateSimPositions(l3trades) {
-    // sim 가상 포지션 집계: buy 개수 - sell 개수 > 0 인 ticker.
-    //   실 수량/평단은 계산 불가 — '—' 로 두고 결정 수 · 최근 신호 · 담당 PM 만 노출.
+    // v13.0 폴백 전용 — sim_portfolio 부재 시에만 호출.
+    //   layer3.recent_would_trades 이벤트 로그로 근사 집계 (수량/평단 계산 불가).
     var byTicker = {};
     (l3trades || []).forEach(function(w) {
       var tk = (w.ticker || w.symbol || '').toUpperCase();
@@ -11319,12 +11578,42 @@
       arr.push({
         symbol: tk,
         _sim: true,
+        _simSource: 'l3',
         pm_key: b.pm_key,
         _decisions: b.trades.length,
         _latest: b.trades[0],
       });
     });
     return arr;
+  }
+
+  function _simPositionsFromLedger(sp) {
+    // v13.0 정본 — sim_portfolio.positions 원장 직결 (수량/평단/현재가/PnL 실값).
+    if (!sp || !Array.isArray(sp.positions) || !sp.positions.length) return [];
+    return sp.positions.map(function(p) {
+      var band = null;
+      if (p.signal_bands_buy) {
+        // 마지막 신호가 어느 밴드인지 표시용 축약 라벨
+        if (p.last_signal >= 0.6) band = '0.6+';
+        else if (p.last_signal >= 0.45) band = '0.45-0.6';
+        else band = '<0.45';
+      }
+      return {
+        symbol: p.ticker,
+        _sim: true,
+        _simSource: 'ledger',
+        pm_key: p.pm,
+        quantity: p.shares,
+        avg_cost: p.avg_cost,
+        market_price: p.market_price,
+        unrealized_pnl: p.unrealized_pnl_usd,
+        unrealized_pnl_pct: p.unrealized_pnl_pct,
+        market_value: p.market_value_usd,
+        _lastSignal: p.last_signal,
+        _lastAction: p.last_action,
+        _band: band,
+      };
+    });
   }
 
   function _renderHoldingsChips(activePersonas) {
@@ -11361,8 +11650,30 @@
         ? '<span class="pm-cell"><span class="swatch" style="background:' + _esc(pmMeta.color) + ';"></span>' +
           _esc(pmMeta.short) + '</span>'
         : '<span class="pm-cell"><span class="swatch"></span>—</span>';
+      if (r._sim && r._simSource === 'ledger') {
+        // v13.0 — sim_portfolio 원장 실값. 실계좌 렌더와 동일 필드 매핑 + sim 배지.
+        var qtyL = r.quantity != null ? Number(r.quantity).toFixed(3) : '—';
+        var avgL = r.avg_cost != null ? '$' + Number(r.avg_cost).toFixed(2) : '—';
+        var lastL = r.market_price != null ? '$' + Number(r.market_price).toFixed(2) : '—';
+        var pnlL = r.unrealized_pnl;
+        var pnlPctL = r.unrealized_pnl_pct;
+        var pnlClsL = (pnlL == null) ? 'neut' : (pnlL >= 0 ? 'pos' : 'neg');
+        var pnlTxtL = (pnlL == null) ? '—' :
+          (pnlL >= 0 ? '+' : '−') + '$' + Math.abs(pnlL).toLocaleString('en-US', {maximumFractionDigits: 0}) +
+          (pnlPctL != null ? ' (' + _fmtPct(pnlPctL, true) + ')' : '');
+        var bandTxt = r._band ? r._band : (r._lastSignal != null ? Number(r._lastSignal).toFixed(2) : '—');
+        return '<tr class="sim" data-h2-tk="' + _esc(tk) + '" data-h2-pm="' + _esc(pmKey || '') + '">' +
+          '<td><span class="sym">' + _esc(tk) + '</span></td>' +
+          '<td>' + pmHtml + '</td>' +
+          '<td class="num">' + qtyL + '</td>' +
+          '<td class="num">' + avgL + '</td>' +
+          '<td class="num">' + lastL + '</td>' +
+          '<td class="num pnl ' + pnlClsL + '">' + pnlTxtL + '</td>' +
+          '<td class="num">' + _esc(bandTxt) + '</td>' +
+        '</tr>';
+      }
       if (r._sim) {
-        // sim: 계산 불가 필드는 — 로. 결정 수 · 최근 신호 표시.
+        // sim(l3 폴백): 계산 불가 필드는 — 로. 결정 수 · 최근 신호 표시.
         var latest = r._latest || {};
         var exp = (latest.net_expected_pct != null) ? Number(latest.net_expected_pct).toFixed(2) + '%' : '—';
         return '<tr class="sim" data-h2-tk="' + _esc(tk) + '" data-h2-pm="' + _esc(pmKey || '') + '">' +
@@ -11396,6 +11707,10 @@
       '</tr>';
     }).join('');
 
+    // v13.0 — sim ledger 소스면 손익/신호밴드 헤더 (l3 폴백은 여전히 기대/결정)
+    var simLedger = rows.length && rows[0]._sim && rows[0]._simSource === 'ledger';
+    var col6 = simLedger ? '손익' : (isSim ? '기대' : '손익');
+    var col7 = simLedger ? '신호밴드' : (isSim ? '결정' : '비중');
     host.innerHTML =
       '<table class="h2-table">' +
         '<thead><tr>' +
@@ -11404,8 +11719,8 @@
           '<th class="num">수량</th>' +
           '<th class="num">평단</th>' +
           '<th class="num">현재가</th>' +
-          '<th class="num">' + (isSim ? '기대' : '손익') + '</th>' +
-          '<th class="num">' + (isSim ? '결정' : '비중') + '</th>' +
+          '<th class="num">' + col6 + '</th>' +
+          '<th class="num">' + col7 + '</th>' +
         '</tr></thead>' +
         '<tbody>' + rowsHtml + '</tbody>' +
       '</table>';
@@ -11427,6 +11742,9 @@
   }
 
   function renderPcHoldingsV12(data) {
+    // v13.0 — 소스 우선순위: (1) broker positions 실계좌
+    //   (2) sim_portfolio.positions 원장 (수량·평단·현재가·PnL 실값)
+    //   (3) layer3.recent_would_trades 폴백 (수량/평단 계산 불가)
     var block = document.querySelector('[data-bind="h2-holdings-block"]');
     if (!block) return;
     var positions = Array.isArray(data.positions)
@@ -11434,52 +11752,52 @@
     var portfolio = data.portfolio || {};
     var nav = data.nav || {};
     var aegisLine = (data.team_desk && data.team_desk.aegis_line) || {};
+    var sp = data.sim_portfolio || null;
     var l3trades = (data.layer3 && data.layer3.recent_would_trades) || [];
 
-    var isSim = false;
+    var isSim = false, isSimLedger = false;
     var rows = positions.slice();
     var srcLabel = '', srcCls = 'empty', srcBadgeTxt = '—';
 
     if (positions.length > 0) {
-      // 실계좌
-      isSim = false;
-      srcCls = 'real';
-      srcBadgeTxt = '실계좌';
+      isSim = false; srcCls = 'real'; srcBadgeTxt = '실계좌';
       srcLabel = '포지션 ' + positions.length + '건 · 실계좌 잔고';
+    } else if (sp && Array.isArray(sp.positions) && sp.positions.length > 0) {
+      // v13.0 — sim_portfolio 원장 직결
+      rows = _simPositionsFromLedger(sp);
+      isSim = true; isSimLedger = true; srcCls = 'sim';
+      srcBadgeTxt = 'sim — 원장';
+      srcLabel = 'sim 원장 ' + rows.length + '건 · 실보유 0 · virtual NAV $' +
+                 Number(sp.virtual_nav && sp.virtual_nav.current_nav_usd || 0).toLocaleString('en-US', {maximumFractionDigits: 0});
     } else {
-      // sim 폴백
+      // 폴백: l3 이벤트 로그 근사
       var sim = _aggregateSimPositions(l3trades);
       if (sim.length > 0) {
-        rows = sim;
-        isSim = true;
-        srcCls = 'sim';
-        srcBadgeTxt = 'sim — 가상';
-        srcLabel = 'sim 가상 포지션 ' + sim.length + '건 · 실보유 0';
+        rows = sim; isSim = true; srcCls = 'sim'; srcBadgeTxt = 'sim — 폴백';
+        srcLabel = 'sim 근사 ' + sim.length + '건 · 원장 부재 (l3 로그 폴백)';
       } else {
-        rows = [];
-        srcCls = 'empty';
-        srcBadgeTxt = '대기';
+        rows = []; srcCls = 'empty'; srcBadgeTxt = '대기';
         srcLabel = '포지션 0 · 다음 평가 KST 22:30';
       }
     }
 
-    // 3 카드 (실계좌 있으면 실측 값, sim 이면 '—' 또는 sim 표시)
+    // 3 카드 — sim ledger 있으면 실값 집계, 아니면 실계좌 집계
     var totalMV = 0, totalPnl = 0, havePnl = false;
-    rows.forEach(function(p) {
-      if (p._sim) return;
-      if (p.market_value != null) totalMV += Number(p.market_value);
-      if (p.unrealized_pnl != null) { totalPnl += Number(p.unrealized_pnl); havePnl = true; }
+    rows.forEach(function(pp) {
+      if (pp.market_value != null) totalMV += Number(pp.market_value);
+      if (pp.unrealized_pnl != null) { totalPnl += Number(pp.unrealized_pnl); havePnl = true; }
     });
-    var totalTxt = isSim || rows.length === 0
-      ? '—'
-      : '$' + Number(totalMV).toLocaleString('en-US', {maximumFractionDigits: 0});
-    var pnlTxt = isSim || !havePnl
-      ? '—'
-      : (totalPnl >= 0 ? '+' : '−') + '$' + Math.abs(totalPnl).toLocaleString('en-US', {maximumFractionDigits: 0});
-    var pnlCls = isSim || !havePnl ? '' : (totalPnl >= 0 ? 'pos' : 'neg');
-    var pnlSub = isSim
-      ? 'sim — 실 손익 없음'
-      : (havePnl ? '평단 대비' : '—');
+    var canShowTotals = (isSimLedger || !isSim) && rows.length > 0;
+    var totalTxt = canShowTotals && totalMV > 0
+      ? '$' + Number(totalMV).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—';
+    var pnlTxt = canShowTotals && havePnl
+      ? (totalPnl >= 0 ? '+' : '−') + '$' + Math.abs(totalPnl).toLocaleString('en-US', {maximumFractionDigits: 0})
+      : '—';
+    var pnlCls = canShowTotals && havePnl ? (totalPnl >= 0 ? 'pos' : 'neg') : '';
+    var pnlSub;
+    if (isSimLedger) pnlSub = 'sim 원장 · 미실현';
+    else if (isSim) pnlSub = 'sim 근사 · 실 손익 없음';
+    else pnlSub = havePnl ? '평단 대비' : '—';
 
     var navUsd = Number(nav.value_usd || 0);
     var cashUsd = Number(portfolio.cash_usd != null ? portfolio.cash_usd : (aegisLine.cash_pct != null && navUsd ? (aegisLine.cash_pct / 100 * navUsd) : 0));
@@ -11494,11 +11812,8 @@
     var c = document.querySelector('[data-bind="h2-cash-pct"]');
     var cs = document.querySelector('[data-bind="h2-cash-sub"]');
     if (t)  t.textContent = totalTxt;
-    if (ts) ts.textContent = isSim ? 'sim — 계산 불가' : '평가액 · USD';
-    if (p) {
-      p.textContent = pnlTxt;
-      p.className = 'v ' + pnlCls;
-    }
+    if (ts) ts.textContent = isSimLedger ? 'sim 원장 · 평가액' : (isSim ? 'sim 근사 · 계산 불가' : '평가액 · USD');
+    if (p) { p.textContent = pnlTxt; p.className = 'v ' + pnlCls; }
     if (ps) ps.textContent = pnlSub;
     if (c)  c.textContent = (cashPct == null ? '—' : Number(cashPct).toFixed(1) + '%');
     if (cs) cs.textContent = '하한 ' + cashFloor + '%';
@@ -11509,17 +11824,25 @@
     if (sl) sl.textContent = srcLabel;
     if (sb) { sb.textContent = srcBadgeTxt; sb.className = 'h2-source-badge ' + srcCls; }
 
-    // PM 칩 — 활성 PM = 현재 rows 에서 나타난 PM 만.
-    //   실계좌면 broker positions 의 pm_key. sim 이면 sim 결정의 persona_key.
-    //   count = 해당 PM 소유 포지션 수.
+    // PM 칩 — sim ledger 면 pm_summary 우선 (return_pct 표시 가능), 아니면 rows 집계
     var counts = {};
     rows.forEach(function(r) {
       var k = _pmKeyFromPos(r) || 'unknown';
       counts[k] = (counts[k] || 0) + 1;
     });
-    var activePms = Object.keys(counts).map(function(k) {
-      return { key: k, meta: _pmMeta(k), count: counts[k] };
-    });
+    var pmSummary = (isSimLedger && sp && sp.pm_summary) ? sp.pm_summary : null;
+    var activePms;
+    if (pmSummary) {
+      // pm_summary 키 기준 — 원장 소스면 이게 정본
+      activePms = Object.keys(pmSummary).map(function(k) {
+        var s = pmSummary[k];
+        return { key: k, meta: _pmMeta(k), count: counts[k] || (s.positions_open || 0), _ret: s.return_pct };
+      });
+    } else {
+      activePms = Object.keys(counts).map(function(k) {
+        return { key: k, meta: _pmMeta(k), count: counts[k] };
+      });
+    }
     activePms.sort(function(a, b){ return b.count - a.count; });
     _renderHoldingsChips(activePms);
 
@@ -11608,10 +11931,15 @@
   }
 
   function _renderDailyBars(trades) {
+    // v13.0 A안 — 소스: sim recent_ledger (실체결). 축: 금액(notional_usd).
+    //   PM별 색으로 스택 · 매수 위/매도 아래 (매도는 부호 반전 스택).
+    //   원 trades 는 판단(would_trade) — 지금은 count 툴팁 정보로만 씀.
     var barsHost = document.querySelector('[data-bind="h3-daily-bars"]');
     var labelsHost = document.querySelector('[data-bind="h3-daily-labels"]');
     if (!barsHost || !labelsHost) return;
-    // 오늘 KST 기준 최근 14일
+    var data = window.nexusBackendData || {};
+    var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
+
     var today = new Date();
     var days = [];
     for (var i = 13; i >= 0; i--) {
@@ -11619,29 +11947,45 @@
       var key = d.getFullYear() + '-' +
                 String(d.getMonth() + 1).padStart(2, '0') + '-' +
                 String(d.getDate()).padStart(2, '0');
-      days.push({ key: key, buy: 0, sell: 0 });
+      days.push({ key: key, buyByPm: {}, sellByPm: {}, buyCnt: 0, sellCnt: 0, buyTotal: 0, sellTotal: 0 });
     }
-    (trades || []).forEach(function(t) {
-      var k = _dayKey(t.ts);
+    ledger.forEach(function(l) {
+      var k = _dayKey(l.ts);
       if (!k) return;
       var day = days.find(function(x) { return x.key === k; });
       if (!day) return;
-      var side = (t.action || t.intent || 'buy').toLowerCase();
-      if (side === 'sell') day.sell++;
-      else day.buy++;
-    });
-    var maxCnt = Math.max.apply(null, days.map(function(d){return d.buy + d.sell;})) || 1;
-    barsHost.innerHTML = days.map(function(d) {
-      var total = d.buy + d.sell;
-      if (total === 0) {
-        return '<div class="h3-daily-bar" data-count="0" title="' + d.key + ': 0"><div class="seg-empty"></div></div>';
+      var pm = l.pm || 'unknown';
+      var notional = Math.abs(Number(l.notional_usd || 0));
+      var side = (l.action || 'buy').toLowerCase();
+      if (side === 'sell') {
+        day.sellByPm[pm] = (day.sellByPm[pm] || 0) + notional;
+        day.sellCnt++; day.sellTotal += notional;
+      } else {
+        day.buyByPm[pm] = (day.buyByPm[pm] || 0) + notional;
+        day.buyCnt++; day.buyTotal += notional;
       }
-      var buyH = (d.buy / maxCnt) * 100;
-      var sellH = (d.sell / maxCnt) * 100;
-      var buyHtml = d.buy > 0 ? '<div class="seg-buy" style="height:' + buyH + '%;" title="매수 ' + d.buy + '"></div>' : '';
-      var sellHtml = d.sell > 0 ? '<div class="seg-sell" style="height:' + sellH + '%;" title="매도 ' + d.sell + '"></div>' : '';
-      return '<div class="h3-daily-bar" title="' + d.key + ': 매수 ' + d.buy + ' · 매도 ' + d.sell + '">' +
-        buyHtml + sellHtml +
+    });
+    var maxAmt = Math.max.apply(null, days.map(function(d){return Math.max(d.buyTotal, d.sellTotal);})) || 1;
+
+    function _stackHtml(byPm, sideCls) {
+      return Object.keys(byPm).map(function(pm) {
+        var meta = _pmMeta(pm);
+        var h = (byPm[pm] / maxAmt) * 100;
+        return '<div class="seg-pm ' + sideCls + '" style="height:' + h.toFixed(2) + '%;background:' + _esc(meta.color) + ';" ' +
+               'title="' + _esc(meta.short) + ' $' + Math.round(byPm[pm]).toLocaleString('en-US') + '"></div>';
+      }).join('');
+    }
+
+    barsHost.innerHTML = days.map(function(d) {
+      var totalTx = d.buyCnt + d.sellCnt;
+      if (totalTx === 0) {
+        return '<div class="h3-daily-bar" data-count="0" title="' + d.key + ': 체결 0건"><div class="seg-empty"></div></div>';
+      }
+      var tip = d.key + ': 매수 ' + d.buyCnt + '건 $' + Math.round(d.buyTotal).toLocaleString('en-US') +
+                ' · 매도 ' + d.sellCnt + '건 $' + Math.round(d.sellTotal).toLocaleString('en-US');
+      return '<div class="h3-daily-bar amt-stack" title="' + _esc(tip) + '">' +
+        '<div class="stack-top">' + _stackHtml(d.buyByPm, 'buy') + '</div>' +
+        '<div class="stack-bot">' + _stackHtml(d.sellByPm, 'sell') + '</div>' +
       '</div>';
     }).join('');
     labelsHost.innerHTML = days.map(function(d) {
@@ -11764,6 +12108,37 @@
     if (meta) meta.textContent = filtered.length + '건 / 전체 ' + trades.length;
 
     _renderTimeline(filtered);
+    _renderSimLedger(data);
+  }
+
+  function _renderSimLedger(data) {
+    // v13.0 — sim_portfolio.recent_ledger (실체결가 · 수량 · notional) 렌더
+    var host = document.querySelector('[data-bind="h3-ledger-wrap"]');
+    var meta = document.querySelector('[data-bind="h3-ledger-meta"]');
+    if (!host) return;
+    var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
+    if (meta) meta.textContent = '최근 ' + ledger.length + '건';
+    if (!ledger.length) {
+      host.innerHTML = '<div class="h3-empty"><div class="big">sim 원장 부재</div><div class="desc">sim_portfolio.recent_ledger 없음</div></div>';
+      return;
+    }
+    var rows = ledger.map(function(l) {
+      var pmMeta = _pmMeta(l.pm);
+      var side = (l.action || 'buy').toLowerCase();
+      var actCls = side === 'sell' ? 'sell' : 'buy';
+      var actTxt = side === 'sell' ? '매도' : '매수';
+      var tt = _timeShort(l.ts) + ' ' + _dayKey(l.ts).slice(5);
+      return '<div class="h3-ledger-row" data-h3-ltid="' + _esc((l.ts||'') + '#' + (l.ticker||'')) + '">' +
+        '<span class="t">' + _esc(tt) + '</span>' +
+        '<span class="sym">' + _esc(l.ticker || '?') + '</span>' +
+        '<span class="pm"><span class="swatch" style="background:' + _esc(pmMeta.color) + '"></span>' + _esc(pmMeta.short) + '</span>' +
+        '<span class="act ' + actCls + '">' + actTxt + '</span>' +
+        '<span class="num">$' + Number(l.fill_price).toFixed(2) + ' × ' + Number(l.shares).toFixed(3) + '</span>' +
+        '<span class="num">$' + Math.round(Number(l.notional_usd || 0)).toLocaleString('en-US') +
+          ' <span style="color:var(--fg-dim);font-size:10px;">신호 ' + (l.signal_strength != null ? Number(l.signal_strength).toFixed(2) : '—') + '</span></span>' +
+      '</div>';
+    }).join('');
+    host.innerHTML = rows;
   }
 
   // 필터 · 행 · 초기화 클릭 위임

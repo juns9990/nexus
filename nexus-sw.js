@@ -104,7 +104,14 @@
 //         감지 (setItem→getItem 확인) 후 조용한 실패 대신 배너로 사유 표시.
 //         (d) ?backend=<url> 쿼리 지원 — 주소창만으로 백엔드 교체 가능.
 //         표시·설정 계층만, 매매·Aegis·미러 로직 무변경. 캐시 무효화 위해 bump.
-const CACHE_VERSION = 'v12.8';
+// v12.9 — 익명인증 코드 이식 (20260715). 폰 미러 read 복구의 마지막 조각.
+//         Firebase Console 익명 인증 ON + rules 게시 완료 상태에서 코드만
+//         뒤쳐져 있어 폰에서 nexus_mirror/latest 접근이 permission-denied 로
+//         차단되던 문제. deploy dashboard.html 미러 스크립트에 firebase-auth
+//         import + signInAnonymously + onAuthStateChanged 5s 폴백 이식.
+//         PC(Tailscale) 직결 실패 시 폰이 Firestore 미러로 fallback 하도록
+//         복구. 미러 read 계층만, 매매·Aegis·표시 로직 무변경. 캐시 무효화 bump.
+const CACHE_VERSION = 'v12.9';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

@@ -9735,6 +9735,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDMl0_dChzpDbMA0VmLFCGwSvqxbwTE8lw",
@@ -9746,12 +9747,29 @@
   };
 
   let _db = null;
+  let _auth = null;
   let _initFailed = false;
+  let _authReady = null;   // Promise<void> — 익명 로그인 완료 신호
+  let _authFailed = false; // Auth 익명 활성이 꺼져 있으면 true (경고만, read 는 시도)
+
   function _init() {
     if (_db || _initFailed) return;
     try {
       const app = initializeApp(firebaseConfig);
       _db = getFirestore(app);
+      _auth = getAuth(app);
+      _authReady = new Promise((resolve) => {
+        // 상태 변화(로그인 완료) 감지 후 resolve. 실패해도 5s 뒤 resolve — read 재시도 유지.
+        const off = onAuthStateChanged(_auth, (user) => {
+          if (user) { try { off(); } catch(_){} resolve(); }
+        });
+        setTimeout(() => { try { off(); } catch(_){} resolve(); }, 5000);
+      });
+      signInAnonymously(_auth).catch((e) => {
+        _authFailed = true;
+        console.warn("[nexus mirror] anonymous sign-in failed (Console → Auth → 익명 활성 필요):",
+                     e && e.code ? e.code : e);
+      });
     } catch (e) {
       console.warn("[nexus mirror] init failed:", e);
       _initFailed = true;
@@ -9763,6 +9781,9 @@
     async read(path) {
       _init();
       if (!_db || _initFailed) return null;
+      if (_authReady) {
+        try { await _authReady; } catch(_) {}
+      }
       const p = path || "nexus_mirror/latest";
       const parts = p.split("/");
       if (parts.length !== 2) return null;
@@ -9774,7 +9795,9 @@
         if (!snap || !snap.exists()) return null;
         return snap.data();
       } catch (e) {
-        console.warn("[nexus mirror] read failed:", e && e.message ? e.message : e);
+        const msg = e && e.message ? e.message : String(e);
+        console.warn("[nexus mirror] read failed:", msg,
+                     _authFailed ? "(auth: anonymous disabled)" : "");
         return null;
       }
     }

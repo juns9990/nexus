@@ -178,7 +178,22 @@
 //   [UI7] sim 체결 5-폭 그리드 재조정 (빈 컬럼 없게) — 시간 · 종목(PM점) ·
 //         방향 · 체결($금액 + 수량 sub) · 신호. 우측 열로 이동.
 //   매매·Aegis·미러 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.3';
+// v13.4 (20260715) — 밀도 2차 + 일지 상세화 (실화면 피드백). 표시 계층만.
+//   [UI1] 보유 sim 원장 여백 추가 축소 — table-layout fixed→auto, width auto (콘텐츠폭
+//         좌측 정렬 압축). 셀 padding 6→3/8, 폰트 11.5→11, 헤더 9.5→9. 과산개 해소.
+//   [UI2] PM 자본배분 도넛 확대 (180→260, ≥1100px) + 카드 2-col: 좌 도넛 /
+//         우 sim NAV 요약 미니표 (총투입·현금·손익·virtual NAV) + PM 실배분 표
+//         (sim actual%). vnav 는 도넛 아래에서 우측으로 이동.
+//   [UI3] 이력 타임라인 밀도 3차 — padding 5→3, gap 8→6, 시각 폭 54→44,
+//         cols 콘텐츠 기준. 헤더 padding 5→3.
+//   [UI4] 이력 SIM 우측 열 → 주간 집계 교체 (중복 해소). 주 단위 (KST 월요일 시작)
+//         매수/매도 건수·총금액·PM 스택 미니바·실현손익. 소스: sim_portfolio.recent_ledger.
+//         계층3 카드의 "최근 SIM 체결" 은 유지.
+//   [UI5] 홈 "일지 · 최근 8건" → "운용 일지" 격상. 일 단위 그룹으로 병합:
+//         sim ledger (일별 요약 + PM별 1줄) · approvals.history (승인/반려/만료) ·
+//         notif.recent (Aegis · 시스템). 최근 3일 기본 펼침, 이전 접힘.
+//   매매·Aegis·미러 무손. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.4';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

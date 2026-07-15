@@ -2962,6 +2962,56 @@
   .nx-je-type { font-family: var(--mono); color: var(--accent); margin-right: 4px; }
   .nx-je-text { color: var(--fg-muted); }
 
+  /* v13.4 — 운용 일지: 일 단위 그룹 · sim+approvals+notif 병합 · 접기 */
+  .nx-journal-day {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; margin-bottom: 6px;
+  }
+  .nx-journal-day-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 6px 10px; background: var(--bg-card);
+    cursor: pointer; user-select: none;
+    font-size: 11px;
+  }
+  .nx-journal-day-head:hover { background: #12161a; }
+  .nx-journal-day-head .caret { color: var(--fg-dim); margin-right: 6px; }
+  .nx-journal-day-head .lbl {
+    font-family: var(--mono); font-weight: 700; color: var(--fg-strong);
+  }
+  .nx-journal-day-head .cnt {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-muted);
+    margin-left: 6px;
+  }
+  .nx-journal-day-head .sum {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-muted);
+  }
+  .nx-journal-day-body {
+    display: flex; flex-direction: column;
+  }
+  .nx-journal-day-body .nx-jrow {
+    display: grid; grid-template-columns: 50px 60px 1fr;
+    gap: 8px; padding: 4px 10px;
+    border-top: 1px solid #15191775; font-size: 11px;
+    align-items: baseline;
+  }
+  .nx-journal-day-body .nx-jrow .t {
+    font-family: var(--mono); font-size: 10.5px; color: var(--fg-dim);
+  }
+  .nx-journal-day-body .nx-jrow .cat {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+    padding: 1px 5px; border-radius: 3px;
+    letter-spacing: 0.04em; text-align: center;
+  }
+  .nx-journal-day-body .nx-jrow .cat.sim  { background: rgba(212,165,94,0.15); color: var(--warn); }
+  .nx-journal-day-body .nx-jrow .cat.appr { background: rgba(94,234,212,0.15); color: var(--accent); }
+  .nx-journal-day-body .nx-jrow .cat.aegis { background: rgba(239,107,107,0.15); color: var(--negative); }
+  .nx-journal-day-body .nx-jrow .cat.sys  { background: #37415120; color: var(--fg-dim); }
+  .nx-journal-day-body .nx-jrow .desc { color: var(--fg); font-size: 10.5px; }
+  .nx-journal-day-body .nx-jrow .desc .k {
+    color: var(--fg-strong); font-family: var(--mono); font-weight: 600;
+  }
+  .nx-journal-day-body .nx-jrow .desc .dim { color: var(--fg-dim); }
+
   .nx-countdown-card {
     margin-top: 14px; padding: 16px;
     background: #101412; border: 1px solid #1c2320; border-radius: 12px;
@@ -3016,6 +3066,45 @@
   .hold-pm-card, .hold-donut-card {
     padding: 14px; margin-bottom: 12px;
     background: #101412; border: 1px solid #1c2320; border-radius: 12px;
+  }
+  /* v13.4 — PM 도넛 카드 좌우 2열 (좌 도넛 확대 · 우 vnav+실배분) */
+  .hold-pm-2col { display: block; }
+  @media (min-width: 1100px) {
+    .hold-pm-2col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .hold-pm-2col > .pm-donut-side { min-width: 0; }
+    .hold-pm-2col > .pm-data-side { min-width: 0; }
+    /* v13.4 — 도넛 확대 (180 → 260 · 카드 높이 활용) */
+    .hold-pm-card .pm-donut-side .nx-chart-canvas { height: 260px !important; }
+  }
+  .hold-pm-actual-mix {
+    padding: 8px 10px; margin-top: 8px;
+    background: #0c0f0e; border: 1px solid #1c2320; border-radius: 8px;
+  }
+  .hold-pm-actual-mix .hpam-title {
+    font-size: 10px; font-weight: 700; color: var(--fg-muted);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .hold-pm-actual-mix .hpam-row {
+    display: grid; grid-template-columns: 14px 1fr auto auto;
+    align-items: center; gap: 8px;
+    padding: 3px 0; font-size: 11px;
+    border-bottom: 1px solid #15191740;
+  }
+  .hold-pm-actual-mix .hpam-row:last-child { border-bottom: none; }
+  .hold-pm-actual-mix .hpam-sw {
+    width: 8px; height: 8px; border-radius: 2px;
+  }
+  .hold-pm-actual-mix .hpam-name { color: var(--fg-strong); font-weight: 500; }
+  .hold-pm-actual-mix .hpam-a {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+  }
+  .hold-pm-actual-mix .hpam-t {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-dim);
   }
   .hold-pm-title, .hold-donut-title {
     display: flex; justify-content: space-between; align-items: baseline;
@@ -3895,24 +3984,26 @@
   }
 
   .h2-table {
-    width: 100%;
+    width: auto;                     /* v13.4 — 콘텐츠폭 좌측 정렬 (과산개 방지) */
+    max-width: 100%;
     border-collapse: collapse;
     background: var(--bg-elev);
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
-    font-size: 12px;
-    table-layout: fixed;
+    font-size: 11px;                 /* v13.4 — 12 → 11 */
+    table-layout: auto;              /* v13.4 — fixed → auto */
   }
-  /* v13.3 — 밀도 개선: 셀 여백 10px→6px, 폰트 12→11.5, 헤더 폰트 10→9.5 */
+  /* v13.4 — 밀도 2차: 셀 여백 6→3/6, 폰트 헤더 9.5→9, 본문 11.5→11 */
   .h2-table thead th {
     background: var(--bg-card);
     color: var(--fg-muted);
-    font-weight: 700; font-size: 9.5px;
+    font-weight: 700; font-size: 9px;
     letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 6px 8px;
+    padding: 4px 8px;
     text-align: left;
     border-bottom: 1px solid var(--border);
+    white-space: nowrap;
   }
   .h2-table thead th.num { text-align: right; }
   .h2-table tbody tr {
@@ -3923,17 +4014,18 @@
   .h2-table tbody tr:first-child { border-top: none; }
   .h2-table tbody tr:hover { background: var(--bg-card); }
   .h2-table tbody td {
-    padding: 6px 8px;
+    padding: 3px 8px;
     color: var(--fg);
     vertical-align: middle;
-    font-size: 11.5px;
+    font-size: 11px;
+    white-space: nowrap;
   }
   .h2-table tbody td.num {
     font-family: var(--mono); text-align: right; font-weight: 500;
   }
   .h2-table .sym {
     font-family: var(--mono); font-weight: 700;
-    color: var(--fg-strong); font-size: 12px;
+    color: var(--fg-strong); font-size: 11.5px;
   }
   .h2-table .pm-cell {
     display: inline-flex; align-items: center; gap: 6px;
@@ -3980,9 +4072,9 @@
   .risk-unified-card .defense-board { margin: 0; }
   .risk-unified-card .risk-card { margin: 0; border: 1px solid #1c2320; }
 
-  /* v13.2 — 보유 sim 원장 날짜 그룹 접기 */
+  /* v13.2 — 보유 sim 원장 날짜 그룹 접기 · v13.4 — 그룹 헤더 padding 축소 */
   .h2-table-grouped .h2-group-head td {
-    background: #0c0f0e; padding: 8px 12px; cursor: pointer;
+    background: #0c0f0e; padding: 5px 10px; cursor: pointer;
     border-top: 1px solid #1c2320; user-select: none;
   }
   .h2-table-grouped .h2-group-head:hover td { background: #12161a; }
@@ -4163,6 +4255,47 @@
   }
   .h3-ledger-toggle:hover { color: var(--fg-strong); border-color: var(--accent); }
 
+  /* v13.4 — 주간 집계 (PC 이력 우측 열, sim ledger 전체를 KST 주 버킷으로) */
+  .h3-weekly-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .h3-weekly-card {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .h3-weekly-card .hw-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-size: 11px;
+  }
+  .h3-weekly-card .hw-week {
+    font-family: var(--mono); font-weight: 600; color: var(--fg-strong);
+  }
+  .h3-weekly-card .hw-range {
+    font-family: var(--mono); font-size: 10px; color: var(--fg-dim);
+  }
+  .h3-weekly-card .hw-cnts {
+    display: flex; gap: 10px; font-family: var(--mono); font-size: 10.5px;
+    color: var(--fg-muted);
+  }
+  .h3-weekly-card .hw-cnts .buy { color: var(--positive, #22c55e); font-weight: 600; }
+  .h3-weekly-card .hw-cnts .sell { color: var(--negative, #ef4444); font-weight: 600; }
+  .h3-weekly-card .hw-cnts .pnl.pos { color: var(--positive); font-weight: 600; }
+  .h3-weekly-card .hw-cnts .pnl.neg { color: var(--negative); font-weight: 600; }
+  .h3-weekly-card .hw-stack {
+    display: flex; height: 6px; width: 100%; border-radius: 3px; overflow: hidden;
+    background: #0c0f0e;
+  }
+  .h3-weekly-card .hw-stack-seg { height: 100%; }
+  .h3-weekly-card .hw-legend {
+    display: flex; flex-wrap: wrap; gap: 6px 10px;
+    font-family: var(--mono); font-size: 9.5px; color: var(--fg-muted);
+  }
+  .h3-weekly-card .hw-legend .lg {
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .h3-weekly-card .hw-legend .lg .sw {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+
   /* 타임라인 */
   .h3-timeline {
     background: var(--bg-elev);
@@ -4176,9 +4309,9 @@
   .h3-day-group:first-child { border-top: none; }
   .h3-day-head {
     display: flex; align-items: baseline; justify-content: space-between;
-    padding: 5px 10px;
+    padding: 3px 8px;
     background: var(--bg-card);
-    font-size: 11px; font-weight: 700;
+    font-size: 10.5px; font-weight: 700;
     color: var(--fg-muted);
     letter-spacing: 0.04em;
   }
@@ -4186,40 +4319,40 @@
     font-family: var(--mono); font-size: 10px;
     color: var(--fg-dim); font-weight: 500;
   }
-  /* v13.3 — 밀도 개선: 행 높이·여백 축소 (padding 9→5, gap 10→8, font 12→11.5) */
+  /* v13.4 — 타임라인 밀도 3차: padding 5→3, gap 8→6, cols 콘텐츠 기준, 시각 폭 54→44 */
   .h3-trow {
     display: grid;
-    grid-template-columns: 54px auto 1fr auto auto auto;
-    gap: 8px;
-    padding: 5px 10px;
+    grid-template-columns: 44px auto auto auto auto auto;
+    gap: 6px;
+    padding: 3px 8px;
     border-top: 1px solid var(--border);
     align-items: center;
     cursor: pointer;
-    font-size: 11.5px;
+    font-size: 11px;
     transition: background-color 0.15s ease;
   }
   .h3-trow:first-of-type { border-top: none; }
   .h3-trow:hover { background: var(--bg-card); }
   .h3-trow .t {
-    font-family: var(--mono); font-size: 11px;
+    font-family: var(--mono); font-size: 10.5px;
     color: var(--fg-dim);
   }
   .h3-trow .pm {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 11px; color: var(--fg-muted);
-    min-width: 60px;
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10.5px; color: var(--fg-muted);
   }
   .h3-trow .pm .dot {
-    width: 7px; height: 7px; border-radius: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
     background: var(--fg-dim); flex-shrink: 0;
   }
   .h3-trow .sym {
     font-family: var(--mono); font-weight: 700;
-    color: var(--fg-strong); font-size: 13px;
+    color: var(--fg-strong); font-size: 12px;
+    justify-self: start; margin-right: 4px;
   }
   .h3-trow .side {
-    font-family: var(--mono); font-size: 10px; font-weight: 700;
-    padding: 3px 7px; border-radius: 3px;
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+    padding: 2px 6px; border-radius: 3px;
     letter-spacing: 0.04em;
   }
   .h3-trow .side.buy {
@@ -4229,14 +4362,12 @@
     background: rgba(239,107,107,0.15); color: var(--negative);
   }
   .h3-trow .tgt {
-    font-family: var(--mono); font-size: 11px;
+    font-family: var(--mono); font-size: 10.5px;
     color: var(--fg-muted); text-align: right;
-    min-width: 60px;
   }
   .h3-trow .sig {
-    font-family: var(--mono); font-size: 11px;
+    font-family: var(--mono); font-size: 10.5px;
     color: var(--fg); text-align: right;
-    min-width: 44px;
     font-weight: 600;
   }
   .h3-trow.skipped {
@@ -4679,8 +4810,8 @@
         <div class="nx-sim-rank" data-bind="nx-sim-rank"></div>
       </div>
 
-      <!-- (6) 일지 타임라인 -->
-      <div class="nx-section-title">일지 · 최근 8건</div>
+      <!-- (6) 운용 일지 — v13.4 : 일 단위 그룹, sim+approvals+notif 병합 -->
+      <div class="nx-section-title">운용 일지<span class="meta" data-bind="nx-journal-meta">최근 3일 · 이전 접힘</span></div>
       <div class="nx-journal" data-bind="nx-journal">
         <div class="nx-journal-empty">최근 이벤트 없음</div>
       </div>
@@ -4750,15 +4881,20 @@
         <div class="hold-split" data-bind="hold-split">투자 — · 캐시 —</div>
       </div>
 
-      <!-- PM 자본배분 — 도넛 + 커스텀 범례 + 바 -->
+      <!-- PM 자본배분 — 도넛 + 커스텀 범례 + 바 (v13.4 : 좌 도넛 확대 · 우 vnav+실배분 표) -->
       <div class="hold-pm-card">
         <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
-        <div class="nx-chart-host" id="nx-pm-donut-host">
-          <canvas id="nx-pm-donut" class="nx-chart-canvas" aria-label="PM 자본배분 도넛"></canvas>
+        <div class="hold-pm-2col">
+          <div class="pm-donut-side">
+            <div class="nx-chart-host" id="nx-pm-donut-host">
+              <canvas id="nx-pm-donut" class="nx-chart-canvas" aria-label="PM 자본배분 도넛"></canvas>
+            </div>
+            <div class="nx-chart-legend" id="nx-pm-donut-legend"></div>
+          </div>
+          <div class="pm-data-side" data-bind="hold-pm-data-side"></div>
         </div>
-        <div class="nx-chart-legend" id="nx-pm-donut-legend"></div>
         <div class="hold-pm-list" data-bind="hold-pm-list">
-          <div class="hold-empty">데이터 수집 중…</div>
+          <div class="hold-empty">registry 대기</div>
         </div>
       </div>
 
@@ -5714,12 +5850,17 @@
       <div class="hold-row-2">
         <div class="hold-pm-card">
           <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
-          <div class="nx-chart-host" id="nx-pm-donut-host-pc">
-            <canvas id="nx-pm-donut-pc" class="nx-chart-canvas" aria-label="PM 자본배분 도넛 (PC)"></canvas>
+          <div class="hold-pm-2col">
+            <div class="pm-donut-side">
+              <div class="nx-chart-host" id="nx-pm-donut-host-pc">
+                <canvas id="nx-pm-donut-pc" class="nx-chart-canvas" aria-label="PM 자본배분 도넛 (PC)"></canvas>
+              </div>
+              <div class="nx-chart-legend" id="nx-pm-donut-legend-pc"></div>
+            </div>
+            <div class="pm-data-side" data-bind="hold-pm-data-side"></div>
           </div>
-          <div class="nx-chart-legend" id="nx-pm-donut-legend-pc"></div>
           <div class="hold-pm-list" data-bind="hold-pm-list">
-            <div class="hold-empty">데이터 수집 중…</div>
+            <div class="hold-empty">registry 대기</div>
           </div>
         </div>
         <div class="hold-donut-card" data-bind="hold-donut-card" style="display:none;">
@@ -5862,11 +6003,11 @@
           </div>
           <div class="h3-col-right">
             <div class="d-tab-section-title" style="margin-top:0;">
-              sim 체결
-              <span class="d-tab-section-meta" data-bind="h3-ledger-meta-pc">최근 20건</span>
+              기간 집계 · 주 단위
+              <span class="d-tab-section-meta" data-bind="h3-weekly-meta-pc">최근 4주</span>
             </div>
-            <div class="h3-ledger-wrap h3-ledger-wrap-pc" data-bind="h3-ledger-wrap-pc">
-              <div class="h3-empty"><div class="big">sim 원장 대기</div></div>
+            <div class="h3-weekly-wrap" data-bind="h3-weekly-wrap-pc">
+              <div class="h3-empty"><div class="big">sim 원장 대기</div><div class="desc">주간 집계 계산 대기</div></div>
             </div>
           </div>
         </div>
@@ -7255,54 +7396,192 @@
       _setBinds('nx-aegis-blocked', String(aegisLine.blocked_today || 0));
     }
 
+    // v13.4 — 운용 일지: 일 단위 그룹 · sim ledger + approvals.history + notif.recent 병합.
+    //   최근 3일 기본 펼침 · 이전은 접힘 (헤더 클릭 토글).
+    //   sim 체결은 하루 요약 1줄 + PM별 1줄 (건수 · 금액) 로 압축.
+    var _journalExpanded = null;  // null=초기(최근 3일 펼침) · {day:bool}
+
     function renderJournal(data) {
       var hosts = document.querySelectorAll('[data-bind="nx-journal"]');
       if (!hosts.length) return;
-      var items = [];
-      // 1) notif.recent — snapshot 실 필드는 'ts' (telegram_notifier).
-      //    timestamp/sent_at/time 은 그 어디에도 안 쓰이는 옛 이름. 'ts' 1순위.
+      var metaEls = document.querySelectorAll('[data-bind="nx-journal-meta"]');
+      var PM_META = window.NEXUS_PM_META || {};
+      var _kstDay = function(iso) {
+        if (!iso) return '—';
+        try {
+          var d = new Date(iso);
+          var kst = new Date(d.getTime() + 9 * 3600 * 1000);
+          return kst.toISOString().slice(0, 10);
+        } catch (e) { return '—'; }
+      };
+      var _kstTime = function(iso) {
+        if (!iso) return '—';
+        try {
+          var d = new Date(iso);
+          var kst = new Date(d.getTime() + 9 * 3600 * 1000);
+          return kst.toISOString().slice(11, 16);
+        } catch (e) { return '—'; }
+      };
+
+      var items = [];  // {ts, day, kind, cat, html}
+
+      // 1) sim ledger — recent_ledger (KST 일자 그룹 후, 일별 1행 요약 + PM별 1행)
+      var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
+      var dayBuckets = {};
+      ledger.forEach(function(l) {
+        var day = _kstDay(l.ts);
+        if (!dayBuckets[day]) dayBuckets[day] = { day: day, ts: l.ts, items: [] };
+        dayBuckets[day].items.push(l);
+        // 최신 ts 유지 (그룹 대표)
+        if (new Date(l.ts).getTime() > new Date(dayBuckets[day].ts).getTime()) dayBuckets[day].ts = l.ts;
+      });
+      Object.keys(dayBuckets).forEach(function(day){
+        var bucket = dayBuckets[day];
+        var buy = 0, sell = 0, buyAmt = 0, sellAmt = 0;
+        var pmAgg = {};
+        bucket.items.forEach(function(l){
+          var amt = Math.abs(Number(l.notional_usd || 0));
+          var side = (l.action || 'buy').toLowerCase();
+          if (side === 'sell') { sell++; sellAmt += amt; } else { buy++; buyAmt += amt; }
+          var pk = l.pm || 'unknown';
+          if (!pmAgg[pk]) pmAgg[pk] = { buy: 0, sell: 0, amt: 0 };
+          if (side === 'sell') pmAgg[pk].sell++; else pmAgg[pk].buy++;
+          pmAgg[pk].amt += amt;
+        });
+        // 요약 행
+        items.push({
+          ts: bucket.ts, day: day, kind: 'sim-day', cat: 'sim',
+          time: _kstTime(bucket.ts),
+          catLabel: 'SIM',
+          descHtml: '<span class="k">SIM 체결 ' + (buy + sell) + '건</span> ' +
+                    '<span class="dim">매수 ' + buy + ' $' + Math.round(buyAmt).toLocaleString('en-US') +
+                    ' · 매도 ' + sell + ' $' + Math.round(sellAmt).toLocaleString('en-US') + '</span>',
+        });
+        Object.keys(pmAgg).sort(function(a, b){ return pmAgg[b].amt - pmAgg[a].amt; }).forEach(function(pk){
+          var pm = pmAgg[pk];
+          var pmShort = (PM_META[pk] && PM_META[pk].short) || pk;
+          items.push({
+            ts: bucket.ts, day: day, kind: 'sim-pm', cat: 'sim',
+            time: '',
+            catLabel: '',
+            descHtml: '<span class="dim">→</span> <span class="k">' + _escapeHtml(pmShort) + '</span> ' +
+                      '<span class="dim">매수 ' + pm.buy + ' · 매도 ' + pm.sell +
+                      ' · $' + Math.round(pm.amt).toLocaleString('en-US') + '</span>',
+          });
+        });
+      });
+
+      // 2) approvals.history — 승인·반려·만료 결정 (종목·유형)
+      var approvals = (data.approvals && Array.isArray(data.approvals.history)) ? data.approvals.history : [];
+      approvals.forEach(function(a) {
+        var ts = a.decided_at || a.ts || a.created_at;
+        var day = _kstDay(ts);
+        var status = (a.status || '').toLowerCase();
+        var catLabel = 'APPR';
+        var statusKo = status === 'approved' ? '승인' :
+                       status === 'rejected' ? '반려' :
+                       status === 'expired'  ? '만료' : (a.status || '결정');
+        var sym = a.symbol || a.ticker || '';
+        var itype = a.item_type || a.type || '';
+        items.push({
+          ts: ts, day: day, kind: 'appr', cat: 'appr',
+          time: _kstTime(ts),
+          catLabel: catLabel,
+          descHtml: '<span class="k">' + _escapeHtml(statusKo) + '</span> ' +
+                    '<span class="k">' + _escapeHtml(sym) + '</span> ' +
+                    '<span class="dim">' + _escapeHtml(itype) + '</span>',
+        });
+      });
+
+      // 3) notif.recent — Aegis/방어 이벤트 + 시스템 알림
       var notif = (data.notif && data.notif.recent) || [];
       notif.forEach(function(n) {
+        var ts = n.ts || n.timestamp || n.sent_at || n.time;
+        var day = _kstDay(ts);
+        var typeRaw = String(n.type || n.category || 'notif').toLowerCase();
+        var isAegis = typeRaw.indexOf('aegis') >= 0 || typeRaw.indexOf('defense') >= 0 ||
+                      typeRaw.indexOf('block') >= 0 || typeRaw.indexOf('breach') >= 0;
         items.push({
-          ts: n.ts || n.timestamp || n.sent_at || n.time,
-          type: n.type || n.category || '알림',
-          text: n.summary || n.message || n.text || '(no message)',
+          ts: ts, day: day, kind: isAegis ? 'aegis' : 'sys', cat: isAegis ? 'aegis' : 'sys',
+          time: _kstTime(ts),
+          catLabel: isAegis ? 'AEGIS' : 'SYS',
+          descHtml: '<span class="k">' + _escapeHtml(String(n.type || n.category || '알림')) + '</span> ' +
+                    '<span class="dim">' + _escapeHtml(String(n.summary || n.message || n.text || '')) + '</span>',
         });
       });
-      // 2) layer3.recent_would_trades — 실 필드는 'ts' (layer3_opportunity).
-      var l3wt = (data.layer3 && data.layer3.recent_would_trades) || [];
-      l3wt.forEach(function(w) {
-        var symbol = w.symbol || w.ticker || '?';
-        var act = w.action || 'sim';
-        var rationale = w.rationale || w.reason;
-        items.push({
-          ts: w.ts || w.timestamp || w.at,
-          type: '[검토] ' + symbol + ' ' + (act === 'buy' ? '매수' : (act === 'sell' ? '매도' : act)),
-          text: rationale || '경제성 통과',
-        });
-      });
-      // 시간순 desc
-      items.sort(function(a, b) {
-        return (new Date(b.ts || 0)).getTime() - (new Date(a.ts || 0)).getTime();
-      });
-      items = items.slice(0, 8);
-      var html;
+
       if (items.length === 0) {
-        html = '<div class="nx-journal-empty">최근 이벤트 없음</div>';
-      } else {
-        html = items.map(function(it) {
-          var t = _kstTimeShort(it.ts) + ' · ' + _kstDateShort(it.ts);
-          return '<div class="nx-journal-row">' +
-            '<div class="nx-jt">' + _escapeHtml(t) + '</div>' +
-            '<div class="nx-je">' +
-              '<span class="nx-je-type">' + _escapeHtml(String(it.type)) + '</span> ' +
-              '<span class="nx-je-text">' + _escapeHtml(String(it.text)) + '</span>' +
-            '</div>' +
-          '</div>';
-        }).join('');
+        var emptyHtml = '<div class="nx-journal-empty">최근 이벤트 없음</div>';
+        hosts.forEach(function(h){ h.innerHTML = emptyHtml; });
+        if (metaEls.length) metaEls.forEach(function(m){ m.textContent = '이벤트 없음'; });
+        return;
       }
-      hosts.forEach(function(h){ h.innerHTML = html; });
+
+      // 일자 그룹핑
+      var days = {};
+      items.forEach(function(it) {
+        if (!days[it.day]) days[it.day] = [];
+        days[it.day].push(it);
+      });
+      var dayKeys = Object.keys(days).sort().reverse();
+
+      // 기본 펼침: 최근 3일
+      if (_journalExpanded == null) {
+        _journalExpanded = {};
+        dayKeys.forEach(function(k, i) { _journalExpanded[k] = (i < 3); });
+      }
+
+      var todayKst = _kstDay(new Date().toISOString());
+      var dayHtml = dayKeys.map(function(day) {
+        var isOpen = !!_journalExpanded[day];
+        var dayItems = days[day].slice().sort(function(a, b){
+          return (new Date(b.ts||0)).getTime() - (new Date(a.ts||0)).getTime();
+        });
+        var lbl = (day === todayKst) ? '오늘 · ' + day : day;
+        // 요약 (헤더 우측)
+        var simCnt = dayItems.filter(function(x){ return x.kind === 'sim-day'; }).length > 0
+                     ? dayItems.filter(function(x){ return x.kind === 'sim-day'; }).length : 0;
+        var apprCnt = dayItems.filter(function(x){ return x.cat === 'appr'; }).length;
+        var aegCnt  = dayItems.filter(function(x){ return x.cat === 'aegis'; }).length;
+        var sumParts = [];
+        if (simCnt) sumParts.push('sim ' + simCnt);
+        if (apprCnt) sumParts.push('승인 ' + apprCnt);
+        if (aegCnt) sumParts.push('aegis ' + aegCnt);
+        var sumTxt = sumParts.length ? sumParts.join(' · ') : dayItems.length + '건';
+        var rowsHtml = isOpen ? dayItems.map(function(it) {
+          return '<div class="nx-jrow">' +
+            '<span class="t">' + _escapeHtml(it.time || '') + '</span>' +
+            '<span class="cat ' + it.cat + '">' + _escapeHtml(it.catLabel || '') + '</span>' +
+            '<span class="desc">' + it.descHtml + '</span>' +
+          '</div>';
+        }).join('') : '';
+        return '<div class="nx-journal-day">' +
+          '<div class="nx-journal-day-head" data-nx-jday="' + _escapeHtml(day) + '">' +
+            '<span><span class="caret">' + (isOpen ? '▾' : '▸') + '</span>' +
+              '<span class="lbl">' + _escapeHtml(lbl) + '</span>' +
+              '<span class="cnt">' + dayItems.length + '건</span>' +
+            '</span>' +
+            '<span class="sum">' + _escapeHtml(sumTxt) + '</span>' +
+          '</div>' +
+          (isOpen ? '<div class="nx-journal-day-body">' + rowsHtml + '</div>' : '') +
+        '</div>';
+      }).join('');
+
+      hosts.forEach(function(h){ h.innerHTML = dayHtml; });
+      if (metaEls.length) metaEls.forEach(function(m){
+        m.textContent = dayKeys.length + '일 · 최근 3일 펼침';
+      });
     }
+
+    // v13.4 — 일자 헤더 클릭 토글 (위임 · 일지 전용)
+    document.addEventListener('click', function(ev) {
+      var head = ev.target.closest('.nx-journal-day-head[data-nx-jday]');
+      if (!head) return;
+      var day = head.getAttribute('data-nx-jday');
+      if (!day || !_journalExpanded) return;
+      _journalExpanded[day] = !_journalExpanded[day];
+      try { renderJournal(window.nexusBackendData || {}); } catch (e) { console.warn('[journal] toggle', e); }
+    });
 
     function renderSimBlock(sp) {
       // v13.0 — 홈: sim virtual_nav 카드 + PM 랭킹 (return_pct 정렬)
@@ -7494,10 +7773,12 @@
 
       // v13.3 — PM 자본배분: 활성 PM 순회 = data.team_desk.desks (registry).
       //   pm_summary 미존재 PM 은 "투입 $0 · 매매 대기" 표시 (사라짐 방지).
-      //   pm_allocation(실계좌) 폴백은 계속 유효. 도넛 밑 "데이터 수집 중" 제거 —
-      //   그 자리에 sim virtual_nav 요약 카드 (총투입 · 현금 · 총손익) 상단 삽입.
-      var pmHost = document.querySelector('[data-bind="hold-pm-list"]');
-      if (pmHost) {
+      //   pm_allocation(실계좌) 폴백은 계속 유효.
+      // v13.4 — 도넛 카드 2-col: 좌 도넛 확대 · 우 vnav 미니표 + PM 실배분 표.
+      //   기존 pm-list (바) 는 카드 하단에 그대로 유지 (모바일/PC 모두 동일 위치).
+      var pmHosts = document.querySelectorAll('[data-bind="hold-pm-list"]');
+      var pmDataSides = document.querySelectorAll('[data-bind="hold-pm-data-side"]');
+      if (pmHosts.length) {
         var snap = window.nexusBackendData || {};
         var sp   = snap.sim_portfolio || {};
         var pmSummary = sp.pm_summary || {};
@@ -7525,6 +7806,7 @@
         Object.keys(pmSummary).forEach(function(k) { _pushReg(k, null, 'sum'); });
 
         // v13.3 — sim virtual_nav 요약 카드 (도넛 밑 "데이터 수집 중" 대체)
+        // v13.4 — 오른쪽 데이터 사이드에 배치. 총투입·현금·손익·virtual NAV 4-cell.
         var vnavHtml = '';
         var vn = sp.virtual_nav;
         if (vn) {
@@ -7532,13 +7814,15 @@
           var pnlV = Number(vn.unrealized_pnl_usd || 0) + Number(vn.realized_pnl_usd || 0);
           var pnlCls = pnlV >= 0 ? 'pos' : 'neg';
           var pnlSign = pnlV >= 0 ? '+' : '−';
+          var navV   = Number(vn.value_usd || 0);
           vnavHtml =
             '<div class="hold-vnav-mini">' +
               '<div class="hvm-title">sim NAV 요약</div>' +
-              '<div class="hvm-grid">' +
+              '<div class="hvm-grid" style="grid-template-columns:1fr 1fr;">' +
                 '<div><div class="l">총 투입</div><div class="v">' + _fmt(vn.invested_usd) + '</div></div>' +
                 '<div><div class="l">현금</div><div class="v">' + _fmt(vn.cash_usd) + '</div></div>' +
                 '<div><div class="l">총 손익</div><div class="v ' + pnlCls + '">' + pnlSign + '$' + Math.abs(pnlV).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</div></div>' +
+                '<div><div class="l">virtual NAV</div><div class="v">' + _fmt(navV) + '</div></div>' +
               '</div>' +
             '</div>';
         } else {
@@ -7546,6 +7830,7 @@
         }
 
         var rowsHtml = '';
+        var mixRows = [];  // v13.4 — 우측 데이터 사이드용 실배분 표 (레지스트리 순회)
         if (registry.length === 0) {
           // registry 전무 (초기 부팅) — 최소 안내
           rowsHtml = '<div class="hold-empty">registry 대기 (team_desk.desks 부재)</div>';
@@ -7560,6 +7845,8 @@
             var allocMatch = allocRows.filter(function(r) { return (r.key || r.persona_key) === k; })[0];
             var t = allocMatch ? (Number(allocMatch.target_pct) || 0) : (reg.target != null ? reg.target : 0);
             var a = allocMatch ? (Number(allocMatch.actual_pct) || 0) : 0;
+            // v13.4 — 우측 데이터 사이드용 실배분 표 데이터 수집
+            mixRows.push({ ko: ko, color: color, target: t, actual: a });
             var maxScale = Math.max(t, a, 60);
             var tw = Math.min(100, maxScale > 0 ? (t / maxScale * 100) : 0);
             var aw = Math.min(100, maxScale > 0 ? (a / maxScale * 100) : 0);
@@ -7624,9 +7911,29 @@
               '<div class="marker" style="left:calc(' + ctw + '% - 1px)"></div>' +
             '</div>' +
           '</div>';
+          mixRows.push({ ko: '현금', color: cashColor, target: cashFloorPct, actual: cashActual });
         }
 
-        pmHost.innerHTML = vnavHtml + rowsHtml;
+        // v13.4 — 우측 데이터 사이드: vnav 요약 + PM 실배분 표 (sim actual%)
+        var mixHtml = '';
+        if (mixRows.length > 0) {
+          mixHtml = '<div class="hold-pm-actual-mix">' +
+            '<div class="hpam-title">PM 실배분 (sim actual%)</div>' +
+            mixRows.map(function(m){
+              return '<div class="hpam-row">' +
+                '<span class="hpam-sw" style="background:' + m.color + '"></span>' +
+                '<span class="hpam-name">' + _escapeHtml(m.ko) + '</span>' +
+                '<span class="hpam-a" style="color:' + m.color + ';">' + m.actual.toFixed(2) + '%</span>' +
+                '<span class="hpam-t">/ 목표 ' + m.target.toFixed(0) + '%</span>' +
+              '</div>';
+            }).join('') +
+          '</div>';
+        }
+        var dataSideHtml = vnavHtml + mixHtml;
+
+        // pm-list 는 바 리스트, pm-data-side 는 vnav+mix.  <1100px 에서는 pm-data-side 위쪽 스택 (자연 flow).
+        pmHosts.forEach(function(h){ h.innerHTML = rowsHtml; });
+        pmDataSides.forEach(function(h){ h.innerHTML = dataSideHtml; });
       }
 
       // 자산 도넛 — positions 있을 때만
@@ -12559,21 +12866,19 @@
 
     _renderTimeline(filtered);
     _renderSimLedger(data);
+    _renderSimWeekly(data);
   }
 
   // v13.2 — sim 체결 컴팩트: 1줄/건 · 기본 5건 표시 · "더보기" 로 전체 확장
   var _simLedgerExpanded = false;
 
   function _renderSimLedger(data) {
-    // v13.3 — 모바일(h3-ledger-wrap) + PC 2열 우측(h3-ledger-wrap-pc) 동시 렌더.
-    //         5-폭 그리드: 시간 · 종목(PM점) · 방향 · 체결(수량 sub) · 신호
+    // v13.4 — 모바일(h3-ledger-wrap) 만 렌더. PC 우측 열은 _renderSimWeekly 로 대체 (중복 해소).
     var hosts = [
       document.querySelector('[data-bind="h3-ledger-wrap"]'),
-      document.querySelector('[data-bind="h3-ledger-wrap-pc"]'),
     ].filter(Boolean);
     var metas = [
       document.querySelector('[data-bind="h3-ledger-meta"]'),
-      document.querySelector('[data-bind="h3-ledger-meta-pc"]'),
     ].filter(Boolean);
     if (!hosts.length) return;
     var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
@@ -12624,6 +12929,97 @@
     _simLedgerExpanded = !_simLedgerExpanded;
     try { _renderSimLedger(window.nexusBackendData || {}); } catch (e) { console.warn('[h3] ledger toggle', e); }
   });
+
+  // v13.4 — 이력 우측 열: sim ledger 전체를 KST 주 버킷으로 집계.
+  //   주차별 매수/매도 건수·총금액·PM별 금액 스택 미니바·실현손익.
+  //   소스: sim_portfolio.recent_ledger (KST 주 시작 = 월요일 00:00).
+  function _renderSimWeekly(data) {
+    var host = document.querySelector('[data-bind="h3-weekly-wrap-pc"]');
+    var meta = document.querySelector('[data-bind="h3-weekly-meta-pc"]');
+    if (!host) return;
+    var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
+    if (!ledger.length) {
+      var hasSp = !!(data.sim_portfolio);
+      host.innerHTML = hasSp
+        ? '<div class="h3-empty"><div class="big">recent_ledger 값 0건</div><div class="desc">주간 집계 대기</div></div>'
+        : '<div class="h3-empty"><div class="big">sim_portfolio 필드 없음</div><div class="desc">백엔드 미노출</div></div>';
+      if (meta) meta.textContent = '0주';
+      return;
+    }
+    // KST 주 시작 (월요일) 계산
+    var _weekKey = function(iso) {
+      if (!iso) return '—';
+      try {
+        var d = new Date(iso);
+        var kst = new Date(d.getTime() + 9 * 3600 * 1000);
+        var dow = kst.getUTCDay();               // 0=일, 1=월 ...
+        var mondayOffset = (dow + 6) % 7;        // 월요일까지 뒤로 뺄 일수
+        var monday = new Date(kst.getTime() - mondayOffset * 86400 * 1000);
+        return monday.toISOString().slice(0, 10);
+      } catch (e) { return '—'; }
+    };
+    var groups = {};
+    ledger.forEach(function(l) {
+      var wk = _weekKey(l.ts);
+      if (!groups[wk]) groups[wk] = { key: wk, items: [] };
+      groups[wk].items.push(l);
+    });
+    var weeks = Object.keys(groups).sort().reverse().slice(0, 6);
+    if (meta) meta.textContent = '최근 ' + weeks.length + '주';
+    var html = weeks.map(function(wk) {
+      var items = groups[wk].items;
+      var buyCnt = 0, sellCnt = 0, buyAmt = 0, sellAmt = 0, realized = 0;
+      var pmAmt = {};   // pmKey → 절대 금액 합
+      var PM_META = window.NEXUS_PM_META || {};
+      items.forEach(function(l) {
+        var amt = Math.abs(Number(l.notional_usd || 0));
+        var side = (l.action || 'buy').toLowerCase();
+        if (side === 'sell') { sellCnt++; sellAmt += amt; }
+        else { buyCnt++; buyAmt += amt; }
+        if (l.realized_pnl_usd != null) realized += Number(l.realized_pnl_usd || 0);
+        var pk = l.pm || 'unknown';
+        pmAmt[pk] = (pmAmt[pk] || 0) + amt;
+      });
+      var totalAmt = buyAmt + sellAmt;
+      // 주 범위 (월 ~ 일) 표기
+      var rangeLabel;
+      try {
+        var monday = new Date(wk + 'T00:00:00Z');
+        var sunday = new Date(monday.getTime() + 6 * 86400 * 1000);
+        rangeLabel = wk.slice(5) + ' ~ ' + sunday.toISOString().slice(5, 10);
+      } catch (e) { rangeLabel = wk; }
+      var pmKeys = Object.keys(pmAmt).sort(function(a, b){ return pmAmt[b] - pmAmt[a]; });
+      var stackHtml = pmKeys.map(function(pk) {
+        var w = totalAmt > 0 ? (pmAmt[pk] / totalAmt * 100) : 0;
+        var color = (PM_META[pk] && PM_META[pk].color) || '#4b5563';
+        return '<div class="hw-stack-seg" style="width:' + w.toFixed(1) + '%;background:' + color + ';" title="' + _esc((PM_META[pk] ? PM_META[pk].short : pk)) + ' $' + Math.round(pmAmt[pk]).toLocaleString('en-US') + '"></div>';
+      }).join('');
+      var legendHtml = pmKeys.slice(0, 6).map(function(pk) {
+        var color = (PM_META[pk] && PM_META[pk].color) || '#4b5563';
+        var short = (PM_META[pk] && PM_META[pk].short) || pk;
+        return '<span class="lg"><span class="sw" style="background:' + color + '"></span>' + _esc(short) + ' $' + Math.round(pmAmt[pk]).toLocaleString('en-US') + '</span>';
+      }).join('');
+      var pnlCls = realized >= 0 ? 'pos' : 'neg';
+      var pnlSign = realized >= 0 ? '+' : '−';
+      var pnlHtml = (realized === 0 && !items.some(function(l){ return l.realized_pnl_usd != null; }))
+        ? '<span class="pnl">실현 —</span>'
+        : '<span class="pnl ' + pnlCls + '">실현 ' + pnlSign + '$' + Math.abs(realized).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</span>';
+      return '<div class="h3-weekly-card">' +
+        '<div class="hw-head">' +
+          '<span class="hw-week">주 ' + _esc(wk.slice(5)) + '</span>' +
+          '<span class="hw-range">' + _esc(rangeLabel) + '</span>' +
+        '</div>' +
+        '<div class="hw-cnts">' +
+          '<span>매수 <span class="buy">' + buyCnt + '건 · $' + Math.round(buyAmt).toLocaleString('en-US') + '</span></span>' +
+          '<span>매도 <span class="sell">' + sellCnt + '건 · $' + Math.round(sellAmt).toLocaleString('en-US') + '</span></span>' +
+          pnlHtml +
+        '</div>' +
+        (totalAmt > 0 ? '<div class="hw-stack">' + stackHtml + '</div>' : '') +
+        (legendHtml ? '<div class="hw-legend">' + legendHtml + '</div>' : '') +
+      '</div>';
+    }).join('');
+    host.innerHTML = html;
+  }
 
   // 필터 · 행 · 초기화 클릭 위임
   // -----------------------------------------------------------------

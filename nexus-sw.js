@@ -206,7 +206,18 @@
 //   [Layout2] PM 자본배분 카드: 도넛 밑 nx-chart-legend 제거 (3중 중복 해소) +
 //             PM 상세 행 컴팩트 (padding·font 축소, 바 높이 8→6).
 //   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.5';
+// v13.6 (20260715) — 레이아웃 잔손 2건 + 사이드카드 금액 버그. 표시 계층만.
+//   [Layout1] 원장 2열 실렌더 — v13.5 column-count 미작동 (단일 date-group 이
+//             col1 을 가득 채워 col2 가 빔 · 우측 광활한 여백). 42행 flatten +
+//             half-split · grid 2컬럼 · 두 <table> 병렬. 좌 top 에 오늘 헤더 1회.
+//   [Layout2] 일일 요약 사이드카드 흡수 — aside 삭제, source-bar 인라인
+//             "오늘 · SIM 15건 · 매수 15 $X · 결재 1" 한 줄. 원장 host 100% 폭.
+//   [Bug] 사이드카드 매수 15건·$0 — notional_usd 결측/0 폴백:
+//         fill_price × shares 유도. 필드명 변형 (notional·amount_usd) 도 시도.
+//   [Layout3] PM 자본배분 카드 3열 (PC only) — 좌 도넛 (200px, 260→축소) /
+//             중 SIM NAV+실배분 / 우 PM 상세 스택. 세로 대폭 감소.
+//   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.6';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

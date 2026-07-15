@@ -3068,7 +3068,8 @@
     background: #101412; border: 1px solid #1c2320; border-radius: 12px;
   }
   /* v13.4 — PM 도넛 카드 좌우 2열 (좌 도넛 확대 · 우 vnav+실배분) */
-  .hold-pm-2col { display: block; }
+  /* v13.6 — PC 만 3열 (좌 도넛 축소 · 중 vnav+실배분 · 우 PM 상세 스택) */
+  .hold-pm-2col, .hold-pm-3col { display: block; }
   @media (min-width: 1100px) {
     .hold-pm-2col {
       display: grid;
@@ -3079,7 +3080,18 @@
     .hold-pm-2col > .pm-donut-side { min-width: 0; }
     .hold-pm-2col > .pm-data-side { min-width: 0; }
     /* v13.4 — 도넛 확대 (180 → 260 · 카드 높이 활용) */
-    .hold-pm-card .pm-donut-side .nx-chart-canvas { height: 260px !important; }
+    .hold-pm-card .hold-pm-2col .pm-donut-side .nx-chart-canvas { height: 260px !important; }
+    /* v13.6 — 3열 (사진2 #4). 도넛 축소로 세로 대폭 감소. */
+    .hold-pm-3col {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.85fr) minmax(0, 1fr) minmax(0, 1.35fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .hold-pm-3col > * { min-width: 0; }
+    .hold-pm-card .hold-pm-3col .pm-donut-side .nx-chart-canvas { height: 200px !important; }
+    /* 3열 내 우측 PM 스택은 별도 margin-top 필요 없음 */
+    .hold-pm-3col > .pm-list-side .hold-pm-list.compact { margin-top: 0; }
   }
   .hold-pm-actual-mix {
     padding: 8px 10px; margin-top: 8px;
@@ -3968,9 +3980,9 @@
   }
   .h2-chip.active .count { color: var(--accent); }
 
-  /* 포지션 테이블 + 소스 배지 */
+  /* 포지션 테이블 + 소스 배지 · v13.6 space-between 제거 → gap layout */
   .h2-source-bar {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center;
     padding: 4px 2px 10px;
     font-size: 11px; color: var(--fg-muted);
   }
@@ -4095,64 +4107,42 @@
   .h2-group-pnl .pos { color: var(--accent, #22c55e); }
   .h2-group-pnl .neg { color: var(--negative, #ef4444); }
 
-  /* v13.5 — 좌 요약 카드 (좁게) / 우 원장 (넓게) 2열 스왑 (사진3 피드백) */
-  .h2-table-2col { display: block; }
+  /* v13.6 — 원장 42행 flatten 후 half-split · grid 2컬럼 (사진1 #1) */
+  /*   기존 column-count + break-inside:avoid 는 단일 date-group 이 column 을
+  /*   가득 채워 col2 가 비어버리는 문제 있어 grid 로 교체. */
+  .h2-ledger-cols { display: block; }
   @media (min-width: 1100px) {
-    .h2-table-2col {
+    [data-bind="h2-table-host"] .h2-ledger-cols {
       display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
-      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 12px;
       align-items: start;
     }
-    .h2-table-2col > [data-bind="h2-table-host"] { min-width: 0; }
-    /* v13.5 — 원장 42행을 2열 병렬 그리드로 분할 (날짜 그룹 유지, 좌→우 채움) */
-    [data-bind="h2-table-host"] .h2-ledger-cols {
-      column-count: 2;
-      column-gap: 12px;
-      column-fill: balance;
-    }
-    [data-bind="h2-table-host"] .h2-ledger-group {
-      break-inside: avoid;
-      margin-bottom: 8px;
-    }
+    [data-bind="h2-table-host"] .h2-ledger-col { min-width: 0; }
+    [data-bind="h2-table-host"] .h2-ledger-col > .h2-table { width: 100%; }
   }
-  .h2-ledger-cols { display: block; }
-  .h2-ledger-group {
-    background: var(--bg-elev); border: 1px solid var(--border);
-    border-radius: 8px; overflow: hidden;
+  .h2-ledger-col + .h2-ledger-col { margin-top: 8px; }
+  @media (min-width: 1100px) {
+    .h2-ledger-col + .h2-ledger-col { margin-top: 0; }
   }
-  .h2-ledger-group + .h2-ledger-group { margin-top: 8px; }
-  .h2-side-card {
-    background: #101412; border: 1px solid #1c2320; border-radius: 10px;
-    padding: 12px 14px;
-    display: flex; flex-direction: column; gap: 10px;
-    font-size: 12px;
+  /* v13.6 — h2-side-card 는 사용 안 함 (source-bar 인라인 흡수) */
+  /* v13.6 — source-bar 인라인 today 요약 (사진1 #2) */
+  .h2-source-bar {
+    gap: 12px; flex-wrap: wrap;
   }
-  .h2-side-card .hsc-title {
-    font-size: 10px; font-weight: 700; color: var(--fg-muted);
-    letter-spacing: 0.06em; text-transform: uppercase;
+  .h2-today-inline {
+    flex: 1 1 auto;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--fg-dim);
+    display: inline-flex; align-items: center; gap: 10px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .h2-side-card .hsc-empty { color: var(--fg-dim); font-size: 11px; text-align: center; padding: 6px 0; }
-  .h2-side-card .hsc-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    font-family: var(--mono); font-size: 11.5px;
-  }
-  .h2-side-card .hsc-row .k { color: var(--fg-muted); }
-  .h2-side-card .hsc-row .v { color: var(--fg-strong); font-weight: 600; }
-  .h2-side-card .hsc-row .v.buy { color: var(--positive, #22c55e); }
-  .h2-side-card .hsc-row .v.sell { color: var(--negative, #ef4444); }
-  .h2-side-card .hsc-sep {
-    height: 1px; background: #1c2320; margin: 2px 0;
-  }
-  .h2-side-card .hsc-pm {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11.5px;
-  }
-  .h2-side-card .hsc-pm .swatch {
-    width: 8px; height: 8px; border-radius: 50%;
-  }
-  .h2-side-card .hsc-pm-name { color: var(--fg-strong); font-weight: 600; }
-  .h2-side-card .hsc-pm-cnt { color: var(--fg-muted); font-family: var(--mono); font-size: 10.5px; margin-left: auto; }
+  .h2-today-inline .k { color: var(--fg-muted); }
+  .h2-today-inline .v { color: var(--fg-strong); font-weight: 600; }
+  .h2-today-inline .v.buy { color: var(--positive, #22c55e); }
+  .h2-today-inline .v.sell { color: var(--negative, #ef4444); }
+  .h2-today-inline .sep { color: #2a3230; margin: 0 2px; }
+  .h2-source-bar .h2-source-badge { margin-left: auto; }
 
   .h2-empty {
     padding: 26px 20px; text-align: center;
@@ -5839,19 +5829,14 @@
 
         <div class="h2-source-bar">
           <span data-bind="h2-source-label">포지션 —</span>
+          <span class="h2-today-inline" data-bind="h2-today-inline"></span>
           <span class="h2-source-badge empty" data-bind="h2-source-badge">—</span>
         </div>
-        <!-- v13.5 — 좌: 활동 요약 (좁게) / 우: 원장 2열 그리드 (넓게, 사진3 피드백) -->
-        <div class="h2-table-2col">
-          <aside class="h2-side-card" data-bind="h2-side-card">
-            <div class="hsc-title">오늘 활동</div>
-            <div class="hsc-empty">sim 원장 대기</div>
-          </aside>
-          <div data-bind="h2-table-host">
-            <div class="h2-empty">
-              <div class="big">데이터 수집 중…</div>
-              <div class="desc">첫 snapshot 도착 대기</div>
-            </div>
+        <!-- v13.6 — sidecard 제거 (source-bar 인라인 흡수) · 원장 host 100% 폭 -->
+        <div data-bind="h2-table-host">
+          <div class="h2-empty">
+            <div class="big">데이터 수집 중…</div>
+            <div class="desc">첫 snapshot 도착 대기</div>
           </div>
         </div>
       </div>
@@ -5875,16 +5860,19 @@
       <div class="hold-row-2">
         <div class="hold-pm-card compact">
           <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
-          <div class="hold-pm-2col">
+          <!-- v13.6 — PC 3열: 좌 도넛 / 중 SIM NAV+실배분 / 우 PM 상세 스택 (사진2 #4) -->
+          <div class="hold-pm-3col">
             <div class="pm-donut-side">
               <div class="nx-chart-host" id="nx-pm-donut-host-pc">
                 <canvas id="nx-pm-donut-pc" class="nx-chart-canvas" aria-label="PM 자본배분 도넛 (PC)"></canvas>
               </div>
             </div>
             <div class="pm-data-side" data-bind="hold-pm-data-side"></div>
-          </div>
-          <div class="hold-pm-list compact" data-bind="hold-pm-list">
-            <div class="hold-empty">registry 대기</div>
+            <div class="pm-list-side">
+              <div class="hold-pm-list compact" data-bind="hold-pm-list">
+                <div class="hold-empty">registry 대기</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="hold-donut-card" data-bind="hold-donut-card" style="display:none;">
@@ -6280,7 +6268,10 @@
             <div class="h5-row"><span class="k">v13.0</span><span class="desc">sim_portfolio 원장 직결 (보유·홈·이력) · 상세 패널 필드명 수정 · 미니바 A안 · 기간 칩 · sim NAV 축적 시작</span><span class="v muted">2026-07-15</span></div>
             <div class="h5-row"><span class="k">v13.1</span><span class="desc">v13.0 회귀 4건 수정 — 크로스 IIFE 참조 + 예외 격리</span><span class="v muted">2026-07-15</span></div>
             <div class="h5-row"><span class="k">v13.2</span><span class="desc">실화면 피드백 (버그 2 + UI 7) — 원장 그룹 접기 · sim 미니 라인 · 컴팩트 체결 · 방어 통합 카드</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.3</span><span class="desc">밀도 개선 라운드 — 5 PM 전원 표시 · 도넛 슬라이스 라벨 · 이력 2열 · 14일 미니바 제거 · 보유 사이드 카드</span><span class="v ok">현재</span></div>
+            <div class="h5-row"><span class="k">v13.3</span><span class="desc">밀도 개선 라운드 — 5 PM 전원 표시 · 도넛 슬라이스 라벨 · 이력 2열 · 14일 미니바 제거 · 보유 사이드 카드</span><span class="v muted">2026-07-15</span></div>
+            <div class="h5-row"><span class="k">v13.4</span><span class="desc">밀도 2차 + 일지 상세화 (실화면 피드백)</span><span class="v muted">2026-07-15</span></div>
+            <div class="h5-row"><span class="k">v13.5</span><span class="desc">sim 시세 리셋 버그 + 카드 버그 2 + 레이아웃 2 — 원장 2열 · vNAV 필드명 · PM 실배분 sim 기준</span><span class="v muted">2026-07-15</span></div>
+            <div class="h5-row"><span class="k">v13.6</span><span class="desc">레이아웃 잔손 2건 + 사이드카드 금액 버그 — 원장 half-split · 오늘 요약 인라인 흡수 · notional 폴백 · PM 카드 3열</span><span class="v ok">현재</span></div>
           </div>
 
         </div>
@@ -12463,8 +12454,9 @@
         '<th class="num">' + col7 + '</th>' +
       '</tr></thead>';
 
-    // v13.2 — sim ledger 원장이면 opened_at KST 날짜별 그룹 접기.
-    //   기본: 오늘만 펼침, 이전 날짜는 접힘 (헤더 클릭 토글).
+    // v13.6 — 원장 42행 flatten + half-split (사진1 #1).
+    //   기존 date-group 접기 + column-count 는 단일 그룹(오늘 30+행)이 col1 을
+    //   가득 채우고 col2 가 빔 → 우측 광활한 여백. flat sort + 이등분으로 교체.
     if (!simLedger) {
       var flat = rows.map(_rowHtmlFor).join('');
       host.innerHTML = '<table class="h2-table">' + headHtml + '<tbody>' + flat + '</tbody></table>';
@@ -12479,63 +12471,44 @@
         return kst.toISOString().slice(0, 10);
       } catch (e) { return '—'; }
     };
-    var groups = {};
-    rows.forEach(function(r) {
-      var k = _kstDay(r.opened_at);
-      if (!groups[k]) groups[k] = [];
-      groups[k].push(r);
+    // opened_at 최신순 정렬 (fallback: 원본 순서)
+    var sortedFlat = rows.slice().sort(function(a, b) {
+      var ka = String(a.opened_at || ''), kb = String(b.opened_at || '');
+      if (ka < kb) return 1;
+      if (ka > kb) return -1;
+      return 0;
     });
-    var keys = Object.keys(groups).sort().reverse();  // 최신 날짜 위
     var todayKst = _kstDay(new Date().toISOString());
+    var todayCnt = sortedFlat.filter(function(r){ return _kstDay(r.opened_at) === todayKst; }).length;
 
-    if (_h2ExpandedGroups == null) {
-      _h2ExpandedGroups = {};
-      keys.forEach(function(k) { _h2ExpandedGroups[k] = (k === todayKst); });
-      if (!keys.some(function(k){ return _h2ExpandedGroups[k]; }) && keys.length > 0) {
-        _h2ExpandedGroups[keys[0]] = true;  // 오늘 없으면 최신 그룹 펼침 (완전 접힘 방지)
-      }
-    }
+    // 절반씩 나눠 좌·우 테이블에 배치. 홀수면 좌측이 1개 더.
+    var half = Math.ceil(sortedFlat.length / 2);
+    var leftRows = sortedFlat.slice(0, half);
+    var rightRows = sortedFlat.slice(half);
 
-    // v13.5 — 각 날짜 그룹을 독립 <table> 로 렌더 → 상위 wrapper 에 column-count:2 로 좌→우 채움.
-    //   각 그룹은 break-inside: avoid — 그룹 분할 없이 그대로 유지.
-    var groupHtml = keys.map(function(k) {
-      var isOpen = !!_h2ExpandedGroups[k];
-      var cnt = groups[k].length;
-      var label = (k === todayKst) ? '오늘 (' + k + ')' : k;
-      var dayPnl = 0, haveDayPnl = false;
-      groups[k].forEach(function(r){ if (r.unrealized_pnl != null){ dayPnl += Number(r.unrealized_pnl); haveDayPnl = true; }});
-      var dayPnlHtml = haveDayPnl
-        ? '<span class="' + (dayPnl >= 0 ? 'pos' : 'neg') + '">' + (dayPnl >= 0 ? '+' : '−') + '$' + Math.abs(dayPnl).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</span>'
-        : '';
-      var headRow = '<tr class="h2-group-head" data-h2-group="' + _esc(k) + '">' +
-        '<td colspan="7">' +
-          '<span class="h2-group-caret">' + (isOpen ? '▾' : '▸') + '</span> ' +
-          '<span class="h2-group-label">' + _esc(label) + '</span> ' +
-          '<span class="h2-group-cnt">' + cnt + '건</span> ' +
-          '<span class="h2-group-pnl">' + dayPnlHtml + '</span>' +
-        '</td>' +
-      '</tr>';
-      var bodyRows = isOpen ? groups[k].map(_rowHtmlFor).join('') : '';
-      return '<div class="h2-ledger-group">' +
-        '<table class="h2-table h2-table-grouped">' + headHtml +
-          '<tbody>' + headRow + bodyRows + '</tbody>' +
-        '</table>' +
-      '</div>';
-    }).join('');
+    var labelTop = todayCnt > 0 ? ('오늘 (' + todayKst + ')') : todayKst;
+    var headerCell = '<tr class="h2-group-head">' +
+      '<td colspan="7">' +
+        '<span class="h2-group-label">' + _esc(labelTop) + '</span> ' +
+        '<span class="h2-group-cnt">' + sortedFlat.length + '건 · 최신순</span>' +
+      '</td>' +
+    '</tr>';
 
-    host.innerHTML = '<div class="h2-ledger-cols">' + groupHtml + '</div>';
+    var leftBody = headerCell + leftRows.map(_rowHtmlFor).join('');
+    var rightBody = rightRows.map(_rowHtmlFor).join('');
+    var leftTable = '<div class="h2-ledger-col">' +
+      '<table class="h2-table h2-table-grouped">' + headHtml +
+        '<tbody>' + leftBody + '</tbody>' +
+      '</table>' +
+    '</div>';
+    var rightTable = rightRows.length ? ('<div class="h2-ledger-col">' +
+      '<table class="h2-table h2-table-grouped">' + headHtml +
+        '<tbody>' + rightBody + '</tbody>' +
+      '</table>' +
+    '</div>') : '';
+
+    host.innerHTML = '<div class="h2-ledger-cols">' + leftTable + rightTable + '</div>';
   }
-
-  // v13.2 — 날짜 그룹 헤더 클릭 토글 (위임)
-  document.addEventListener('click', function(ev) {
-    var head = ev.target.closest('.h2-group-head[data-h2-group]');
-    if (!head) return;
-    ev.preventDefault();
-    var k = head.getAttribute('data-h2-group');
-    if (!k || !_h2ExpandedGroups) return;
-    _h2ExpandedGroups[k] = !_h2ExpandedGroups[k];
-    try { renderPcHoldingsV12(window.nexusBackendData || {}); } catch (e) { console.warn('[h2] group toggle', e); }
-  });
 
   function _renderHoldingsEmptyState(nav, portfolio) {
     var host = document.querySelector('[data-bind="h2-table-host"]');
@@ -12676,73 +12649,51 @@
   }
 
   function _renderHoldingsSideCard(data) {
-    // v13.5 — 사이드 카드 확장: 오늘 sim 체결 (건수/금액) · PM별 1줄 · 결재 요약.
-    //   홈 운용일지의 컴팩트판.
-    var host = document.querySelector('[data-bind="h2-side-card"]');
+    // v13.6 — sidecard 를 source-bar 인라인 요약으로 흡수 (사진1 #2).
+    //   "오늘 · SIM 15건 · 매수 15 · $12,345 · 결재 1" 한 줄.
+    // v13.6 — notional 폴백 (사진1 #3): notional_usd 결측/0 이면 fill_price × shares.
+    var host = document.querySelector('[data-bind="h2-today-inline"]');
     if (!host) return;
     var ledger = (data && data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
     var approvals = (data && data.approvals && Array.isArray(data.approvals.history)) ? data.approvals.history : [];
     var _fmt = function(v) { return '$' + Math.round(v).toLocaleString('en-US'); };
-    // KST 오늘
     var today = new Date();
     var todayKey = today.getFullYear() + '-' +
                    String(today.getMonth() + 1).padStart(2, '0') + '-' +
                    String(today.getDate()).padStart(2, '0');
-    // 오늘 sim
     var todayRows = ledger.filter(function(l) { return _dayKey(l.ts) === todayKey; });
     var buyCnt = 0, sellCnt = 0, buyAmt = 0, sellAmt = 0;
-    var pmAgg = {};
     todayRows.forEach(function(l) {
       var side = (l.action || 'buy').toLowerCase();
-      var amt = Math.abs(Number(l.notional_usd || 0));
+      var amt = Number(l.notional_usd || 0);
+      if (!amt) {
+        // v13.6 폴백 — notional_usd 결측/0 → fill_price × shares 유도
+        var price = Number(l.fill_price || l.price || l.avg_price || 0);
+        var qty   = Number(l.shares || l.qty || l.quantity || 0);
+        amt = price * qty;
+      }
+      amt = Math.abs(amt);
       if (side === 'sell') { sellCnt++; sellAmt += amt; } else { buyCnt++; buyAmt += amt; }
-      var pm = l.pm || 'unknown';
-      if (!pmAgg[pm]) pmAgg[pm] = { cnt: 0, amt: 0 };
-      pmAgg[pm].cnt++; pmAgg[pm].amt += amt;
     });
-    // 오늘 결재 (KST decided_at 매칭)
     var apprToday = approvals.filter(function(a) {
       var ts = a.decided_at || a.ts;
       return ts && _dayKey(ts) === todayKey;
     });
-    var apprCnt = { approved: 0, rejected: 0, expired: 0 };
-    apprToday.forEach(function(a) {
-      var s = (a.status || '').toLowerCase();
-      if (apprCnt[s] != null) apprCnt[s]++;
-    });
 
-    var html = '<div class="hsc-title">오늘 · ' + todayKey.slice(5) + '</div>';
+    var parts = ['<span class="k">오늘 ' + todayKey.slice(5) + '</span>'];
     if (todayRows.length === 0 && apprToday.length === 0) {
-      html += '<div class="hsc-empty">활동 없음</div>';
-      host.innerHTML = html;
-      return;
+      parts.push('<span class="sep">·</span><span>활동 없음</span>');
+    } else {
+      if (todayRows.length > 0) {
+        parts.push('<span class="sep">·</span><span class="k">SIM</span><span class="v">' + todayRows.length + '건</span>');
+        if (buyCnt)  parts.push('<span class="sep">·</span><span class="k">매수</span><span class="v buy">' + buyCnt + ' ' + _fmt(buyAmt) + '</span>');
+        if (sellCnt) parts.push('<span class="sep">·</span><span class="k">매도</span><span class="v sell">' + sellCnt + ' ' + _fmt(sellAmt) + '</span>');
+      }
+      if (apprToday.length > 0) {
+        parts.push('<span class="sep">·</span><span class="k">결재</span><span class="v">' + apprToday.length + '건</span>');
+      }
     }
-    // SIM 요약
-    if (todayRows.length > 0) {
-      html += '<div class="hsc-row"><span class="k">SIM 체결</span><span class="v">' + todayRows.length + '건</span></div>' +
-              '<div class="hsc-row"><span class="k">매수</span><span class="v buy">' + buyCnt + ' · ' + _fmt(buyAmt) + '</span></div>' +
-              '<div class="hsc-row"><span class="k">매도</span><span class="v sell">' + sellCnt + ' · ' + _fmt(sellAmt) + '</span></div>' +
-              '<div class="hsc-sep"></div>' +
-              '<div class="hsc-title" style="margin-bottom:2px;">PM별</div>';
-      var pmKeys = Object.keys(pmAgg).sort(function(a, b){ return pmAgg[b].amt - pmAgg[a].amt; });
-      pmKeys.slice(0, 5).forEach(function(k) {
-        var pmMeta = _pmMeta(k);
-        html += '<div class="hsc-pm">' +
-          '<span class="swatch" style="background:' + _esc(pmMeta.color) + '"></span>' +
-          '<span class="hsc-pm-name">' + _esc(pmMeta.short || k) + '</span>' +
-          '<span class="hsc-pm-cnt">' + pmAgg[k].cnt + '건 · ' + _fmt(pmAgg[k].amt) + '</span>' +
-        '</div>';
-      });
-    }
-    // 결재 요약
-    if (apprToday.length > 0) {
-      html += '<div class="hsc-sep"></div>' +
-              '<div class="hsc-title" style="margin-bottom:2px;">결재 (' + apprToday.length + ')</div>';
-      if (apprCnt.approved) html += '<div class="hsc-row"><span class="k">승인</span><span class="v buy">' + apprCnt.approved + '건</span></div>';
-      if (apprCnt.rejected) html += '<div class="hsc-row"><span class="k">반려</span><span class="v sell">' + apprCnt.rejected + '건</span></div>';
-      if (apprCnt.expired)  html += '<div class="hsc-row"><span class="k">만료</span><span class="v">' + apprCnt.expired + '건</span></div>';
-    }
-    host.innerHTML = html;
+    host.innerHTML = parts.join('');
   }
 
   // 위임 클릭: 칩 · 행

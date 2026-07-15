@@ -3106,6 +3106,16 @@
   .hold-pm-actual-mix .hpam-t {
     font-family: var(--mono); font-size: 10px; color: var(--fg-dim);
   }
+  /* v13.5 — 도넛 밑 legend 제거 + PM 상세 행 컴팩트 (사진4 피드백) */
+  .hold-pm-card.compact .nx-chart-legend { display: none; }
+  .hold-pm-list.compact { margin-top: 10px; }
+  .hold-pm-list.compact .hold-pm-row { margin-bottom: 5px; }
+  .hold-pm-list.compact .hold-pm-head { margin-bottom: 2px; font-size: 10.5px; }
+  .hold-pm-list.compact .hold-pm-bar { height: 6px; }
+  .hold-pm-list.compact .hold-pm-sim {
+    padding: 2px 5px; font-size: 9.5px; margin-top: 2px; gap: 6px;
+  }
+  .hold-pm-list.compact .hold-pm-sim .label { font-size: 8.5px; padding: 1px 4px; }
   .hold-pm-title, .hold-donut-title {
     display: flex; justify-content: space-between; align-items: baseline;
     font-size: 12px; font-weight: 600; color: var(--fg-strong); margin-bottom: 10px;
@@ -4085,17 +4095,33 @@
   .h2-group-pnl .pos { color: var(--accent, #22c55e); }
   .h2-group-pnl .neg { color: var(--negative, #ef4444); }
 
-  /* v13.3 — 테이블 + 사이드 카드 2열 (PC only, ≥1100px) */
+  /* v13.5 — 좌 요약 카드 (좁게) / 우 원장 (넓게) 2열 스왑 (사진3 피드백) */
   .h2-table-2col { display: block; }
   @media (min-width: 1100px) {
     .h2-table-2col {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 230px;
+      grid-template-columns: 260px minmax(0, 1fr);
       gap: 12px;
       align-items: start;
     }
     .h2-table-2col > [data-bind="h2-table-host"] { min-width: 0; }
+    /* v13.5 — 원장 42행을 2열 병렬 그리드로 분할 (날짜 그룹 유지, 좌→우 채움) */
+    [data-bind="h2-table-host"] .h2-ledger-cols {
+      column-count: 2;
+      column-gap: 12px;
+      column-fill: balance;
+    }
+    [data-bind="h2-table-host"] .h2-ledger-group {
+      break-inside: avoid;
+      margin-bottom: 8px;
+    }
   }
+  .h2-ledger-cols { display: block; }
+  .h2-ledger-group {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+  }
+  .h2-ledger-group + .h2-ledger-group { margin-top: 8px; }
   .h2-side-card {
     background: #101412; border: 1px solid #1c2320; border-radius: 10px;
     padding: 12px 14px;
@@ -4881,19 +4907,18 @@
         <div class="hold-split" data-bind="hold-split">투자 — · 캐시 —</div>
       </div>
 
-      <!-- PM 자본배분 — 도넛 + 커스텀 범례 + 바 (v13.4 : 좌 도넛 확대 · 우 vnav+실배분 표) -->
-      <div class="hold-pm-card">
+      <!-- PM 자본배분 — v13.5 : 도넛 밑 legend 제거 (3중 중복) · PM 상세 컴팩트 -->
+      <div class="hold-pm-card compact">
         <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
         <div class="hold-pm-2col">
           <div class="pm-donut-side">
             <div class="nx-chart-host" id="nx-pm-donut-host">
               <canvas id="nx-pm-donut" class="nx-chart-canvas" aria-label="PM 자본배분 도넛"></canvas>
             </div>
-            <div class="nx-chart-legend" id="nx-pm-donut-legend"></div>
           </div>
           <div class="pm-data-side" data-bind="hold-pm-data-side"></div>
         </div>
-        <div class="hold-pm-list" data-bind="hold-pm-list">
+        <div class="hold-pm-list compact" data-bind="hold-pm-list">
           <div class="hold-empty">registry 대기</div>
         </div>
       </div>
@@ -5816,18 +5841,18 @@
           <span data-bind="h2-source-label">포지션 —</span>
           <span class="h2-source-badge empty" data-bind="h2-source-badge">—</span>
         </div>
-        <!-- v13.3 — 테이블 + 사이드 카드 2열 (오늘 매수·매도, 최다 활동 PM) -->
+        <!-- v13.5 — 좌: 활동 요약 (좁게) / 우: 원장 2열 그리드 (넓게, 사진3 피드백) -->
         <div class="h2-table-2col">
+          <aside class="h2-side-card" data-bind="h2-side-card">
+            <div class="hsc-title">오늘 활동</div>
+            <div class="hsc-empty">sim 원장 대기</div>
+          </aside>
           <div data-bind="h2-table-host">
             <div class="h2-empty">
               <div class="big">데이터 수집 중…</div>
               <div class="desc">첫 snapshot 도착 대기</div>
             </div>
           </div>
-          <aside class="h2-side-card" data-bind="h2-side-card">
-            <div class="hsc-title">오늘 활동</div>
-            <div class="hsc-empty">sim 원장 대기</div>
-          </aside>
         </div>
       </div>
 
@@ -5848,18 +5873,17 @@
       </div>
 
       <div class="hold-row-2">
-        <div class="hold-pm-card">
+        <div class="hold-pm-card compact">
           <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
           <div class="hold-pm-2col">
             <div class="pm-donut-side">
               <div class="nx-chart-host" id="nx-pm-donut-host-pc">
                 <canvas id="nx-pm-donut-pc" class="nx-chart-canvas" aria-label="PM 자본배분 도넛 (PC)"></canvas>
               </div>
-              <div class="nx-chart-legend" id="nx-pm-donut-legend-pc"></div>
             </div>
             <div class="pm-data-side" data-bind="hold-pm-data-side"></div>
           </div>
-          <div class="hold-pm-list" data-bind="hold-pm-list">
+          <div class="hold-pm-list compact" data-bind="hold-pm-list">
             <div class="hold-empty">registry 대기</div>
           </div>
         </div>
@@ -7814,7 +7838,7 @@
           var pnlV = Number(vn.unrealized_pnl_usd || 0) + Number(vn.realized_pnl_usd || 0);
           var pnlCls = pnlV >= 0 ? 'pos' : 'neg';
           var pnlSign = pnlV >= 0 ? '+' : '−';
-          var navV   = Number(vn.value_usd || 0);
+          var navV   = Number(vn.current_nav_usd || vn.value_usd || 0);  // v13.5 fix — 실 필드명은 current_nav_usd
           vnavHtml =
             '<div class="hold-vnav-mini">' +
               '<div class="hvm-title">sim NAV 요약</div>' +
@@ -7835,17 +7859,27 @@
           // registry 전무 (초기 부팅) — 최소 안내
           rowsHtml = '<div class="hold-empty">registry 대기 (team_desk.desks 부재)</div>';
         } else {
+          // v13.5 — 실배분 소스: sim 기준 (pm_summary.invested_usd / vnav × 100).
+          //   pm_allocation(실계좌) 는 paper=0 환경에서 항상 0 이라 옛 소스로 두면 전원 0.00%.
+          var vnavForActual = Number((sp.virtual_nav && (sp.virtual_nav.current_nav_usd || sp.virtual_nav.value_usd)) || 0);
           registry.forEach(function(reg) {
             var k = reg.key;
             var meta = PM_META_MAP[k] || null;
             var ko = meta ? meta.ko : k;
             var en = meta ? meta.en : '';
             var color = meta ? meta.color : '#4b5563';
-            // alloc 있으면 실제 · 없으면 target 만
+            // target: desk.capital_weight_pct 우선, 폴백 pm_allocation.target_pct.
             var allocMatch = allocRows.filter(function(r) { return (r.key || r.persona_key) === k; })[0];
-            var t = allocMatch ? (Number(allocMatch.target_pct) || 0) : (reg.target != null ? reg.target : 0);
-            var a = allocMatch ? (Number(allocMatch.actual_pct) || 0) : 0;
-            // v13.4 — 우측 데이터 사이드용 실배분 표 데이터 수집
+            var t = (reg.target != null ? reg.target : 0);
+            if (!t && allocMatch) t = Number(allocMatch.target_pct) || 0;
+            // v13.5 — actual: sim pm_summary invested_usd / vnav × 100 (실계좌 폴백 X)
+            var pmSum = pmSummary[k];
+            var a = 0;
+            if (pmSum && vnavForActual > 0) {
+              a = Number(pmSum.invested_usd || 0) / vnavForActual * 100.0;
+            } else if (allocMatch && allocMatch.actual_pct != null) {
+              a = Number(allocMatch.actual_pct) || 0;  // 폴백: 실계좌 alloc (있을 때만)
+            }
             mixRows.push({ ko: ko, color: color, target: t, actual: a });
             var maxScale = Math.max(t, a, 60);
             var tw = Math.min(100, maxScale > 0 ? (t / maxScale * 100) : 0);
@@ -7888,11 +7922,18 @@
               simLine +
             '</div>';
           });
-          // 현금 행 (unchanged)
+          // 현금 행 — v13.5: sim vnav 우선 (paper=0 실계좌 폴백 X)
           var cashFloorPct = Number(port.cash_floor_target_pct || 10);
-          var navUsd2 = Number((snap.nav && snap.nav.value_usd) || 0);
-          var cashUsd2 = Number(port.cash_usd || 0);
-          var cashActual = navUsd2 > 0 ? (cashUsd2 / navUsd2 * 100) : 0;
+          var simCashUsd = Number((sp.virtual_nav && sp.virtual_nav.cash_usd) || 0);
+          var simNavUsd  = vnavForActual;
+          var cashActual;
+          if (simNavUsd > 0) {
+            cashActual = simCashUsd / simNavUsd * 100;
+          } else {
+            var navUsd2 = Number((snap.nav && snap.nav.value_usd) || 0);
+            var cashUsd2 = Number(port.cash_usd || 0);
+            cashActual = navUsd2 > 0 ? (cashUsd2 / navUsd2 * 100) : 0;
+          }
           var cMaxScale = Math.max(cashFloorPct, cashActual, 60);
           var ctw = Math.min(100, cashFloorPct / cMaxScale * 100);
           var caw = Math.min(100, cashActual / cMaxScale * 100);
@@ -12455,6 +12496,8 @@
       }
     }
 
+    // v13.5 — 각 날짜 그룹을 독립 <table> 로 렌더 → 상위 wrapper 에 column-count:2 로 좌→우 채움.
+    //   각 그룹은 break-inside: avoid — 그룹 분할 없이 그대로 유지.
     var groupHtml = keys.map(function(k) {
       var isOpen = !!_h2ExpandedGroups[k];
       var cnt = groups[k].length;
@@ -12473,10 +12516,14 @@
         '</td>' +
       '</tr>';
       var bodyRows = isOpen ? groups[k].map(_rowHtmlFor).join('') : '';
-      return headRow + bodyRows;
+      return '<div class="h2-ledger-group">' +
+        '<table class="h2-table h2-table-grouped">' + headHtml +
+          '<tbody>' + headRow + bodyRows + '</tbody>' +
+        '</table>' +
+      '</div>';
     }).join('');
 
-    host.innerHTML = '<table class="h2-table h2-table-grouped">' + headHtml + '<tbody>' + groupHtml + '</tbody></table>';
+    host.innerHTML = '<div class="h2-ledger-cols">' + groupHtml + '</div>';
   }
 
   // v13.2 — 날짜 그룹 헤더 클릭 토글 (위임)
@@ -12629,54 +12676,72 @@
   }
 
   function _renderHoldingsSideCard(data) {
+    // v13.5 — 사이드 카드 확장: 오늘 sim 체결 (건수/금액) · PM별 1줄 · 결재 요약.
+    //   홈 운용일지의 컴팩트판.
     var host = document.querySelector('[data-bind="h2-side-card"]');
     if (!host) return;
     var ledger = (data && data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
-    if (!ledger.length) {
-      host.innerHTML =
-        '<div class="hsc-title">오늘 활동</div>' +
-        '<div class="hsc-empty">sim 원장 대기</div>';
-      return;
-    }
-    // KST 오늘 (KST = UTC+9). ts 는 이미 KST 라 가정 (원장이 KST 로 저장됨).
+    var approvals = (data && data.approvals && Array.isArray(data.approvals.history)) ? data.approvals.history : [];
+    var _fmt = function(v) { return '$' + Math.round(v).toLocaleString('en-US'); };
+    // KST 오늘
     var today = new Date();
     var todayKey = today.getFullYear() + '-' +
                    String(today.getMonth() + 1).padStart(2, '0') + '-' +
                    String(today.getDate()).padStart(2, '0');
+    // 오늘 sim
     var todayRows = ledger.filter(function(l) { return _dayKey(l.ts) === todayKey; });
     var buyCnt = 0, sellCnt = 0, buyAmt = 0, sellAmt = 0;
-    var pmCnt = {};
+    var pmAgg = {};
     todayRows.forEach(function(l) {
       var side = (l.action || 'buy').toLowerCase();
       var amt = Math.abs(Number(l.notional_usd || 0));
       if (side === 'sell') { sellCnt++; sellAmt += amt; } else { buyCnt++; buyAmt += amt; }
       var pm = l.pm || 'unknown';
-      pmCnt[pm] = (pmCnt[pm] || 0) + 1;
+      if (!pmAgg[pm]) pmAgg[pm] = { cnt: 0, amt: 0 };
+      pmAgg[pm].cnt++; pmAgg[pm].amt += amt;
     });
-    var topPmKey = null, topPmMax = 0;
-    Object.keys(pmCnt).forEach(function(k) {
-      if (pmCnt[k] > topPmMax) { topPmMax = pmCnt[k]; topPmKey = k; }
+    // 오늘 결재 (KST decided_at 매칭)
+    var apprToday = approvals.filter(function(a) {
+      var ts = a.decided_at || a.ts;
+      return ts && _dayKey(ts) === todayKey;
     });
-    var _fmt = function(v) { return '$' + Math.round(v).toLocaleString('en-US'); };
-    var html =
-      '<div class="hsc-title">오늘 활동 (' + todayRows.length + '건)</div>' +
-      (todayRows.length === 0
-        ? '<div class="hsc-empty">오늘 체결 없음</div>'
-        : '<div class="hsc-row"><span class="k">매수</span><span class="v buy">' + buyCnt + '건 · ' + _fmt(buyAmt) + '</span></div>' +
-          '<div class="hsc-row"><span class="k">매도</span><span class="v sell">' + sellCnt + '건 · ' + _fmt(sellAmt) + '</span></div>' +
-          '<div class="hsc-sep"></div>' +
-          '<div class="hsc-title" style="margin-bottom:2px;">최다 활동 PM</div>' +
-          (topPmKey
-            ? (function() {
-                var pmMeta = _pmMeta(topPmKey);
-                return '<div class="hsc-pm">' +
-                  '<span class="swatch" style="background:' + _esc(pmMeta.color) + '"></span>' +
-                  '<span class="hsc-pm-name">' + _esc(pmMeta.ko || pmMeta.short) + '</span>' +
-                  '<span class="hsc-pm-cnt">' + topPmMax + '건</span>' +
-                '</div>';
-              })()
-            : '<div class="hsc-empty">—</div>')
-      );
+    var apprCnt = { approved: 0, rejected: 0, expired: 0 };
+    apprToday.forEach(function(a) {
+      var s = (a.status || '').toLowerCase();
+      if (apprCnt[s] != null) apprCnt[s]++;
+    });
+
+    var html = '<div class="hsc-title">오늘 · ' + todayKey.slice(5) + '</div>';
+    if (todayRows.length === 0 && apprToday.length === 0) {
+      html += '<div class="hsc-empty">활동 없음</div>';
+      host.innerHTML = html;
+      return;
+    }
+    // SIM 요약
+    if (todayRows.length > 0) {
+      html += '<div class="hsc-row"><span class="k">SIM 체결</span><span class="v">' + todayRows.length + '건</span></div>' +
+              '<div class="hsc-row"><span class="k">매수</span><span class="v buy">' + buyCnt + ' · ' + _fmt(buyAmt) + '</span></div>' +
+              '<div class="hsc-row"><span class="k">매도</span><span class="v sell">' + sellCnt + ' · ' + _fmt(sellAmt) + '</span></div>' +
+              '<div class="hsc-sep"></div>' +
+              '<div class="hsc-title" style="margin-bottom:2px;">PM별</div>';
+      var pmKeys = Object.keys(pmAgg).sort(function(a, b){ return pmAgg[b].amt - pmAgg[a].amt; });
+      pmKeys.slice(0, 5).forEach(function(k) {
+        var pmMeta = _pmMeta(k);
+        html += '<div class="hsc-pm">' +
+          '<span class="swatch" style="background:' + _esc(pmMeta.color) + '"></span>' +
+          '<span class="hsc-pm-name">' + _esc(pmMeta.short || k) + '</span>' +
+          '<span class="hsc-pm-cnt">' + pmAgg[k].cnt + '건 · ' + _fmt(pmAgg[k].amt) + '</span>' +
+        '</div>';
+      });
+    }
+    // 결재 요약
+    if (apprToday.length > 0) {
+      html += '<div class="hsc-sep"></div>' +
+              '<div class="hsc-title" style="margin-bottom:2px;">결재 (' + apprToday.length + ')</div>';
+      if (apprCnt.approved) html += '<div class="hsc-row"><span class="k">승인</span><span class="v buy">' + apprCnt.approved + '건</span></div>';
+      if (apprCnt.rejected) html += '<div class="hsc-row"><span class="k">반려</span><span class="v sell">' + apprCnt.rejected + '건</span></div>';
+      if (apprCnt.expired)  html += '<div class="hsc-row"><span class="k">만료</span><span class="v">' + apprCnt.expired + '건</span></div>';
+    }
     host.innerHTML = html;
   }
 

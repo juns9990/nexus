@@ -193,7 +193,20 @@
 //         sim ledger (일별 요약 + PM별 1줄) · approvals.history (승인/반려/만료) ·
 //         notif.recent (Aegis · 시스템). 최근 3일 기본 펼침, 이전 접힘.
 //   매매·Aegis·미러 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.4';
+// v13.5 (20260715) — sim 시세 리셋 버그 + 카드 버그 2 + 레이아웃 2. 백엔드+표시.
+//   [Bug1] sim_portfolio mark-to-market: quote_cache stale/mock 이 avg 와 우연 일치해
+//          market_price 를 리셋 (0.00% pnl) → 미실현 +$4,503 → +$94 붕괴.
+//          수정: source != 'live' 이면 마킹 skip, 이전가 유지. last_price_at 기록.
+//          유닛 1건 (quote 부재/stale 시 이전가 유지). 복원 후 재평가 → live 42 갱신.
+//   [Bug2] SIM NAV 요약 "virtual NAV $0" — vn.value_usd 오필드 → vn.current_nav_usd 로 수정.
+//   [Bug3] PM 실배분 전원 0.00% — 옛 pm_allocation(실계좌, paper=0) 소스에서
+//          sim pm_summary.invested_usd / virtual_nav × 100 으로 전환. 현금도 sim.cash_usd 기준.
+//   [Layout1] 보유 탭 좌 사이드카드 (활동 요약 확장: sim + PM별 + 결재) · 우 원장 2열 그리드
+//             (column-count:2, 날짜 그룹 break-inside:avoid → 세로 절반).
+//   [Layout2] PM 자본배분 카드: 도넛 밑 nx-chart-legend 제거 (3중 중복 해소) +
+//             PM 상세 행 컴팩트 (padding·font 축소, 바 높이 8→6).
+//   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.5';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

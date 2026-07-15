@@ -3061,6 +3061,31 @@
   .hold-pm-sim .pos { color: var(--accent, #22c55e); font-weight: 600; }
   .hold-pm-sim .neg { color: var(--negative, #ef4444); font-weight: 600; }
   .hold-pm-sim .dim { color: var(--fg-dim); margin-left: auto; }
+  /* v13.3 — sim 미리 대기 상태 (pm_summary 부재 PM) */
+  .hold-pm-sim.idle { opacity: 0.7; }
+  .hold-pm-sim .label.idle { background: #37415120; color: var(--fg-dim); }
+  /* v13.3 — sim virtual_nav 요약 카드 (도넛 밑, 옛 "데이터 수집 중" 자리) */
+  .hold-vnav-mini {
+    padding: 8px 10px; margin-bottom: 10px;
+    background: #0c0f0e; border: 1px solid #1c2320; border-radius: 8px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .hold-vnav-mini.muted { color: var(--fg-dim); font-size: 11px; text-align: center; }
+  .hold-vnav-mini .hvm-title {
+    font-size: 10px; font-weight: 700; color: var(--fg-muted);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .hold-vnav-mini .hvm-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+  }
+  .hold-vnav-mini .hvm-grid .l {
+    font-size: 10px; color: var(--fg-dim); margin-bottom: 2px;
+  }
+  .hold-vnav-mini .hvm-grid .v {
+    font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--fg-strong);
+  }
+  .hold-vnav-mini .hvm-grid .v.pos { color: var(--positive, #22c55e); }
+  .hold-vnav-mini .hvm-grid .v.neg { color: var(--negative, #ef4444); }
 
   .hold-pm-bar .marker {
     position: absolute; top: -2px; bottom: -2px; width: 2px;
@@ -3879,12 +3904,13 @@
     font-size: 12px;
     table-layout: fixed;
   }
+  /* v13.3 — 밀도 개선: 셀 여백 10px→6px, 폰트 12→11.5, 헤더 폰트 10→9.5 */
   .h2-table thead th {
     background: var(--bg-card);
     color: var(--fg-muted);
-    font-weight: 700; font-size: 10px;
+    font-weight: 700; font-size: 9.5px;
     letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 10px 12px;
+    padding: 6px 8px;
     text-align: left;
     border-bottom: 1px solid var(--border);
   }
@@ -3897,16 +3923,17 @@
   .h2-table tbody tr:first-child { border-top: none; }
   .h2-table tbody tr:hover { background: var(--bg-card); }
   .h2-table tbody td {
-    padding: 10px 12px;
+    padding: 6px 8px;
     color: var(--fg);
     vertical-align: middle;
+    font-size: 11.5px;
   }
   .h2-table tbody td.num {
     font-family: var(--mono); text-align: right; font-weight: 500;
   }
   .h2-table .sym {
     font-family: var(--mono); font-weight: 700;
-    color: var(--fg-strong); font-size: 13px;
+    color: var(--fg-strong); font-size: 12px;
   }
   .h2-table .pm-cell {
     display: inline-flex; align-items: center; gap: 6px;
@@ -3966,6 +3993,49 @@
   .h2-group-pnl .pos { color: var(--accent, #22c55e); }
   .h2-group-pnl .neg { color: var(--negative, #ef4444); }
 
+  /* v13.3 — 테이블 + 사이드 카드 2열 (PC only, ≥1100px) */
+  .h2-table-2col { display: block; }
+  @media (min-width: 1100px) {
+    .h2-table-2col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 230px;
+      gap: 12px;
+      align-items: start;
+    }
+    .h2-table-2col > [data-bind="h2-table-host"] { min-width: 0; }
+  }
+  .h2-side-card {
+    background: #101412; border: 1px solid #1c2320; border-radius: 10px;
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 10px;
+    font-size: 12px;
+  }
+  .h2-side-card .hsc-title {
+    font-size: 10px; font-weight: 700; color: var(--fg-muted);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .h2-side-card .hsc-empty { color: var(--fg-dim); font-size: 11px; text-align: center; padding: 6px 0; }
+  .h2-side-card .hsc-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 11.5px;
+  }
+  .h2-side-card .hsc-row .k { color: var(--fg-muted); }
+  .h2-side-card .hsc-row .v { color: var(--fg-strong); font-weight: 600; }
+  .h2-side-card .hsc-row .v.buy { color: var(--positive, #22c55e); }
+  .h2-side-card .hsc-row .v.sell { color: var(--negative, #ef4444); }
+  .h2-side-card .hsc-sep {
+    height: 1px; background: #1c2320; margin: 2px 0;
+  }
+  .h2-side-card .hsc-pm {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11.5px;
+  }
+  .h2-side-card .hsc-pm .swatch {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .h2-side-card .hsc-pm-name { color: var(--fg-strong); font-weight: 600; }
+  .h2-side-card .hsc-pm-cnt { color: var(--fg-muted); font-family: var(--mono); font-size: 10.5px; margin-left: auto; }
+
   .h2-empty {
     padding: 26px 20px; text-align: center;
     background: var(--bg-elev); border: 1px solid var(--border);
@@ -3992,7 +4062,19 @@
   @media (min-width: 1100px) {
     .h3-history-block { display: block; margin-bottom: 14px; }
     section.d-tab[data-tab="history"] > .d-tab-pad > .d-tab-section-title[data-h3-hide="1"],
-    section.d-tab[data-tab="history"] > .d-tab-pad > .d-history-list { display: none; }
+    section.d-tab[data-tab="history"] > .d-tab-pad > .d-history-list,
+    section.d-tab[data-tab="history"] > .d-tab-pad > .h3-ledger-wrap[data-h3-hide="1"] { display: none; }
+  }
+  /* v13.3 — 타임라인 + sim 체결 2열 (PC only) */
+  .h3-2col-wrap { display: block; }
+  @media (min-width: 1100px) {
+    .h3-2col-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .h3-col-left, .h3-col-right { min-width: 0; }
   }
 
   /* 필터 바 */
@@ -4045,88 +4127,34 @@
   .h3-mode-badge.sim  { background: rgba(212,165,94,0.12); color: var(--warn);   border: 1px solid var(--warn); }
   .h3-mode-badge.live { background: rgba(94,234,212,0.12); color: var(--accent); border: 1px solid var(--accent); }
 
-  /* 일별 미니바 */
-  .h3-daily {
-    display: flex; flex-direction: column; gap: 6px;
-    padding: 12px;
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 12px;
-  }
-  .h3-daily-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    font-size: 11px; color: var(--fg-muted);
-  }
-  .h3-daily-title {
-    font-size: 12px; font-weight: 700; color: var(--fg);
-    display: flex; align-items: center;
-  }
-  .h3-daily-legend {
-    font-family: var(--mono); font-size: 10px;
-    display: inline-flex; gap: 10px;
-  }
-  .h3-daily-legend .buy  { color: var(--positive); }
-  .h3-daily-legend .sell { color: var(--negative); }
-  .h3-daily-bars {
-    display: grid;
-    grid-template-columns: repeat(14, 1fr);
-    gap: 4px;
-    height: 60px;
-    align-items: end;
-  }
-  .h3-daily-bar {
-    display: flex; flex-direction: column;
-    height: 100%; align-items: stretch; justify-content: flex-end;
-    background: var(--bg-card);
-    border-radius: 2px;
-    overflow: hidden;
-    position: relative;
-    cursor: default;
-  }
-  .h3-daily-bar .seg-buy  { background: var(--positive); }
-  .h3-daily-bar .seg-sell { background: var(--negative); }
-  .h3-daily-bar .seg-empty {
-    flex: 1;
-    background: transparent;
-    border-bottom: 1px dashed var(--border);
-  }
-  .h3-daily-bar[data-count="0"] {
-    background: var(--bg-deep);
-  }
-  /* v13.0 A안 — 금액·PM색 스택 */
-  .h3-daily-bar.amt-stack {
-    justify-content: center;
-    background: transparent;
-  }
-  .h3-daily-bar.amt-stack .stack-top,
-  .h3-daily-bar.amt-stack .stack-bot {
-    display: flex; flex-direction: column-reverse; align-items: stretch;
-    height: 50%;
-  }
-  .h3-daily-bar.amt-stack .stack-top { justify-content: flex-end; }
-  .h3-daily-bar.amt-stack .stack-bot { justify-content: flex-start; }
-  .h3-daily-bar.amt-stack .seg-pm {
-    width: 100%; min-height: 1px;
-  }
-  .h3-daily-bar.amt-stack .seg-pm.sell { opacity: 0.75; }
-  /* v13.0 — sim ledger 섹션 · v13.2 컴팩트 */
+  /* v13.3 — 14일 미니바 제거 (사용자 판정). 관련 CSS 삭제. */
+  /* v13.0 — sim ledger 섹션 · v13.2 컴팩트 · v13.3 5-폭 */
   .h3-ledger-wrap { display: flex; flex-direction: column; gap: 1px; }
+  /* v13.3 — 5-폭 그리드 재조정 (빈 컬럼 없게). 시간 · 종목(+PM점) · 방향 · 체결(수량+금액) · 신호 */
   .h3-ledger-row.compact {
-    display: grid; grid-template-columns: 78px 55px 10px 40px 100px 80px 40px; gap: 6px;
+    display: grid; grid-template-columns: 70px minmax(0, 1fr) 36px minmax(0, 1.15fr) 36px; gap: 6px;
     padding: 3px 8px; align-items: center; font-size: 11px;
     border-bottom: 1px solid #15191740; line-height: 1.3;
   }
   .h3-ledger-row.compact .t { font-family: var(--mono); color: var(--fg-dim); font-size: 10px; }
-  .h3-ledger-row.compact .sym { font-family: var(--mono); font-weight: 600; color: var(--fg-strong); }
-  .h3-ledger-row.compact .pm-dot {
-    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  .h3-ledger-row.compact .sym-cell {
+    display: inline-flex; align-items: center; gap: 5px; min-width: 0;
+    font-family: var(--mono); font-weight: 600; color: var(--fg-strong);
   }
-  .h3-ledger-row.compact .act { font-family: var(--mono); font-size: 10px; }
+  .h3-ledger-row.compact .sym-cell .pm-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .h3-ledger-row.compact .sym-cell .sym { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .h3-ledger-row.compact .act { font-family: var(--mono); font-size: 10px; text-align: center; }
   .h3-ledger-row.compact .act.buy { color: var(--accent, #22c55e); }
   .h3-ledger-row.compact .act.sell { color: var(--negative, #ef4444); }
-  .h3-ledger-row.compact .num { font-family: var(--mono); text-align: right; color: var(--fg); font-size: 10px; }
-  .h3-ledger-row.compact .num.strong { color: var(--fg-strong); font-weight: 600; }
+  .h3-ledger-row.compact .fill-cell {
+    font-family: var(--mono); text-align: right; color: var(--fg-strong); font-size: 10.5px;
+    font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .h3-ledger-row.compact .fill-cell .fill-sub {
+    font-weight: 400; color: var(--fg-dim); font-size: 9.5px; margin-left: 4px;
+  }
   .h3-ledger-row.compact .sig { font-family: var(--mono); color: var(--fg-muted); font-size: 10px; text-align: right; }
   .h3-ledger-toggle {
     margin-top: 6px; padding: 6px 12px;
@@ -4134,13 +4162,6 @@
     color: var(--fg-muted); font-size: 11px; cursor: pointer; width: 100%;
   }
   .h3-ledger-toggle:hover { color: var(--fg-strong); border-color: var(--accent); }
-  .h3-daily-labels {
-    display: grid; grid-template-columns: repeat(14, 1fr);
-    gap: 4px;
-    font-family: var(--mono); font-size: 9px; color: var(--fg-dim);
-    text-align: center;
-    margin-top: 2px;
-  }
 
   /* 타임라인 */
   .h3-timeline {
@@ -4155,7 +4176,7 @@
   .h3-day-group:first-child { border-top: none; }
   .h3-day-head {
     display: flex; align-items: baseline; justify-content: space-between;
-    padding: 8px 14px;
+    padding: 5px 10px;
     background: var(--bg-card);
     font-size: 11px; font-weight: 700;
     color: var(--fg-muted);
@@ -4165,15 +4186,16 @@
     font-family: var(--mono); font-size: 10px;
     color: var(--fg-dim); font-weight: 500;
   }
+  /* v13.3 — 밀도 개선: 행 높이·여백 축소 (padding 9→5, gap 10→8, font 12→11.5) */
   .h3-trow {
     display: grid;
-    grid-template-columns: 62px auto 1fr auto auto auto;
-    gap: 10px;
-    padding: 9px 14px;
+    grid-template-columns: 54px auto 1fr auto auto auto;
+    gap: 8px;
+    padding: 5px 10px;
     border-top: 1px solid var(--border);
     align-items: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11.5px;
     transition: background-color 0.15s ease;
   }
   .h3-trow:first-of-type { border-top: none; }
@@ -5658,11 +5680,18 @@
           <span data-bind="h2-source-label">포지션 —</span>
           <span class="h2-source-badge empty" data-bind="h2-source-badge">—</span>
         </div>
-        <div data-bind="h2-table-host">
-          <div class="h2-empty">
-            <div class="big">데이터 수집 중…</div>
-            <div class="desc">첫 snapshot 도착 대기</div>
+        <!-- v13.3 — 테이블 + 사이드 카드 2열 (오늘 매수·매도, 최다 활동 PM) -->
+        <div class="h2-table-2col">
+          <div data-bind="h2-table-host">
+            <div class="h2-empty">
+              <div class="big">데이터 수집 중…</div>
+              <div class="desc">첫 snapshot 도착 대기</div>
+            </div>
           </div>
+          <aside class="h2-side-card" data-bind="h2-side-card">
+            <div class="hsc-title">오늘 활동</div>
+            <div class="hsc-empty">sim 원장 대기</div>
+          </aside>
         </div>
       </div>
 
@@ -5816,31 +5845,29 @@
           </div>
         </div>
 
-        <!-- 일별 미니바 (최근 14일) -->
-        <div class="h3-daily">
-          <div class="h3-daily-head">
-            <span class="h3-daily-title">최근 14일 매매
-              <button type="button" class="nx-help-btn" data-help="daily_bar" aria-label="일별 도움말">?</button>
-            </span>
-            <span class="h3-daily-legend">
-              <span class="buy">■ 매수</span>
-              <span class="sell">■ 매도</span>
-            </span>
+        <!-- v13.3 — 타임라인 + sim 체결 2열 그리드 (14일 미니바 제거) -->
+        <div class="h3-2col-wrap">
+          <div class="h3-col-left">
+            <div class="d-tab-section-title" style="margin-top:0;">
+              타임라인
+              <button type="button" class="nx-help-btn" data-help="timeline" aria-label="타임라인 도움말">?</button>
+              <span class="d-tab-section-meta" data-bind="h3-timeline-meta">—</span>
+            </div>
+            <div data-bind="h3-timeline-host">
+              <div class="h3-empty">
+                <div class="big">데이터 수집 중…</div>
+                <div class="desc">첫 snapshot 도착 대기</div>
+              </div>
+            </div>
           </div>
-          <div class="h3-daily-bars" data-bind="h3-daily-bars"></div>
-          <div class="h3-daily-labels" data-bind="h3-daily-labels"></div>
-        </div>
-
-        <!-- 타임라인 -->
-        <div class="d-tab-section-title" style="margin-top:8px;">
-          타임라인
-          <button type="button" class="nx-help-btn" data-help="timeline" aria-label="타임라인 도움말">?</button>
-          <span class="d-tab-section-meta" data-bind="h3-timeline-meta">—</span>
-        </div>
-        <div data-bind="h3-timeline-host">
-          <div class="h3-empty">
-            <div class="big">데이터 수집 중…</div>
-            <div class="desc">첫 snapshot 도착 대기</div>
+          <div class="h3-col-right">
+            <div class="d-tab-section-title" style="margin-top:0;">
+              sim 체결
+              <span class="d-tab-section-meta" data-bind="h3-ledger-meta-pc">최근 20건</span>
+            </div>
+            <div class="h3-ledger-wrap h3-ledger-wrap-pc" data-bind="h3-ledger-wrap-pc">
+              <div class="h3-empty"><div class="big">sim 원장 대기</div></div>
+            </div>
           </div>
         </div>
       </div>
@@ -5853,12 +5880,12 @@
         <div class="d-history-empty">최근 활동 없음</div>
       </div>
 
-      <!-- v13.0 — sim 체결 (실체결가 · 수량 · notional) -->
-      <div class="d-tab-section-title">
+      <!-- v13.0 — sim 체결 (실체결가 · 수량 · notional) — v13.3 : PC 에서는 h3-history-block 내부 2열 우측으로 이동 -->
+      <div class="d-tab-section-title" data-h3-hide="1">
         sim 체결
         <span class="d-tab-section-meta" data-bind="h3-ledger-meta">최근 20건</span>
       </div>
-      <div class="h3-ledger-wrap" data-bind="h3-ledger-wrap">
+      <div class="h3-ledger-wrap" data-bind="h3-ledger-wrap" data-h3-hide="1">
         <div class="h3-empty"><div class="big">sim 원장 대기</div></div>
       </div>
 
@@ -6085,7 +6112,10 @@
             <div class="h5-row"><span class="k">v12.7</span><span class="desc">deploy 체계 복구 — PC 원본이 deploy 를 덮은 혼합 오염 되돌림</span><span class="v muted">2026-07-13</span></div>
             <div class="h5-row"><span class="k">v12.8</span><span class="desc">설정 탭 백엔드 URL 저장 버그 수정 — h5 레이아웃 표시 계층만</span><span class="v muted">2026-07-14</span></div>
             <div class="h5-row"><span class="k">v12.9</span><span class="desc">익명인증 코드 이식 — 폰 미러 read 복구</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.0</span><span class="desc">sim_portfolio 원장 직결 (보유·홈·이력) · 상세 패널 필드명 수정 · 미니바 A안 · 기간 칩 · sim NAV 축적 시작</span><span class="v ok">현재</span></div>
+            <div class="h5-row"><span class="k">v13.0</span><span class="desc">sim_portfolio 원장 직결 (보유·홈·이력) · 상세 패널 필드명 수정 · 미니바 A안 · 기간 칩 · sim NAV 축적 시작</span><span class="v muted">2026-07-15</span></div>
+            <div class="h5-row"><span class="k">v13.1</span><span class="desc">v13.0 회귀 4건 수정 — 크로스 IIFE 참조 + 예외 격리</span><span class="v muted">2026-07-15</span></div>
+            <div class="h5-row"><span class="k">v13.2</span><span class="desc">실화면 피드백 (버그 2 + UI 7) — 원장 그룹 접기 · sim 미니 라인 · 컴팩트 체결 · 방어 통합 카드</span><span class="v muted">2026-07-15</span></div>
+            <div class="h5-row"><span class="k">v13.3</span><span class="desc">밀도 개선 라운드 — 5 PM 전원 표시 · 도넛 슬라이스 라벨 · 이력 2열 · 14일 미니바 제거 · 보유 사이드 카드</span><span class="v ok">현재</span></div>
           </div>
 
         </div>
@@ -7462,36 +7492,84 @@
         (cash != null ? '$' + Number(cash).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—');
       _setBinds('hold-split', splitTxt);
 
-      // PM 자본배분 바 — v12.4: window.NEXUS_PM_META 순회, 하드코딩 3 PM 목록 제거.
-      //   pm_allocation 배열은 백엔드가 활성 PM 만 담아 반환 (5~7 자동).
-      //   색은 inline (PM_META.color), CSS 클래스 .pm-* 는 legacy 호환용으로만 유지.
+      // v13.3 — PM 자본배분: 활성 PM 순회 = data.team_desk.desks (registry).
+      //   pm_summary 미존재 PM 은 "투입 $0 · 매매 대기" 표시 (사라짐 방지).
+      //   pm_allocation(실계좌) 폴백은 계속 유효. 도넛 밑 "데이터 수집 중" 제거 —
+      //   그 자리에 sim virtual_nav 요약 카드 (총투입 · 현금 · 총손익) 상단 삽입.
       var pmHost = document.querySelector('[data-bind="hold-pm-list"]');
       if (pmHost) {
-        var rows = port.pm_allocation || [];
-        // v13.2 — 도넛 옆 미니표 소스: sim_portfolio.pm_summary (invested/return_pct/util).
-        //   각 PM 행에 sim 데이터 라인을 병기 (없으면 생략).
-        var pmSummary = (window.nexusBackendData && window.nexusBackendData.sim_portfolio
-                         && window.nexusBackendData.sim_portfolio.pm_summary) || {};
-        if (rows.length === 0) {
-          pmHost.innerHTML = '<div class="hold-empty">데이터 수집 중…</div>';
+        var snap = window.nexusBackendData || {};
+        var sp   = snap.sim_portfolio || {};
+        var pmSummary = sp.pm_summary || {};
+        var PM_META_MAP = (window.NEXUS_PM_META || {});
+        var desks = (snap.team_desk && Array.isArray(snap.team_desk.desks))
+                    ? snap.team_desk.desks : [];
+        var allocRows = port.pm_allocation || [];
+
+        // registry 정본: desks(persona_key, capital_weight_pct) → 폴백 pm_allocation → 폴백 pm_summary keys
+        var registry = [];
+        var seen = {};
+        function _pushReg(k, target, source) {
+          if (!k || seen[k]) return;
+          seen[k] = true;
+          registry.push({ key: k, target: target, source: source });
+        }
+        desks.forEach(function(d) {
+          var k = d.persona_key || (d.persona_label || '').toLowerCase();
+          _pushReg(k, (d.capital_weight_pct != null ? Number(d.capital_weight_pct) : null), 'desk');
+        });
+        allocRows.forEach(function(r) {
+          var k = r.key || r.persona_key || '';
+          _pushReg(k, Number(r.target_pct) || null, 'alloc');
+        });
+        Object.keys(pmSummary).forEach(function(k) { _pushReg(k, null, 'sum'); });
+
+        // v13.3 — sim virtual_nav 요약 카드 (도넛 밑 "데이터 수집 중" 대체)
+        var vnavHtml = '';
+        var vn = sp.virtual_nav;
+        if (vn) {
+          var _fmt = function(v) { return '$' + Number(v || 0).toLocaleString('en-US', {maximumFractionDigits: 0}); };
+          var pnlV = Number(vn.unrealized_pnl_usd || 0) + Number(vn.realized_pnl_usd || 0);
+          var pnlCls = pnlV >= 0 ? 'pos' : 'neg';
+          var pnlSign = pnlV >= 0 ? '+' : '−';
+          vnavHtml =
+            '<div class="hold-vnav-mini">' +
+              '<div class="hvm-title">sim NAV 요약</div>' +
+              '<div class="hvm-grid">' +
+                '<div><div class="l">총 투입</div><div class="v">' + _fmt(vn.invested_usd) + '</div></div>' +
+                '<div><div class="l">현금</div><div class="v">' + _fmt(vn.cash_usd) + '</div></div>' +
+                '<div><div class="l">총 손익</div><div class="v ' + pnlCls + '">' + pnlSign + '$' + Math.abs(pnlV).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</div></div>' +
+              '</div>' +
+            '</div>';
         } else {
-          var PM_META_MAP = (window.NEXUS_PM_META || {});
-          var rowsHtml = rows.map(function(r) {
-            var k = r.key || r.persona_key || '';
+          vnavHtml = '<div class="hold-vnav-mini muted">sim virtual_nav 대기</div>';
+        }
+
+        var rowsHtml = '';
+        if (registry.length === 0) {
+          // registry 전무 (초기 부팅) — 최소 안내
+          rowsHtml = '<div class="hold-empty">registry 대기 (team_desk.desks 부재)</div>';
+        } else {
+          registry.forEach(function(reg) {
+            var k = reg.key;
             var meta = PM_META_MAP[k] || null;
-            var t = Number(r.target_pct) || 0;
-            var a = Number(r.actual_pct) || 0;
-            var maxScale = Math.max(t, a, 60);
-            var tw = Math.min(100, t / maxScale * 100);
-            var aw = Math.min(100, a / maxScale * 100);
-            var ko = meta ? meta.ko : (r.label || k);
-            var en = meta ? meta.en : (r.short || '');
+            var ko = meta ? meta.ko : k;
+            var en = meta ? meta.en : '';
             var color = meta ? meta.color : '#4b5563';
+            // alloc 있으면 실제 · 없으면 target 만
+            var allocMatch = allocRows.filter(function(r) { return (r.key || r.persona_key) === k; })[0];
+            var t = allocMatch ? (Number(allocMatch.target_pct) || 0) : (reg.target != null ? reg.target : 0);
+            var a = allocMatch ? (Number(allocMatch.actual_pct) || 0) : 0;
+            var maxScale = Math.max(t, a, 60);
+            var tw = Math.min(100, maxScale > 0 ? (t / maxScale * 100) : 0);
+            var aw = Math.min(100, maxScale > 0 ? (a / maxScale * 100) : 0);
             var nameHtml = '<span class="pm-swatch" style="background:' + color + '"></span>' +
                            _escapeHtml(ko) + (en ? ' <span style="color:var(--fg-muted);font-weight:400;">(' + en + ')</span>' : '');
-            // v13.2 sim 미니 라인
+            var pctsHtml = '<span class="hold-pm-pcts">목표 ' + t.toFixed(0) + '% · 실제 ' +
+                           '<span class="actual" style="color:' + color + ';">' + a.toFixed(2) + '%</span></span>';
+            // sim 미니 라인 — pm_summary 있으면 실값, 없으면 "투입 $0 · 매매 대기"
             var s = pmSummary[k];
-            var simLine = '';
+            var simLine;
             if (s) {
               var ret = Number(s.return_pct || 0);
               var retCls = ret >= 0 ? 'pos' : 'neg';
@@ -7503,12 +7581,17 @@
                 '<span>소진 ' + Number(s.utilization_pct || 0).toFixed(0) + '%</span>' +
                 '<span class="dim">' + Number(s.positions_open || 0) + '종목</span>' +
               '</div>';
+            } else {
+              simLine = '<div class="hold-pm-sim idle">' +
+                '<span class="label idle">sim</span>' +
+                '<span>투입 $0</span>' +
+                '<span class="dim">매매 대기</span>' +
+              '</div>';
             }
-            return '<div class="hold-pm-row" data-pm-key="' + _escapeHtml(k) + '">' +
+            rowsHtml += '<div class="hold-pm-row" data-pm-key="' + _escapeHtml(k) + '">' +
               '<div class="hold-pm-head">' +
                 '<span class="hold-pm-name">' + nameHtml + '</span>' +
-                '<span class="hold-pm-pcts">목표 ' + t.toFixed(0) + '% · 실제 ' +
-                  '<span class="actual" style="color:' + color + ';">' + a.toFixed(2) + '%</span></span>' +
+                pctsHtml +
               '</div>' +
               '<div class="hold-pm-bar">' +
                 '<div class="target" style="width:' + tw + '%"></div>' +
@@ -7517,9 +7600,10 @@
               '</div>' +
               simLine +
             '</div>';
-          }).join('');
+          });
+          // 현금 행 (unchanged)
           var cashFloorPct = Number(port.cash_floor_target_pct || 10);
-          var navUsd2 = Number((window.nexusBackendData && window.nexusBackendData.nav && window.nexusBackendData.nav.value_usd) || 0);
+          var navUsd2 = Number((snap.nav && snap.nav.value_usd) || 0);
           var cashUsd2 = Number(port.cash_usd || 0);
           var cashActual = navUsd2 > 0 ? (cashUsd2 / navUsd2 * 100) : 0;
           var cMaxScale = Math.max(cashFloorPct, cashActual, 60);
@@ -7540,8 +7624,9 @@
               '<div class="marker" style="left:calc(' + ctw + '% - 1px)"></div>' +
             '</div>' +
           '</div>';
-          pmHost.innerHTML = rowsHtml;
         }
+
+        pmHost.innerHTML = vnavHtml + rowsHtml;
       }
 
       // 자산 도넛 — positions 있을 때만
@@ -10467,17 +10552,52 @@
       return;
     }
     try {
+      // v13.3 — 조각 위 PM명+% 상시 표시 (호버 의존 제거).
+      //   afterDatasetsDraw 훅으로 각 슬라이스 중심 각도에서 외곽쪽으로 라벨 그림.
+      //   조각 <8% 이면 라벨 생략(겹침 방지) — 대신 하단 legend 로 확인.
+      var _pmDonutLabelPlugin = {
+        id: 'pmDonutLabels',
+        afterDatasetsDraw: function(chart) {
+          var ctx = chart.ctx;
+          var meta = chart.getDatasetMeta(0);
+          if (!meta || !meta.data) return;
+          var ds = chart.data.datasets[0].data || [];
+          var lbls = chart.data.labels || [];
+          var total = ds.reduce(function(s, v){ return s + Number(v || 0); }, 0) || 1;
+          ctx.save();
+          ctx.font = '600 10.5px system-ui, -apple-system, sans-serif';
+          ctx.textBaseline = 'middle';
+          meta.data.forEach(function(arc, i) {
+            var pct = Number(ds[i] || 0) / total * 100;
+            if (pct < 8) return;  // 겹침 방지
+            var mid = (arc.startAngle + arc.endAngle) / 2;
+            var r = (arc.outerRadius + arc.innerRadius) / 2 + 2;
+            var x = arc.x + Math.cos(mid) * r;
+            var y = arc.y + Math.sin(mid) * r;
+            var txt = String(lbls[i] || '') + ' ' + Number(ds[i] || 0).toFixed(0) + '%';
+            // 배경 (가독성)
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(0,0,0,0.55)';
+            var tw = ctx.measureText(txt).width + 6;
+            ctx.fillRect(x - tw / 2, y - 8, tw, 15);
+            ctx.fillStyle = '#f0f4f7';
+            ctx.fillText(txt, x, y);
+          });
+          ctx.restore();
+        },
+      };
       pmDonuts[canvasId] = new Chart(canvas.getContext('2d'), {
         type: 'doughnut',
         data: { labels: labels, datasets: [{ data: data, backgroundColor: bg, borderColor: '#0a0a0a', borderWidth: 2 }] },
         options: {
-          responsive: true, maintainAspectRatio: false, cutout: '62%',
+          responsive: true, maintainAspectRatio: false, cutout: '55%',
           plugins: {
             legend: { display: false },
             tooltip: { backgroundColor: 'rgba(20,20,20,0.95)', titleColor: COLORS.white, bodyColor: COLORS.white,
               callbacks: { label: function(c){ return c.label + ': ' + c.parsed.toFixed(1) + '%'; } } },
           },
         },
+        plugins: [_pmDonutLabelPlugin],
       });
     } catch (e) {
       console.warn('[NexusCharts] PM donut 실패:', e && e.message);
@@ -11646,7 +11766,6 @@
     defense_lines: '방어 6선. L1 종목 손절 · L2 일일 · L3 소프트 MDD · L4 하드 MDD · L5 VIX · L6 급락.',
     // v12.2 — 이력 탭
     timeline:      '거래 타임라인. 날짜별 그룹 → 시각·PM·종목·방향·비중·신호값. 행 터치 시 상세.',
-    daily_bar:     '최근 14일 매매 건수. 위쪽 초록은 매수, 아래 빨강은 매도. 0건인 날은 점선.',
     trade_detail:  '거래 상세: 신호값·게이트 통과·목표 비중·기대 순수익·비용·안전배수. 스냅샷에 없는 값은 —.',
     skip_reason:   '계층3 스킵 사유. 게이트를 통과하지 못한 이유 (신호 부족·비용 초과·안전배수 미달 등).',
     mode_badge:    'sim: 실제 발주 없이 시뮬만. live: 실계좌 발주. 현재는 sim만 존재 (D단계에서 live 전환).',
@@ -11701,7 +11820,6 @@
     sim_position: 'sim 가상 포지션',
     defense_lines: '방어 6선',
     timeline: '거래 타임라인',
-    daily_bar: '일별 매매 집계',
     trade_detail: '거래 상세',
     skip_reason: '계층3 스킵',
     mode_badge: 'sim / live 모드',
@@ -12198,6 +12316,61 @@
     } else {
       _renderHoldingsTable(filtered, isSim);
     }
+
+    // v13.3 — 사이드 카드: 오늘 매수/매도 건수·금액 + 최다 활동 PM
+    _renderHoldingsSideCard(data);
+  }
+
+  function _renderHoldingsSideCard(data) {
+    var host = document.querySelector('[data-bind="h2-side-card"]');
+    if (!host) return;
+    var ledger = (data && data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
+    if (!ledger.length) {
+      host.innerHTML =
+        '<div class="hsc-title">오늘 활동</div>' +
+        '<div class="hsc-empty">sim 원장 대기</div>';
+      return;
+    }
+    // KST 오늘 (KST = UTC+9). ts 는 이미 KST 라 가정 (원장이 KST 로 저장됨).
+    var today = new Date();
+    var todayKey = today.getFullYear() + '-' +
+                   String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                   String(today.getDate()).padStart(2, '0');
+    var todayRows = ledger.filter(function(l) { return _dayKey(l.ts) === todayKey; });
+    var buyCnt = 0, sellCnt = 0, buyAmt = 0, sellAmt = 0;
+    var pmCnt = {};
+    todayRows.forEach(function(l) {
+      var side = (l.action || 'buy').toLowerCase();
+      var amt = Math.abs(Number(l.notional_usd || 0));
+      if (side === 'sell') { sellCnt++; sellAmt += amt; } else { buyCnt++; buyAmt += amt; }
+      var pm = l.pm || 'unknown';
+      pmCnt[pm] = (pmCnt[pm] || 0) + 1;
+    });
+    var topPmKey = null, topPmMax = 0;
+    Object.keys(pmCnt).forEach(function(k) {
+      if (pmCnt[k] > topPmMax) { topPmMax = pmCnt[k]; topPmKey = k; }
+    });
+    var _fmt = function(v) { return '$' + Math.round(v).toLocaleString('en-US'); };
+    var html =
+      '<div class="hsc-title">오늘 활동 (' + todayRows.length + '건)</div>' +
+      (todayRows.length === 0
+        ? '<div class="hsc-empty">오늘 체결 없음</div>'
+        : '<div class="hsc-row"><span class="k">매수</span><span class="v buy">' + buyCnt + '건 · ' + _fmt(buyAmt) + '</span></div>' +
+          '<div class="hsc-row"><span class="k">매도</span><span class="v sell">' + sellCnt + '건 · ' + _fmt(sellAmt) + '</span></div>' +
+          '<div class="hsc-sep"></div>' +
+          '<div class="hsc-title" style="margin-bottom:2px;">최다 활동 PM</div>' +
+          (topPmKey
+            ? (function() {
+                var pmMeta = _pmMeta(topPmKey);
+                return '<div class="hsc-pm">' +
+                  '<span class="swatch" style="background:' + _esc(pmMeta.color) + '"></span>' +
+                  '<span class="hsc-pm-name">' + _esc(pmMeta.ko || pmMeta.short) + '</span>' +
+                  '<span class="hsc-pm-cnt">' + topPmMax + '건</span>' +
+                '</div>';
+              })()
+            : '<div class="hsc-empty">—</div>')
+      );
+    host.innerHTML = html;
   }
 
   // 위임 클릭: 칩 · 행
@@ -12269,68 +12442,7 @@
     }).join('');
   }
 
-  function _renderDailyBars(trades) {
-    // v13.0 A안 — 소스: sim recent_ledger (실체결). 축: 금액(notional_usd).
-    //   PM별 색으로 스택 · 매수 위/매도 아래 (매도는 부호 반전 스택).
-    //   원 trades 는 판단(would_trade) — 지금은 count 툴팁 정보로만 씀.
-    var barsHost = document.querySelector('[data-bind="h3-daily-bars"]');
-    var labelsHost = document.querySelector('[data-bind="h3-daily-labels"]');
-    if (!barsHost || !labelsHost) return;
-    var data = window.nexusBackendData || {};
-    var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
-
-    var today = new Date();
-    var days = [];
-    for (var i = 13; i >= 0; i--) {
-      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-      var key = d.getFullYear() + '-' +
-                String(d.getMonth() + 1).padStart(2, '0') + '-' +
-                String(d.getDate()).padStart(2, '0');
-      days.push({ key: key, buyByPm: {}, sellByPm: {}, buyCnt: 0, sellCnt: 0, buyTotal: 0, sellTotal: 0 });
-    }
-    ledger.forEach(function(l) {
-      var k = _dayKey(l.ts);
-      if (!k) return;
-      var day = days.find(function(x) { return x.key === k; });
-      if (!day) return;
-      var pm = l.pm || 'unknown';
-      var notional = Math.abs(Number(l.notional_usd || 0));
-      var side = (l.action || 'buy').toLowerCase();
-      if (side === 'sell') {
-        day.sellByPm[pm] = (day.sellByPm[pm] || 0) + notional;
-        day.sellCnt++; day.sellTotal += notional;
-      } else {
-        day.buyByPm[pm] = (day.buyByPm[pm] || 0) + notional;
-        day.buyCnt++; day.buyTotal += notional;
-      }
-    });
-    var maxAmt = Math.max.apply(null, days.map(function(d){return Math.max(d.buyTotal, d.sellTotal);})) || 1;
-
-    function _stackHtml(byPm, sideCls) {
-      return Object.keys(byPm).map(function(pm) {
-        var meta = _pmMeta(pm);
-        var h = (byPm[pm] / maxAmt) * 100;
-        return '<div class="seg-pm ' + sideCls + '" style="height:' + h.toFixed(2) + '%;background:' + _esc(meta.color) + ';" ' +
-               'title="' + _esc(meta.short) + ' $' + Math.round(byPm[pm]).toLocaleString('en-US') + '"></div>';
-      }).join('');
-    }
-
-    barsHost.innerHTML = days.map(function(d) {
-      var totalTx = d.buyCnt + d.sellCnt;
-      if (totalTx === 0) {
-        return '<div class="h3-daily-bar" data-count="0" title="' + d.key + ': 체결 0건"><div class="seg-empty"></div></div>';
-      }
-      var tip = d.key + ': 매수 ' + d.buyCnt + '건 $' + Math.round(d.buyTotal).toLocaleString('en-US') +
-                ' · 매도 ' + d.sellCnt + '건 $' + Math.round(d.sellTotal).toLocaleString('en-US');
-      return '<div class="h3-daily-bar amt-stack" title="' + _esc(tip) + '">' +
-        '<div class="stack-top">' + _stackHtml(d.buyByPm, 'buy') + '</div>' +
-        '<div class="stack-bot">' + _stackHtml(d.sellByPm, 'sell') + '</div>' +
-      '</div>';
-    }).join('');
-    labelsHost.innerHTML = days.map(function(d) {
-      return '<span>' + d.key.slice(5).replace('-','/') + '</span>';
-    }).join('');
-  }
+  // v13.3 — _renderDailyBars 삭제 (14일 미니바 제거)
 
   function _renderTimeline(filtered) {
     var host = document.querySelector('[data-bind="h3-timeline-host"]');
@@ -12406,8 +12518,7 @@
       if (helpBtn && !mb.contains(helpBtn)) mb.appendChild(helpBtn);
     }
 
-    // 일별 미니바는 전체 rolling window 사용 (필터와 무관)
-    _renderDailyBars(trades);
+    // v13.3 — 14일 미니바 제거 (사용자 판정). _renderDailyBars 호출·함수 삭제.
 
     // PM 별 카운트 (필터에 사용) — 유형·기간 무관 전체 기준
     var pmCounts = {};
@@ -12454,16 +12565,25 @@
   var _simLedgerExpanded = false;
 
   function _renderSimLedger(data) {
-    var host = document.querySelector('[data-bind="h3-ledger-wrap"]');
-    var meta = document.querySelector('[data-bind="h3-ledger-meta"]');
-    if (!host) return;
+    // v13.3 — 모바일(h3-ledger-wrap) + PC 2열 우측(h3-ledger-wrap-pc) 동시 렌더.
+    //         5-폭 그리드: 시간 · 종목(PM점) · 방향 · 체결(수량 sub) · 신호
+    var hosts = [
+      document.querySelector('[data-bind="h3-ledger-wrap"]'),
+      document.querySelector('[data-bind="h3-ledger-wrap-pc"]'),
+    ].filter(Boolean);
+    var metas = [
+      document.querySelector('[data-bind="h3-ledger-meta"]'),
+      document.querySelector('[data-bind="h3-ledger-meta-pc"]'),
+    ].filter(Boolean);
+    if (!hosts.length) return;
     var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
     var hasSp = !!(data.sim_portfolio);
-    if (meta) meta.textContent = '최근 ' + ledger.length + '건';
+    metas.forEach(function(m){ m.textContent = '최근 ' + ledger.length + '건'; });
     if (!ledger.length) {
-      host.innerHTML = hasSp
+      var emptyHtml = hasSp
         ? '<div class="h3-empty"><div class="big">recent_ledger 값 0건</div><div class="desc">sim 체결 이력 없음</div></div>'
         : '<div class="h3-empty"><div class="big">sim_portfolio 필드 없음</div><div class="desc">백엔드 미노출</div></div>';
+      hosts.forEach(function(h){ h.innerHTML = emptyHtml; });
       return;
     }
     var visible = _simLedgerExpanded ? ledger : ledger.slice(0, 5);
@@ -12472,15 +12592,19 @@
       var side = (l.action || 'buy').toLowerCase();
       var actCls = side === 'sell' ? 'sell' : 'buy';
       var actTxt = side === 'sell' ? '매도' : '매수';
-      // 컴팩트 1줄: HH:mm MM/DD · ticker · [PM점] · 매수/매도 · $price × qty · $notional (신호 s.ss)
       var tt = _timeShort(l.ts) + ' ' + _dayKey(l.ts).slice(5);
+      var notionalTxt = '$' + Math.round(Number(l.notional_usd || 0)).toLocaleString('en-US');
+      var qtyTxt = Number(l.shares).toFixed(2) + '주';
       return '<div class="h3-ledger-row compact" data-h3-ltid="' + _esc((l.ts||'') + '#' + (l.ticker||'')) + '">' +
         '<span class="t">' + _esc(tt) + '</span>' +
-        '<span class="sym">' + _esc(l.ticker || '?') + '</span>' +
-        '<span class="pm-dot" style="background:' + _esc(pmMeta.color) + '" title="' + _esc(pmMeta.short) + '"></span>' +
+        '<span class="sym-cell">' +
+          '<span class="pm-dot" style="background:' + _esc(pmMeta.color) + '" title="' + _esc(pmMeta.short) + '"></span>' +
+          '<span class="sym">' + _esc(l.ticker || '?') + '</span>' +
+        '</span>' +
         '<span class="act ' + actCls + '">' + actTxt + '</span>' +
-        '<span class="num">$' + Number(l.fill_price).toFixed(2) + '×' + Number(l.shares).toFixed(2) + '</span>' +
-        '<span class="num strong">$' + Math.round(Number(l.notional_usd || 0)).toLocaleString('en-US') + '</span>' +
+        '<span class="fill-cell">' + notionalTxt +
+          '<span class="fill-sub">' + qtyTxt + '</span>' +
+        '</span>' +
         '<span class="sig">' + (l.signal_strength != null ? Number(l.signal_strength).toFixed(2) : '—') + '</span>' +
       '</div>';
     }).join('');
@@ -12490,7 +12614,7 @@
         (_simLedgerExpanded ? '접기 (▲ 5건만 보기)' : '더보기 (▼ 전체 ' + ledger.length + '건)') +
       '</button>';
     }
-    host.innerHTML = rows + toggle;
+    hosts.forEach(function(h){ h.innerHTML = rows + toggle; });
   }
 
   document.addEventListener('click', function(ev) {

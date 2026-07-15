@@ -3047,6 +3047,21 @@
     position: absolute; top: 0; left: 0; bottom: 0;
     background: var(--accent); border-radius: 4px;
   }
+  /* v13.2 — PM 도넛 옆 sim 미니표 라인 */
+  .hold-pm-sim {
+    display: flex; gap: 10px; margin-top: 4px; padding: 3px 6px;
+    background: #0c0f0e; border-radius: 4px;
+    font-family: var(--mono); font-size: 10px; color: var(--fg);
+    align-items: center;
+  }
+  .hold-pm-sim .label {
+    padding: 1px 5px; background: #fbbf2415; color: #fbbf24;
+    border-radius: 3px; font-size: 9px;
+  }
+  .hold-pm-sim .pos { color: var(--accent, #22c55e); font-weight: 600; }
+  .hold-pm-sim .neg { color: var(--negative, #ef4444); font-weight: 600; }
+  .hold-pm-sim .dim { color: var(--fg-dim); margin-left: auto; }
+
   .hold-pm-bar .marker {
     position: absolute; top: -2px; bottom: -2px; width: 2px;
     background: var(--fg-muted);
@@ -3362,6 +3377,40 @@
   .ev-cal-day .dot.high   { background: #ef4444; }
   .ev-cal-day .dot.medium { background: #facc15; }
   .ev-cal-day .dot.low    { background: #88a8d0; }
+  /* v13.2 — 결재 이력 점 (approvals.history status 별 색) */
+  .dot.app-approved  { background: #22c55e; border: 1px solid rgba(0,0,0,0.3); }
+  .dot.app-rejected  { background: #ef4444; border: 1px solid rgba(0,0,0,0.3); }
+  .dot.app-expired   { background: #6b7280; border: 1px solid rgba(0,0,0,0.3); }
+  .dot.app-pending   { background: #facc15; border: 1px solid rgba(0,0,0,0.3); }
+  .ev-cal-legend .lg-item .dot.app-approved,
+  .ev-cal-legend .lg-item .dot.app-rejected,
+  .ev-cal-legend .lg-item .dot.app-expired,
+  .ev-cal-legend .lg-item .dot.app-pending { width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
+  /* v13.2 — 결재 카드 in day-detail panel */
+  .ev-cal-detail-subhead {
+    margin-top: 14px; padding-top: 10px; border-top: 1px solid #1c2320;
+    font-size: 11px; color: var(--fg-muted); font-weight: 600;
+  }
+  .ev-cal-app-card {
+    padding: 8px 10px; margin-top: 6px;
+    background: #0c0f0e; border-left: 3px solid var(--fg-muted); border-radius: 4px;
+  }
+  .ev-cal-app-card.app-approved { border-left-color: #22c55e; }
+  .ev-cal-app-card.app-rejected { border-left-color: #ef4444; }
+  .ev-cal-app-card.app-expired  { border-left-color: #6b7280; }
+  .ev-cal-app-head {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 3px;
+    font-size: 11px;
+  }
+  .ev-cal-app-status {
+    padding: 1px 6px; border-radius: 3px; font-family: var(--mono); font-size: 10px;
+  }
+  .ev-cal-app-status.app-approved { background: #22c55e20; color: #22c55e; }
+  .ev-cal-app-status.app-rejected { background: #ef444420; color: #ef4444; }
+  .ev-cal-app-status.app-expired  { background: #6b728020; color: #9ca3af; }
+  .ev-cal-app-sym { font-family: var(--mono); font-weight: 700; color: var(--fg-strong); }
+  .ev-cal-app-type { color: var(--fg-muted); font-size: 10px; font-family: var(--mono); }
+  .ev-cal-app-reason { color: var(--fg); font-size: 11px; line-height: 1.4; }
   .ev-cal-day .fomc-badge {
     position: absolute; top: 1px; right: 2px;
     font-size: 8px; font-weight: 800; line-height: 1;
@@ -3876,6 +3925,47 @@
   }
   .h2-table tbody tr.sim .sym { color: var(--warn); }
 
+  /* v13.2 — 위험 관리 통합 카드 (방어 + 게이트 요약 + 리스크) */
+  .risk-unified-card {
+    background: #101412; border: 1px solid #1c2320; border-radius: 12px;
+    padding: 14px; margin-bottom: 14px;
+  }
+  .ru-headline {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; margin-bottom: 12px;
+    background: #0c0f0e; border-radius: 8px;
+    border-left: 3px solid var(--accent, #22c55e);
+  }
+  .ru-headline.warn { border-left-color: #facc15; }
+  .ru-headline.risk { border-left-color: #ef4444; }
+  .ru-nearmiss-label { font-size: 11px; color: var(--fg-muted); font-weight: 600; }
+  .ru-nearmiss-val { font-family: var(--mono); font-size: 12px; color: var(--fg-strong); }
+  .ru-gate-summary {
+    display: flex; gap: 16px; margin-bottom: 10px;
+    padding: 8px 12px; background: #0c0f0e; border-radius: 6px;
+    font-size: 11px; color: var(--fg-muted); font-family: var(--mono);
+  }
+  .ru-gate-summary .v { color: var(--fg-strong); font-weight: 600; margin-left: 4px; }
+  .ru-metrics-head {
+    margin: 14px 0 8px; font-size: 12px; font-weight: 600; color: var(--fg-strong);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .risk-unified-card .defense-board { margin: 0; }
+  .risk-unified-card .risk-card { margin: 0; border: 1px solid #1c2320; }
+
+  /* v13.2 — 보유 sim 원장 날짜 그룹 접기 */
+  .h2-table-grouped .h2-group-head td {
+    background: #0c0f0e; padding: 8px 12px; cursor: pointer;
+    border-top: 1px solid #1c2320; user-select: none;
+  }
+  .h2-table-grouped .h2-group-head:hover td { background: #12161a; }
+  .h2-group-caret { display: inline-block; width: 14px; color: var(--fg-dim); }
+  .h2-group-label { font-family: var(--mono); font-size: 12px; color: var(--fg-strong); font-weight: 600; }
+  .h2-group-cnt { color: var(--fg-muted); font-size: 11px; margin-left: 6px; }
+  .h2-group-pnl { float: right; font-family: var(--mono); font-size: 12px; }
+  .h2-group-pnl .pos { color: var(--accent, #22c55e); }
+  .h2-group-pnl .neg { color: var(--negative, #ef4444); }
+
   .h2-empty {
     padding: 26px 20px; text-align: center;
     background: var(--bg-elev); border: 1px solid var(--border);
@@ -4020,19 +4110,30 @@
     width: 100%; min-height: 1px;
   }
   .h3-daily-bar.amt-stack .seg-pm.sell { opacity: 0.75; }
-  /* v13.0 — sim ledger 섹션 */
-  .h3-ledger-wrap { display: flex; flex-direction: column; gap: 2px; }
-  .h3-ledger-row {
-    display: grid; grid-template-columns: 80px 70px 60px 70px 80px 1fr; gap: 8px;
-    padding: 5px 8px; align-items: center; font-size: 11px; border-bottom: 1px solid #15191775;
+  /* v13.0 — sim ledger 섹션 · v13.2 컴팩트 */
+  .h3-ledger-wrap { display: flex; flex-direction: column; gap: 1px; }
+  .h3-ledger-row.compact {
+    display: grid; grid-template-columns: 78px 55px 10px 40px 100px 80px 40px; gap: 6px;
+    padding: 3px 8px; align-items: center; font-size: 11px;
+    border-bottom: 1px solid #15191740; line-height: 1.3;
   }
-  .h3-ledger-row .t { font-family: var(--mono); color: var(--fg-dim); }
-  .h3-ledger-row .sym { font-family: var(--mono); font-weight: 600; color: var(--fg-strong); }
-  .h3-ledger-row .pm { display: flex; align-items: center; gap: 4px; }
-  .h3-ledger-row .pm .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
-  .h3-ledger-row .act.buy { color: var(--accent); font-family: var(--mono); }
-  .h3-ledger-row .act.sell { color: var(--negative); font-family: var(--mono); }
-  .h3-ledger-row .num { font-family: var(--mono); text-align: right; color: var(--fg); }
+  .h3-ledger-row.compact .t { font-family: var(--mono); color: var(--fg-dim); font-size: 10px; }
+  .h3-ledger-row.compact .sym { font-family: var(--mono); font-weight: 600; color: var(--fg-strong); }
+  .h3-ledger-row.compact .pm-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  }
+  .h3-ledger-row.compact .act { font-family: var(--mono); font-size: 10px; }
+  .h3-ledger-row.compact .act.buy { color: var(--accent, #22c55e); }
+  .h3-ledger-row.compact .act.sell { color: var(--negative, #ef4444); }
+  .h3-ledger-row.compact .num { font-family: var(--mono); text-align: right; color: var(--fg); font-size: 10px; }
+  .h3-ledger-row.compact .num.strong { color: var(--fg-strong); font-weight: 600; }
+  .h3-ledger-row.compact .sig { font-family: var(--mono); color: var(--fg-muted); font-size: 10px; text-align: right; }
+  .h3-ledger-toggle {
+    margin-top: 6px; padding: 6px 12px;
+    background: #101412; border: 1px solid #1c2320; border-radius: 6px;
+    color: var(--fg-muted); font-size: 11px; cursor: pointer; width: 100%;
+  }
+  .h3-ledger-toggle:hover { color: var(--fg-strong); border-color: var(--accent); }
   .h3-daily-labels {
     display: grid; grid-template-columns: repeat(14, 1fr);
     gap: 4px;
@@ -4732,7 +4833,7 @@
         </div>
         <div class="l3-stats">
           <div class="l3-cell"><div class="l3-label">평가</div><div class="l3-val" data-bind="l3-evals">—</div></div>
-          <div class="l3-cell"><div class="l3-label" data-bind="l3-would-label">했을 매매 (시뮬)</div><div class="l3-val would" data-bind="l3-would">—</div><div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div></div>
+          <div class="l3-cell"><div class="l3-label" data-bind="l3-would-label">sim 체결</div><div class="l3-val would" data-bind="l3-would">—</div><div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div></div>
           <div class="l3-cell"><div class="l3-label">스킵</div><div class="l3-val skipped" data-bind="l3-skipped">—</div></div>
           <div class="l3-cell"><div class="l3-label">안전배수</div><div class="l3-val" data-bind="l3-mult">×3</div></div>
         </div>
@@ -4741,7 +4842,7 @@
           <div class="l3-reasons" data-bind="l3-reasons"><div class="l3-empty">집계 없음</div></div>
         </div>
         <div class="l3-section">
-          <div class="l3-section-title">최근 "했을 매매"</div>
+          <div class="l3-section-title">최근 sim 체결</div>
           <div class="l3-trades" data-bind="l3-trades">
             <div class="l3-empty">기록 없음</div>
           </div>
@@ -5619,57 +5720,67 @@
       </div>
       <div class="gauge-wrap" id="nx-gauge-wrap-pc"></div>
 
-      <!-- 방어 상태판 (홈에서 이동) -->
+      <!-- v13.2 — 위험 관리 통합 카드 (방어 6선 + Aegis 게이트 요약 + 리스크 통계 + nearmiss 헤드라인) -->
       <div class="d-tab-section-title">
-        방어 상태판
+        위험 관리 · 방어선 + 리스크 통계
         <button type="button" class="nx-help-btn" data-help="defense_lines" aria-label="방어선 도움말">?</button>
-        <span class="d-tab-section-meta">6선</span>
+        <span class="d-tab-section-meta">12 게이트 · 6 방어선</span>
       </div>
-      <div class="defense-board" id="defense-board-pc">
-        <div class="db-head">
-          <span class="db-title">방어 상태판</span>
-          <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
-          <span class="db-meta" data-bind="defense-meta">—</span>
+      <div class="risk-unified-card">
+        <!-- nearmiss 헤드라인 -->
+        <div class="ru-headline" data-bind="ru-nearmiss">
+          <span class="ru-nearmiss-label">가장 가까운 방어선</span>
+          <span class="ru-nearmiss-val">계산 중…</span>
         </div>
-        <div class="db-stats">
-          <span>고점 <span class="v" data-bind="defense-hwm">—</span><span class="help-tip" tabindex="0" data-tip="최고 자산액. MDD 계산 기준" aria-label="고점 도움말">?</span></span>
-          <span>MDD <span class="v" data-bind="defense-mdd">—</span><span class="help-tip" tabindex="0" data-tip="최대 낙폭. 고점에서 최대로 떨어진 폭" aria-label="MDD 도움말">?</span></span>
-          <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
-          <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
+        <!-- Aegis 게이트 요약 (통과/enforce/live 대기) -->
+        <div class="ru-gate-summary">
+          <span>Aegis 게이트: <span class="v" data-bind="ru-gate-pass">—</span></span>
+          <span>enforce <span class="v" data-bind="ru-gate-enf">—</span></span>
+          <span>Live 대기 <span class="v" data-bind="ru-gate-pending">—</span></span>
         </div>
-        <div class="db-lines" data-bind="defense-lines"></div>
-        <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
-      </div>
-
-      <!-- 리스크 메트릭 (홈에서 이동 — 포트폴리오 분석은 보유 탭) -->
-      <div class="d-tab-section-title">
-        리스크 메트릭
-        <span class="d-tab-section-meta" data-bind="risk-meta">—</span>
-      </div>
-      <div class="risk-card" id="risk-card-pc">
-        <div class="rk-grid">
-          <div class="rk-cell">
-            <div class="rk-label">Sharpe (Rf 4.5%) <span class="help-tip" tabindex="0" data-tip="위험 대비 수익. 높을수록 좋음 (1+ 양호)" aria-label="Sharpe 도움말">?</span></div>
-            <div class="rk-val na" data-bind="risk-sharpe">—</div>
-            <div class="rk-sub" data-bind="risk-sharpe-sub">초과수익/위험</div>
+        <!-- 방어 상태판 (기존 defense-board 를 이 카드 안에 포함) -->
+        <div class="defense-board" id="defense-board-pc">
+          <div class="db-head">
+            <span class="db-title">방어 6선 상태</span>
+            <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
+            <span class="db-meta" data-bind="defense-meta">—</span>
           </div>
-          <div class="rk-cell">
-            <div class="rk-label">Max Drawdown <span class="help-tip" tabindex="0" data-tip="최대 낙폭. 고점에서 최대로 떨어진 폭" aria-label="MDD 도움말">?</span></div>
-            <div class="rk-val na" data-bind="risk-mdd">—</div>
-            <div class="rk-sub" data-bind="risk-mdd-sub">60일 시계열</div>
+          <div class="db-stats">
+            <span>고점 <span class="v" data-bind="defense-hwm">—</span></span>
+            <span>MDD <span class="v" data-bind="defense-mdd">—</span></span>
+            <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
+            <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
           </div>
-          <div class="rk-cell">
-            <div class="rk-label">Beta (vs SPY) <span class="help-tip" tabindex="0" data-tip="시장(SPY) 대비 민감도. 1=동일" aria-label="Beta 도움말">?</span></div>
-            <div class="rk-val na" data-bind="risk-beta">—</div>
-            <div class="rk-sub" data-bind="risk-beta-sub">시장 민감도</div>
-          </div>
-          <div class="rk-cell">
-            <div class="rk-label">변동성 (연율화) <span class="help-tip tip-right" tabindex="0" data-tip="수익률 표준편차(연율화). 높을수록 등락 큼" aria-label="변동성 도움말">?</span></div>
-            <div class="rk-val na" data-bind="risk-vol">—</div>
-            <div class="rk-sub" data-bind="risk-vol-sub">σ × √252</div>
-          </div>
+          <div class="db-lines" data-bind="defense-lines"></div>
+          <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
         </div>
-        <div class="rk-note" data-bind="risk-note">데이터 수집 중…</div>
+        <!-- 리스크 통계 (Sharpe/MDD/Beta/Vol) -->
+        <div class="ru-metrics-head">리스크 통계 <span class="d-tab-section-meta" data-bind="risk-meta">—</span></div>
+        <div class="risk-card" id="risk-card-pc">
+          <div class="rk-grid">
+            <div class="rk-cell">
+              <div class="rk-label">Sharpe (Rf 4.5%)</div>
+              <div class="rk-val na" data-bind="risk-sharpe">—</div>
+              <div class="rk-sub" data-bind="risk-sharpe-sub">초과수익/위험</div>
+            </div>
+            <div class="rk-cell">
+              <div class="rk-label">Max Drawdown</div>
+              <div class="rk-val na" data-bind="risk-mdd">—</div>
+              <div class="rk-sub" data-bind="risk-mdd-sub">60일 시계열</div>
+            </div>
+            <div class="rk-cell">
+              <div class="rk-label">Beta (vs SPY)</div>
+              <div class="rk-val na" data-bind="risk-beta">—</div>
+              <div class="rk-sub" data-bind="risk-beta-sub">시장 민감도</div>
+            </div>
+            <div class="rk-cell">
+              <div class="rk-label">변동성 (연율화)</div>
+              <div class="rk-val na" data-bind="risk-vol">—</div>
+              <div class="rk-sub" data-bind="risk-vol-sub">σ × √252</div>
+            </div>
+          </div>
+          <div class="rk-note" data-bind="risk-note">데이터 수집 중…</div>
+        </div>
       </div>
     </div>
   </section>
@@ -5773,7 +5884,7 @@
             <div class="l3-sub">오늘 KST</div>
           </div>
           <div class="l3-cell">
-            <div class="l3-label"><span data-bind="l3-would-label">했을 매매 (시뮬)</span> <span class="help-tip" tabindex="0" data-tip="시뮬레이트 모드에서 실제로 발사됐을 매매 횟수" aria-label="would_trade 도움말">?</span></div>
+            <div class="l3-label"><span data-bind="l3-would-label">sim 체결</span> <span class="help-tip" tabindex="0" data-tip="sim 모드 · 오늘 KST 게이트 통과 매매 (실계좌 미체결)" aria-label="sim 체결 도움말">?</span></div>
             <div class="l3-val would" data-bind="l3-would">—</div>
             <div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div>
           </div>
@@ -5795,7 +5906,7 @@
           </div>
         </div>
         <div class="l3-section">
-          <div class="l3-section-title">최근 "했을 매매"</div>
+          <div class="l3-section-title">최근 sim 체결</div>
           <div class="l3-trades" data-bind="l3-trades">
             <div class="l3-empty">기록 없음</div>
           </div>
@@ -6388,7 +6499,7 @@
       try { renderStoryline(data); } catch (e) { console.warn('[home] storyline', e); }
       try { renderPerformanceCard(data.performance || {}, data.nav || {}); } catch (e) { console.warn('[home] perf', e); }
       try { renderTeamDesks(data.team_desk || {}); } catch (e) { console.warn('[home] desk', e); }
-      try { renderAegisCard(data.team_desk && data.team_desk.aegis_line || {}, data.aegis_detail || {}); } catch (e) { console.warn('[home] aegis', e); }
+      try { renderAegisCard(data.team_desk && data.team_desk.aegis_line || {}, data.aegis_detail || {}, data.portfolio || {}, data.nav || {}); } catch (e) { console.warn('[home] aegis', e); }
       try { renderJournal(data); } catch (e) { console.warn('[home] journal', e); }
       try { renderSimBlock(data.sim_portfolio || null); } catch (e) { console.warn('[home] simblock', e); }
       try { renderCountdown(data.market_hours || {}, data.defense || {}); } catch (e) { console.warn('[home] countdown', e); }
@@ -7092,7 +7203,7 @@
       hosts.forEach(function(h){ h.innerHTML = html; });
     }
 
-    function renderAegisCard(aegisLine, aegisDetail) {
+    function renderAegisCard(aegisLine, aegisDetail, portfolio, nav) {
       var vix = aegisLine.vix;
       _setBinds('nx-aegis-vix', vix == null ? '—' : Number(vix).toFixed(1));
       _setBinds('nx-aegis-vix-thr', '한도 ' + (aegisLine.vix_threshold || 30));
@@ -7100,8 +7211,16 @@
       _setBinds('nx-aegis-mdd', mdd == null ? '—' : _fmtSignedPct(mdd));
       _setBinds('nx-aegis-mdd-thr',
         '소프트 ' + (aegisLine.soft_mdd_pct || -4) + '% / 하드 ' + (aegisLine.hard_mdd_pct || -7) + '%');
+      // v13.2 — aegisLine.cash_pct 가 null 이면 portfolio.cash_usd/nav.value_usd 로 폴백.
+      //   실계좌 0포지션 상황(paper 초기)에서 백엔드가 cash_pct 를 안 채우는 이슈.
+      var cashPct = aegisLine.cash_pct;
+      if (cashPct == null && portfolio && nav) {
+        var cash = Number(portfolio.cash_usd || 0);
+        var navV = Number(nav.value_usd || 0);
+        if (cash > 0 && navV > 0) cashPct = (cash / navV) * 100;
+      }
       _setBinds('nx-aegis-cash',
-        aegisLine.cash_pct == null ? '—' : Number(aegisLine.cash_pct).toFixed(1) + '%');
+        cashPct == null ? '—' : Number(cashPct).toFixed(1) + '%');
       _setBinds('nx-aegis-cash-thr', '≥ ' + (aegisLine.cash_floor_pct || 10) + '%');
       _setBinds('nx-aegis-blocked', String(aegisLine.blocked_today || 0));
     }
@@ -7349,6 +7468,10 @@
       var pmHost = document.querySelector('[data-bind="hold-pm-list"]');
       if (pmHost) {
         var rows = port.pm_allocation || [];
+        // v13.2 — 도넛 옆 미니표 소스: sim_portfolio.pm_summary (invested/return_pct/util).
+        //   각 PM 행에 sim 데이터 라인을 병기 (없으면 생략).
+        var pmSummary = (window.nexusBackendData && window.nexusBackendData.sim_portfolio
+                         && window.nexusBackendData.sim_portfolio.pm_summary) || {};
         if (rows.length === 0) {
           pmHost.innerHTML = '<div class="hold-empty">데이터 수집 중…</div>';
         } else {
@@ -7366,6 +7489,21 @@
             var color = meta ? meta.color : '#4b5563';
             var nameHtml = '<span class="pm-swatch" style="background:' + color + '"></span>' +
                            _escapeHtml(ko) + (en ? ' <span style="color:var(--fg-muted);font-weight:400;">(' + en + ')</span>' : '');
+            // v13.2 sim 미니 라인
+            var s = pmSummary[k];
+            var simLine = '';
+            if (s) {
+              var ret = Number(s.return_pct || 0);
+              var retCls = ret >= 0 ? 'pos' : 'neg';
+              var retSign = ret >= 0 ? '+' : '';
+              simLine = '<div class="hold-pm-sim">' +
+                '<span class="label">sim</span>' +
+                '<span>투입 $' + Number(s.invested_usd || 0).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</span>' +
+                '<span class="' + retCls + '">' + retSign + ret.toFixed(2) + '%</span>' +
+                '<span>소진 ' + Number(s.utilization_pct || 0).toFixed(0) + '%</span>' +
+                '<span class="dim">' + Number(s.positions_open || 0) + '종목</span>' +
+              '</div>';
+            }
             return '<div class="hold-pm-row" data-pm-key="' + _escapeHtml(k) + '">' +
               '<div class="hold-pm-head">' +
                 '<span class="hold-pm-name">' + nameHtml + '</span>' +
@@ -7377,6 +7515,7 @@
                 '<div class="actual" style="width:' + aw + '%;background:' + color + ';"></div>' +
                 '<div class="marker" style="left:calc(' + tw + '% - 1px)"></div>' +
               '</div>' +
+              simLine +
             '</div>';
           }).join('');
           var cashFloorPct = Number(port.cash_floor_target_pct || 10);
@@ -7701,6 +7840,55 @@
         host.style.display = '';
         host.textContent = '24h 재진입 차단: ' + blocked.map(function(b){return b.symbol;}).join(', ');
       });
+
+      // v13.2 — nearmiss 헤드라인: 방어선 중 임계에 가장 가까운 것 계산
+      var lines = Array.isArray(def.lines) ? def.lines : [];
+      var LABELS = {L1:'종목 손절', L2:'일일 NAV', L3:'Soft MDD', L4:'Hard MDD', L5:'VIX', L6:'5분 급락'};
+      var nearest = null;  // { id, name, marginPct }
+      lines.forEach(function(l) {
+        if (l.value == null || l.threshold == null) return;
+        var v = Number(l.value), thr = Number(l.threshold);
+        // 여유율: (threshold - value) 크기 / |threshold|.
+        // 손실 방어선 (thr<0): value 가 thr 로부터 얼마나 위인지. VIX (thr>0): value 가 thr 로부터 얼마나 아래인지.
+        var margin;
+        if (thr < 0) {
+          if (v > 0) v = 0;  // 손실 방어선은 손실만 관심 — 이익 상태면 완전 안전
+          margin = Math.max(0, (v - thr) / Math.abs(thr) * 100);
+        } else {
+          margin = Math.max(0, (thr - v) / thr * 100);
+        }
+        if (nearest == null || margin < nearest.margin) {
+          nearest = { id: l.id, name: LABELS[l.id] || l.id, margin: margin, thr: thr, val: v, status: l.status };
+        }
+      });
+      document.querySelectorAll('[data-bind="ru-nearmiss"]').forEach(function(host) {
+        var valEl = host.querySelector('.ru-nearmiss-val');
+        if (!valEl) return;
+        host.classList.remove('warn', 'risk');
+        if (!nearest) {
+          valEl.textContent = '계산 불가 (측정 대기)';
+          return;
+        }
+        var cls = nearest.margin < 20 ? 'risk' : (nearest.margin < 40 ? 'warn' : '');
+        if (cls) host.classList.add(cls);
+        var thrTxt = nearest.thr > 0 ? nearest.thr.toString() : nearest.thr.toFixed(1) + '%';
+        var valTxt = nearest.thr > 0 ? Number(nearest.val).toFixed(1) : Number(nearest.val).toFixed(2) + '%';
+        valEl.textContent = nearest.id + ' ' + nearest.name +
+          ' · 현재 ' + valTxt + ' / 임계 ' + thrTxt +
+          ' · 여유 ' + nearest.margin.toFixed(0) + '%';
+      });
+
+      // Aegis 게이트 요약 (window.nexusBackendData 에서 aegis_detail)
+      var ad = (window.nexusBackendData && window.nexusBackendData.aegis_detail) || {};
+      var aeg = (window.nexusBackendData && window.nexusBackendData.aegis) || {};
+      var gates = Array.isArray(ad.gates) ? ad.gates : [];
+      var passN = gates.filter(function(g){return g.passing;}).length;
+      var totalN = gates.length || aeg.gate_count || 15;
+      var enforceN = ad.gate_count_enforced || aeg.gate_count_enforced || 12;
+      var pendingIds = (aeg.live_only_pending || ad.live_only_gates || []).join('·');
+      _setBinds('ru-gate-pass', passN + '/' + totalN + ' 통과');
+      _setBinds('ru-gate-enf', enforceN + '/' + totalN);
+      _setBinds('ru-gate-pending', pendingIds ? 'G' + pendingIds : '—');
     }
 
     function renderLiveBanner(data) {
@@ -7933,10 +8121,22 @@
 
       _setBinds('l3-evals', String(l3.today_evaluations || 0));
       _setBinds('l3-would', String(l3.today_would_trade || 0));
-      _setBinds('l3-would-label', mode === 'live' ? '매매 횟수' : '했을 매매 (시뮬)');
+      // v13.2 — "했을 매매 (시뮬)" → "sim 체결" (가정법 제거, 배지가 이미 sim 표시).
+      //   오늘 KST 카운터는 사실상 정확 (백엔드 today_would_* 는 KST 자정 리셋).
+      //   최근 활동 부재 오해 방지 위해 sub 에 "직전 7일 N건" 병기.
+      _setBinds('l3-would-label', mode === 'live' ? '체결' : 'sim 체결');
+      var trades7d = 0;
+      if (Array.isArray(l3.recent_would_trades)) {
+        var cutoff = Date.now() - 7 * 86400 * 1000;
+        trades7d = l3.recent_would_trades.filter(function(t){
+          var ms = t.ts ? new Date(t.ts).getTime() : 0;
+          return ms >= cutoff;
+        }).length;
+      }
       _setBinds('l3-would-sub',
-        '매수 ' + (l3.today_would_buy || 0) +
-        ' · 매도 ' + (l3.today_would_sell || 0));
+        '오늘 매수 ' + (l3.today_would_buy || 0) +
+        ' · 매도 ' + (l3.today_would_sell || 0) +
+        (trades7d > 0 ? ' · 직전 7일 ' + trades7d + '건' : ''));
       _setBinds('l3-skipped', String(l3.today_skipped || 0));
 
       var mult = l3.safety_multiplier;
@@ -7981,7 +8181,7 @@
         if (!trades.length) {
           var empty = document.createElement('div');
           empty.className = 'l3-empty';
-          empty.textContent = inSession ? '오늘 게이트 통과 없음' : '장 마감 — 오늘 기록 없음';
+          empty.textContent = inSession ? '오늘 게이트 통과 sim 체결 없음' : '장 마감 — 오늘 sim 체결 없음';
           host.appendChild(empty);
           return;
         }
@@ -10438,12 +10638,14 @@
     if (n > 0) return 'D-' + n;
     return 'D+' + (-n);
   }
-  function _renderDayDetail(byDate, ymd) {
-    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트 상세가 보입니다.</div></div>';
+  function _renderDayDetail(byDate, ymd, byApprovalDate) {
+    // v13.2 — approvals.history 도 함께 표시
+    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트 + 결재 내역이 보입니다.</div></div>';
     var evs = byDate[ymd] || [];
+    var apps = (byApprovalDate && byApprovalDate[ymd]) || [];
     var wd = _weekdayKo(ymd);
     var dateHead = ymd + ' (' + wd + ')';
-    if (!evs.length) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + '</div><div class="ev-cal-detail-empty">이날엔 이벤트 없음</div></div>';
+    if (!evs.length && !apps.length) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + '</div><div class="ev-cal-detail-empty">이날엔 이벤트·결재 없음</div></div>';
     var cardsHtml = evs.map(function(e) {
       var imp = e.importance || 'low';
       var type = e.type || 'indicator';
@@ -10464,11 +10666,37 @@
         '<div class="ev-cal-detail-desc">' + _escapeHtmlNC(desc) + '</div>' +
       '</div>';
     }).join('');
-    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + ' · ' + evs.length + '건</div>' + cardsHtml + '</div>';
+    var appsHtml = '';
+    if (apps.length) {
+      appsHtml = '<div class="ev-cal-detail-subhead">결재 내역 · ' + apps.length + '건</div>' + apps.map(function(a) {
+        var status = a.status || '?';
+        var statusCls = 'app-' + status;
+        var statusLabel = ({approved:'승인', rejected:'반려', expired:'만료', pending:'대기'})[status] || status;
+        var meta = a.metadata || {};
+        var extra = '';
+        if (meta.mention_count) extra += ' · 언급 ' + meta.mention_count + '회';
+        if (meta.classifier_pm) extra += ' · PM 라우팅: ' + _escapeHtmlNC(meta.classifier_pm);
+        if (a.decided_by) extra += ' · by ' + _escapeHtmlNC(a.decided_by);
+        return '<div class="ev-cal-app-card ' + statusCls + '">' +
+          '<div class="ev-cal-app-head">' +
+            '<span class="ev-cal-app-status ' + statusCls + '">' + statusLabel + '</span>' +
+            '<span class="ev-cal-app-sym">' + _escapeHtmlNC(a.symbol || '?') + '</span>' +
+            '<span class="ev-cal-app-type">' + _escapeHtmlNC(a.type || '') + '</span>' +
+          '</div>' +
+          '<div class="ev-cal-app-reason">' + _escapeHtmlNC(a.reason || '') + extra + '</div>' +
+        '</div>';
+      }).join('');
+    }
+    var counts = evs.length + (apps.length ? ' · 결재 ' + apps.length : '');
+    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + ' · 이벤트 ' + evs.length + counts.slice(String(evs.length).length) + '</div>' + cardsHtml + appsHtml + '</div>';
   }
-  function renderCalendar(eventsData) {
+  function renderCalendar(eventsData, approvalsData) {
+    // v13.2 — 승인 이력(approvals.history) 통합. decided_at 날짜에 상태 색 점.
     if (!calState.ym) calState.ym = _ymToday();
     var events = (eventsData && Array.isArray(eventsData.events)) ? eventsData.events : [];
+    var history = (approvalsData && Array.isArray(approvalsData.history))
+      ? approvalsData.history
+      : ((approvalsData && Array.isArray(approvalsData.items)) ? approvalsData.items : []);
     var todayYmd = _ymdToday();
     var p = _parseYm(calState.ym);
     var firstWeekday = new Date(p.year, p.month, 1).getDay();
@@ -10480,11 +10708,25 @@
       if (!byDate[dt]) byDate[dt] = [];
       byDate[dt].push(e);
     });
+    // 결재 이력 by decided_at KST 날짜
+    var byApp = {};
+    history.forEach(function(a) {
+      var iso = a.decided_at || a.created_at;
+      if (!iso) return;
+      var dt;
+      try {
+        var d = new Date(iso);
+        var kst = new Date(d.getTime() + 9 * 3600 * 1000);
+        dt = kst.toISOString().slice(0, 10);
+      } catch (e) { dt = String(iso).slice(0, 10); }
+      if (!byApp[dt]) byApp[dt] = [];
+      byApp[dt].push(a);
+    });
     var cells = [];
     for (var i = 0; i < firstWeekday; i++) cells.push({ blank: true });
     for (var dnum = 1; dnum <= daysInMonth; dnum++) {
       var ymd = p.year + '-' + _padN(p.month + 1) + '-' + _padN(dnum);
-      cells.push({ day: dnum, ymd: ymd, events: byDate[ymd] || [], isToday: ymd === todayYmd });
+      cells.push({ day: dnum, ymd: ymd, events: byDate[ymd] || [], apps: byApp[ymd] || [], isToday: ymd === todayYmd });
     }
     while (cells.length % 7 !== 0) cells.push({ blank: true });
     var titleStr = p.year + '년 ' + (p.month + 1) + '월';
@@ -10503,15 +10745,19 @@
       var classes = ['ev-cal-day', 'in-month'];
       if (c.isToday) classes.push('today');
       if (calState.selDay === c.ymd) classes.push('selected');
-      if (c.events.length) classes.push('has-events');
+      if (c.events.length || c.apps.length) classes.push('has-events');
       var hasFomc = c.events.some(function(e) { return e.type === 'fomc'; });
-      var dots = c.events.slice(0, 4).map(function(e) {
+      var eventDots = c.events.slice(0, 3).map(function(e) {
         return '<span class="dot ' + (e.importance || 'low') + '"></span>';
+      }).join('');
+      // 결재 이력 점 — 상태별 색 (approved/rejected/expired)
+      var appDots = c.apps.slice(0, 3).map(function(a) {
+        return '<span class="dot app-' + (a.status || 'pending') + '" title="' + _escapeHtmlNC((a.symbol||'') + ' ' + (a.status||'')) + '"></span>';
       }).join('');
       return '<div class="' + classes.join(' ') + '" data-cal-day="' + c.ymd + '" role="button" tabindex="0">' +
         (hasFomc ? '<span class="fomc-badge">F</span>' : '') +
         '<span class="dnum">' + c.day + '</span>' +
-        (dots ? '<div class="dots">' + dots + '</div>' : '') +
+        (eventDots || appDots ? '<div class="dots">' + eventDots + appDots + '</div>' : '') +
       '</div>';
     }).join('') + '</div>';
     var legendHtml = '<div class="ev-cal-legend">' +
@@ -10519,13 +10765,20 @@
       '<span class="lg-item"><span class="dot medium"></span>보통</span>' +
       '<span class="lg-item"><span class="dot low"></span>참고</span>' +
       '<span class="lg-item"><span class="f">F</span>FOMC</span>' +
+      '<span class="lg-item"><span class="dot app-approved"></span>승인</span>' +
+      '<span class="lg-item"><span class="dot app-rejected"></span>반려</span>' +
+      '<span class="lg-item"><span class="dot app-expired"></span>만료</span>' +
     '</div>';
     var monthCount = 0;
     Object.keys(byDate).forEach(function(dt) {
       if (dt.indexOf(p.year + '-' + _padN(p.month + 1)) === 0) monthCount += byDate[dt].length;
     });
-    var summaryHtml = '<div class="ev-cal-summary">이 달 ' + monthCount + '건 · 다가오는 이벤트 ' + events.length + '건</div>';
-    var detailHtml = _renderDayDetail(byDate, calState.selDay);
+    var appMonthCount = 0;
+    Object.keys(byApp).forEach(function(dt) {
+      if (dt.indexOf(p.year + '-' + _padN(p.month + 1)) === 0) appMonthCount += byApp[dt].length;
+    });
+    var summaryHtml = '<div class="ev-cal-summary">이 달 이벤트 ' + monthCount + '건 · 결재 ' + appMonthCount + '건 · 다가오는 이벤트 ' + events.length + '건</div>';
+    var detailHtml = _renderDayDetail(byDate, calState.selDay, byApp);
     var html = headHtml + wkHtml + gridHtml + legendHtml + summaryHtml + detailHtml;
     ['ev-cal-mobile', 'ev-cal-pc'].forEach(function(id) {
       var el = document.getElementById(id);
@@ -10538,14 +10791,14 @@
       var act = nav.getAttribute('data-cal-act');
       calState.ym = _shiftYm(calState.ym || _ymToday(), act === 'prev' ? -1 : 1);
       var data = window.nexusBackendData || {};
-      renderCalendar(data.events || {});
+      renderCalendar(data.events || {}, data.approvals || {});
       return;
     }
     var dayCell = e.target.closest('[data-cal-day]');
     if (dayCell) {
       calState.selDay = dayCell.getAttribute('data-cal-day');
       var data2 = window.nexusBackendData || {};
-      renderCalendar(data2.events || {});
+      renderCalendar(data2.events || {}, data2.approvals || {});
       return;
     }
   });
@@ -10559,7 +10812,7 @@
         renderPmDonut('nx-pm-donut-pc', data.portfolio || {}, data);
         renderRiskGauges(data);
         renderMarketDeltas(data);
-        renderCalendar(data.events || {});
+        renderCalendar(data.events || {}, data.approvals || {});
       } catch (e) {
         console.warn('[NexusCharts] refresh 예외:', e && e.message);
       }
@@ -11627,6 +11880,7 @@
         unrealized_pnl: p.unrealized_pnl_usd,
         unrealized_pnl_pct: p.unrealized_pnl_pct,
         market_value: p.market_value_usd,
+        opened_at: p.opened_at,        // v13.2 — 날짜 그룹핑용
         _lastSignal: p.last_signal,
         _lastAction: p.last_action,
         _band: band,
@@ -11653,6 +11907,9 @@
     }).join('');
   }
 
+  // v13.2 — sim ledger 소스에서 opened_at 날짜별 그룹 접기 상태
+  var _h2ExpandedGroups = null;  // null=초기(오늘만 펼침) · {key:bool}
+
   function _renderHoldingsTable(rows, isSim) {
     var host = document.querySelector('[data-bind="h2-table-host"]');
     if (!host) return;
@@ -11660,7 +11917,7 @@
       host.innerHTML = '';
       return;
     }
-    var rowsHtml = rows.map(function(r) {
+    var _rowHtmlFor = function(r) {
       var tk = r.symbol;
       var pmKey = _pmKeyFromPos(r);
       var pmMeta = pmKey ? _pmMeta(pmKey) : null;
@@ -11723,26 +11980,90 @@
         '<td class="num pnl ' + pnlCls + '">' + pnlTxt + '</td>' +
         '<td class="num">' + (w != null ? Number(w).toFixed(2) + '%' : '—') + '</td>' +
       '</tr>';
-    }).join('');
+    };  // end _rowHtmlFor
 
     // v13.0 — sim ledger 소스면 손익/신호밴드 헤더 (l3 폴백은 여전히 기대/결정)
     var simLedger = rows.length && rows[0]._sim && rows[0]._simSource === 'ledger';
     var col6 = simLedger ? '손익' : (isSim ? '기대' : '손익');
     var col7 = simLedger ? '신호밴드' : (isSim ? '결정' : '비중');
-    host.innerHTML =
-      '<table class="h2-table">' +
-        '<thead><tr>' +
-          '<th>종목</th>' +
-          '<th>담당 PM</th>' +
-          '<th class="num">수량</th>' +
-          '<th class="num">평단</th>' +
-          '<th class="num">현재가</th>' +
-          '<th class="num">' + col6 + '</th>' +
-          '<th class="num">' + col7 + '</th>' +
-        '</tr></thead>' +
-        '<tbody>' + rowsHtml + '</tbody>' +
-      '</table>';
+    var headHtml =
+      '<thead><tr>' +
+        '<th>종목</th>' +
+        '<th>담당 PM</th>' +
+        '<th class="num">수량</th>' +
+        '<th class="num">평단</th>' +
+        '<th class="num">현재가</th>' +
+        '<th class="num">' + col6 + '</th>' +
+        '<th class="num">' + col7 + '</th>' +
+      '</tr></thead>';
+
+    // v13.2 — sim ledger 원장이면 opened_at KST 날짜별 그룹 접기.
+    //   기본: 오늘만 펼침, 이전 날짜는 접힘 (헤더 클릭 토글).
+    if (!simLedger) {
+      var flat = rows.map(_rowHtmlFor).join('');
+      host.innerHTML = '<table class="h2-table">' + headHtml + '<tbody>' + flat + '</tbody></table>';
+      return;
+    }
+
+    var _kstDay = function(iso) {
+      if (!iso) return '—';
+      try {
+        var d = new Date(iso);
+        var kst = new Date(d.getTime() + 9 * 3600 * 1000);
+        return kst.toISOString().slice(0, 10);
+      } catch (e) { return '—'; }
+    };
+    var groups = {};
+    rows.forEach(function(r) {
+      var k = _kstDay(r.opened_at);
+      if (!groups[k]) groups[k] = [];
+      groups[k].push(r);
+    });
+    var keys = Object.keys(groups).sort().reverse();  // 최신 날짜 위
+    var todayKst = _kstDay(new Date().toISOString());
+
+    if (_h2ExpandedGroups == null) {
+      _h2ExpandedGroups = {};
+      keys.forEach(function(k) { _h2ExpandedGroups[k] = (k === todayKst); });
+      if (!keys.some(function(k){ return _h2ExpandedGroups[k]; }) && keys.length > 0) {
+        _h2ExpandedGroups[keys[0]] = true;  // 오늘 없으면 최신 그룹 펼침 (완전 접힘 방지)
+      }
+    }
+
+    var groupHtml = keys.map(function(k) {
+      var isOpen = !!_h2ExpandedGroups[k];
+      var cnt = groups[k].length;
+      var label = (k === todayKst) ? '오늘 (' + k + ')' : k;
+      var dayPnl = 0, haveDayPnl = false;
+      groups[k].forEach(function(r){ if (r.unrealized_pnl != null){ dayPnl += Number(r.unrealized_pnl); haveDayPnl = true; }});
+      var dayPnlHtml = haveDayPnl
+        ? '<span class="' + (dayPnl >= 0 ? 'pos' : 'neg') + '">' + (dayPnl >= 0 ? '+' : '−') + '$' + Math.abs(dayPnl).toLocaleString('en-US', {maximumFractionDigits: 0}) + '</span>'
+        : '';
+      var headRow = '<tr class="h2-group-head" data-h2-group="' + _esc(k) + '">' +
+        '<td colspan="7">' +
+          '<span class="h2-group-caret">' + (isOpen ? '▾' : '▸') + '</span> ' +
+          '<span class="h2-group-label">' + _esc(label) + '</span> ' +
+          '<span class="h2-group-cnt">' + cnt + '건</span> ' +
+          '<span class="h2-group-pnl">' + dayPnlHtml + '</span>' +
+        '</td>' +
+      '</tr>';
+      var bodyRows = isOpen ? groups[k].map(_rowHtmlFor).join('') : '';
+      return headRow + bodyRows;
+    }).join('');
+
+    host.innerHTML = '<table class="h2-table h2-table-grouped">' + headHtml + '<tbody>' + groupHtml + '</tbody></table>';
   }
+
+  // v13.2 — 날짜 그룹 헤더 클릭 토글 (위임)
+  document.addEventListener('click', function(ev) {
+    var head = ev.target.closest('.h2-group-head[data-h2-group]');
+    if (!head) return;
+    ev.preventDefault();
+    var k = head.getAttribute('data-h2-group');
+    if (!k || !_h2ExpandedGroups) return;
+    _h2ExpandedGroups[k] = !_h2ExpandedGroups[k];
+    try { renderPcHoldingsV12(window.nexusBackendData || {}); } catch (e) { console.warn('[h2] group toggle', e); }
+  });
 
   function _renderHoldingsEmptyState(nav, portfolio) {
     var host = document.querySelector('[data-bind="h2-table-host"]');
@@ -12129,35 +12450,56 @@
     _renderSimLedger(data);
   }
 
+  // v13.2 — sim 체결 컴팩트: 1줄/건 · 기본 5건 표시 · "더보기" 로 전체 확장
+  var _simLedgerExpanded = false;
+
   function _renderSimLedger(data) {
-    // v13.0 — sim_portfolio.recent_ledger (실체결가 · 수량 · notional) 렌더
     var host = document.querySelector('[data-bind="h3-ledger-wrap"]');
     var meta = document.querySelector('[data-bind="h3-ledger-meta"]');
     if (!host) return;
     var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
+    var hasSp = !!(data.sim_portfolio);
     if (meta) meta.textContent = '최근 ' + ledger.length + '건';
     if (!ledger.length) {
-      host.innerHTML = '<div class="h3-empty"><div class="big">sim 원장 부재</div><div class="desc">sim_portfolio.recent_ledger 없음</div></div>';
+      host.innerHTML = hasSp
+        ? '<div class="h3-empty"><div class="big">recent_ledger 값 0건</div><div class="desc">sim 체결 이력 없음</div></div>'
+        : '<div class="h3-empty"><div class="big">sim_portfolio 필드 없음</div><div class="desc">백엔드 미노출</div></div>';
       return;
     }
-    var rows = ledger.map(function(l) {
+    var visible = _simLedgerExpanded ? ledger : ledger.slice(0, 5);
+    var rows = visible.map(function(l) {
       var pmMeta = _pmMeta(l.pm);
       var side = (l.action || 'buy').toLowerCase();
       var actCls = side === 'sell' ? 'sell' : 'buy';
       var actTxt = side === 'sell' ? '매도' : '매수';
+      // 컴팩트 1줄: HH:mm MM/DD · ticker · [PM점] · 매수/매도 · $price × qty · $notional (신호 s.ss)
       var tt = _timeShort(l.ts) + ' ' + _dayKey(l.ts).slice(5);
-      return '<div class="h3-ledger-row" data-h3-ltid="' + _esc((l.ts||'') + '#' + (l.ticker||'')) + '">' +
+      return '<div class="h3-ledger-row compact" data-h3-ltid="' + _esc((l.ts||'') + '#' + (l.ticker||'')) + '">' +
         '<span class="t">' + _esc(tt) + '</span>' +
         '<span class="sym">' + _esc(l.ticker || '?') + '</span>' +
-        '<span class="pm"><span class="swatch" style="background:' + _esc(pmMeta.color) + '"></span>' + _esc(pmMeta.short) + '</span>' +
+        '<span class="pm-dot" style="background:' + _esc(pmMeta.color) + '" title="' + _esc(pmMeta.short) + '"></span>' +
         '<span class="act ' + actCls + '">' + actTxt + '</span>' +
-        '<span class="num">$' + Number(l.fill_price).toFixed(2) + ' × ' + Number(l.shares).toFixed(3) + '</span>' +
-        '<span class="num">$' + Math.round(Number(l.notional_usd || 0)).toLocaleString('en-US') +
-          ' <span style="color:var(--fg-dim);font-size:10px;">신호 ' + (l.signal_strength != null ? Number(l.signal_strength).toFixed(2) : '—') + '</span></span>' +
+        '<span class="num">$' + Number(l.fill_price).toFixed(2) + '×' + Number(l.shares).toFixed(2) + '</span>' +
+        '<span class="num strong">$' + Math.round(Number(l.notional_usd || 0)).toLocaleString('en-US') + '</span>' +
+        '<span class="sig">' + (l.signal_strength != null ? Number(l.signal_strength).toFixed(2) : '—') + '</span>' +
       '</div>';
     }).join('');
-    host.innerHTML = rows;
+    var toggle = '';
+    if (ledger.length > 5) {
+      toggle = '<button type="button" class="h3-ledger-toggle" data-h3-ledger-toggle="1">' +
+        (_simLedgerExpanded ? '접기 (▲ 5건만 보기)' : '더보기 (▼ 전체 ' + ledger.length + '건)') +
+      '</button>';
+    }
+    host.innerHTML = rows + toggle;
   }
+
+  document.addEventListener('click', function(ev) {
+    var t = ev.target.closest('[data-h3-ledger-toggle]');
+    if (!t) return;
+    ev.preventDefault();
+    _simLedgerExpanded = !_simLedgerExpanded;
+    try { _renderSimLedger(window.nexusBackendData || {}); } catch (e) { console.warn('[h3] ledger toggle', e); }
+  });
 
   // 필터 · 행 · 초기화 클릭 위임
   // -----------------------------------------------------------------

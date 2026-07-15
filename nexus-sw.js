@@ -144,7 +144,24 @@
 //         nav_series 를 _navPeriod 필터해 즉시 draw · window 우회 참조 X).
 //         (e) sim 부재 문구 분리: "필드 없음" vs "값 0건" 구분.
 //         매매·Aegis·미러 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.1';
+// v13.2 (20260715) — 실화면 피드백 반영. 버그 2 + UI 7.
+//   [Bug1] 홈 Aegis '현금' 셀 '—' → renderAegisCard 에 portfolio.cash_usd/nav.value_usd
+//          폴백 추가 (aegisLine.cash_pct null 시). 방어·차단·게이트 셀은 이미 정상.
+//   [Bug2] 계층3 '했을 매매 0' — 백엔드 today_would_trade=0 은 오늘 KST 카운트로
+//          사실상 옳음. 최근 20건은 어제(UTC=KST). UI 오해 방지: 라벨 "sim 체결" +
+//          sub 에 "직전 7일 N건" 병기. sub head 도 '최근 sim 체결' 로 통일.
+//   [UI3] 보유 sim 원장 opened_at KST 날짜별 그룹 접기 — 오늘 기본 펼침 · 이전 접힘.
+//   [UI4] 홈(=보유 탭) PM 도넛 옆 hold-pm-row 에 sim 미니 라인 추가
+//         (invested/return_pct/util from sim_portfolio.pm_summary).
+//   [UI5] 이력 sim 체결 컴팩트 (1줄/건 · 기본 5건 · '더보기' 토글).
+//   [UI6] "했을 매매" → "sim 체결" · 가정법 제거 (배지가 이미 sim 표시).
+//   [UI7] 승인 달력에 approvals.history 통합 — decided_at 날짜에 상태별 점
+//         (승인 초록 · 반려 빨강 · 만료 회색) + 패널에 결재 카드 (사유·metadata·라우팅 PM).
+//   [UI8] 방어판 + 리스크 통계 통합 카드 + nearmiss 헤드라인 ('가장 가까운 방어선 · 여유 X%').
+//         defense.lines 값이 임계에 얼마나 가까운지 계산 (VIX/MDD 등).
+//   [UI9] 14일 미니바 — 소스 접근 이미 복구됨(v13.1). 데이터가 있으면 정상 렌더.
+//   매매·Aegis·미러 무손. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.2';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

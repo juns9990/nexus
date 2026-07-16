@@ -217,7 +217,17 @@
 //   [Layout3] PM 자본배분 카드 3열 (PC only) — 좌 도넛 (200px, 260→축소) /
 //             중 SIM NAV+실배분 / 우 PM 상세 스택. 세로 대폭 감소.
 //   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.6';
+// v13.7 (20260716) — PM 자본배분 카드 풀폭 (한 건). 표시 계층만.
+//   [Layout] 보유 탭 PM 자본배분 카드가 화면 좌측 절반만 차지 · 우측 통째로 여백.
+//            원인: .hold-row-2 { grid-template-columns: 1fr 1fr } — 오른쪽 셀
+//            (.hold-donut-card) 가 sectors 비어 display:none 이지만 explicit
+//            grid track 은 유지되어 PM 카드가 좌 1fr 에 갇힘.
+//            수정: grid → flex (flex:1 1 0 · flex-wrap · <1024px column) 로 전환.
+//            hidden 셀은 track 을 차지하지 않고, 둘 다 보이면 균등 분배.
+//   [Layout] 여유 폭 활용: .hold-pm-3col 비율 0.85/1/1.35 → 0.8/1/1.4 ·
+//            도넛 캔버스 200 → 230px (좌 min 180 → 200).
+//   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.7';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

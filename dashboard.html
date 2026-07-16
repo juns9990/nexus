@@ -3082,14 +3082,16 @@
     /* v13.4 — 도넛 확대 (180 → 260 · 카드 높이 활용) */
     .hold-pm-card .hold-pm-2col .pm-donut-side .nx-chart-canvas { height: 260px !important; }
     /* v13.6 — 3열 (사진2 #4). 도넛 축소로 세로 대폭 감소. */
+    /* v13.7 — 카드 풀폭 후 3열 비율 조정 (도넛 0.8 / NAV+실배분 1 / PM 상세 1.4) */
     .hold-pm-3col {
       display: grid;
-      grid-template-columns: minmax(180px, 0.85fr) minmax(0, 1fr) minmax(0, 1.35fr);
+      grid-template-columns: minmax(200px, 0.8fr) minmax(0, 1fr) minmax(0, 1.4fr);
       gap: 14px;
       align-items: start;
     }
     .hold-pm-3col > * { min-width: 0; }
-    .hold-pm-card .hold-pm-3col .pm-donut-side .nx-chart-canvas { height: 200px !important; }
+    /* v13.7 — 카드 풀폭 여유로 도넛 소폭 확대 (200 → 230) */
+    .hold-pm-card .hold-pm-3col .pm-donut-side .nx-chart-canvas { height: 230px !important; }
     /* 3열 내 우측 PM 스택은 별도 margin-top 필요 없음 */
     .hold-pm-3col > .pm-list-side .hold-pm-list.compact { margin-top: 0; }
   }
@@ -3247,8 +3249,12 @@
   .hold-empty-card .big { font-size: 14px; color: var(--fg-strong); margin: 4px 0 4px; font-family: var(--serif); }
 
   /* PC 2컬럼 — PM bars + 도넛 */
-  .hold-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 1024px) { .hold-row-2 { grid-template-columns: 1fr; } }
+  /* v13.7 — flex 로 전환. 도넛 카드가 display:none 이면 PM 카드가 자동 풀폭.
+     둘 다 보이면 flex:1 1 0 로 균등 분배. (기존 grid 1fr 1fr 은 hidden 셀도
+     explicit track 을 차지해서 PM 카드가 좌측 절반에 갇혀 있었음.) */
+  .hold-row-2 { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hold-row-2 > * { flex: 1 1 0; min-width: 0; }
+  @media (max-width: 1024px) { .hold-row-2 { flex-direction: column; } }
 
   .hold-snap-section {
     margin-top: 12px; padding-top: 10px; border-top: 1px solid #1c2320;
@@ -6271,7 +6277,8 @@
             <div class="h5-row"><span class="k">v13.3</span><span class="desc">밀도 개선 라운드 — 5 PM 전원 표시 · 도넛 슬라이스 라벨 · 이력 2열 · 14일 미니바 제거 · 보유 사이드 카드</span><span class="v muted">2026-07-15</span></div>
             <div class="h5-row"><span class="k">v13.4</span><span class="desc">밀도 2차 + 일지 상세화 (실화면 피드백)</span><span class="v muted">2026-07-15</span></div>
             <div class="h5-row"><span class="k">v13.5</span><span class="desc">sim 시세 리셋 버그 + 카드 버그 2 + 레이아웃 2 — 원장 2열 · vNAV 필드명 · PM 실배분 sim 기준</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.6</span><span class="desc">레이아웃 잔손 2건 + 사이드카드 금액 버그 — 원장 half-split · 오늘 요약 인라인 흡수 · notional 폴백 · PM 카드 3열</span><span class="v ok">현재</span></div>
+            <div class="h5-row"><span class="k">v13.6</span><span class="desc">레이아웃 잔손 2건 + 사이드카드 금액 버그 — 원장 half-split · 오늘 요약 인라인 흡수 · notional 폴백 · PM 카드 3열</span><span class="v muted">2026-07-16</span></div>
+            <div class="h5-row"><span class="k">v13.7</span><span class="desc">PM 자본배분 카드 풀폭 — hold-row-2 grid→flex (hidden 도넛 셀이 explicit track 차지 문제 해결) · 3열 0.8/1/1.4 · 도넛 230px</span><span class="v ok">현재</span></div>
           </div>
 
         </div>

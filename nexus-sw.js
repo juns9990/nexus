@@ -63,7 +63,7 @@
 //         'event' 타입 추가. nexusApprovalDecide 동작 무손 (버튼 stopPropagation).
 //         HELP_TEXTS 확장 (approval_queue · discovery_score · event_calendar ·
 //         approval_history). 백엔드 무손.
-// v12.4 — 보유 탭 PM 도넛 7 PM 대응: 하드코딩 3 PM 목록 (박세진/한도현/김선우)
+// v12.4 — 보유 탭 PM 도넛 7 PM 대응: 하드코딩 3 PM 목록 (Night Watch/Tide/Sur)
 //         제거 → data.team_desk.desks 순회. NexusCharts.COLORS.pm / PM_NAMES /
 //         renderHoldingsSummary 의 PM_KO/PM_EN/PM_COLOR 맵 모두 삭제.
 //         단일 소스로 window.NEXUS_PM_META (v12.0 정의) 재사용. mint·pulse 활성
@@ -163,7 +163,7 @@
 //   매매·Aegis·미러 무손. 캐시 무효화 bump.
 // v13.3 (20260715) — 밀도 개선 라운드 (실화면 피드백). 표시 계층만.
 //   [Data1] 보유 PM 미니 라인·도넛 5 PM 전원 표시 — registry(team_desk.desks) 순회.
-//           pm_summary 미존재 PM (박세진·한도현 등) 은 "투입 $0 · 매매 대기" 명시.
+//           pm_summary 미존재 PM (Night Watch·Tide 등) 은 "투입 $0 · 매매 대기" 명시.
 //           하드코딩 금지 — 활성 PM 순회로 자동 대응.
 //   [Data2] 도넛 밑 "데이터 수집 중" 제거 — sim virtual_nav 요약 카드로 대체
 //           (총 투입 · 현금 · 총 손익).
@@ -228,12 +228,23 @@
 //            도넛 캔버스 200 → 230px (좌 min 180 → 200).
 //   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
 //
-// v13.8 (20260718) — PM_META 이름 정합 (7 PM 데뷔 전). 표시 계층만.
-//   [Data] NEXUS_PM_META.mint.ko: '조은서' → '민재훈' (실제 PM 명단 반영).
+// v13.8 (20260716) — PM_META mint.ko 실 PM 명 반영 (7 PM 데뷔 전). 표시 계층만.
 //          단일 소스 (window.NEXUS_PM_META) 통해 도넛·랭킹·칩·일지 전 위치 동기.
-//          terra·nova·기타 PM 값은 dashboard 전역과 이미 정합 — 변경 없음.
+//          매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
+// v13.10 (20260718) — PM 이름 전면 정본화 · 보유 탭 포함 전 위치. 표시 계층만.
+//   [증상] 홈 데스크는 정상(백엔드 공급) 이나 보유 탭 칩·도넛·PM 실배분·상세
+//          리스트가 구명 표시. pulse 는 별개 오기(선행 이름) 노출.
+//   [원인] NEXUS_PM_META 소스가 미갱신 (tide/terra/nova/pulse 4건) + 홈 5인
+//          카드·협의체·설정·헌법·프로필 모달 6곳에 문자열 리터럴 하드코딩.
+//   [정본] tide 윤채영 · terra 서지원 · nova 한세라 · pulse 백지안.
+//   [수정] (a) NEXUS_PM_META 4건 갱신 → 보유 탭 전 렌더 자동 정본화.
+//          (b) 하드코딩 이름표를 <span data-pm-name="<key>"> 로 래핑 + 앱 시작
+//              시 _syncPmNames() 가 PM_META 로 textContent 덮어씀. 향후 소스
+//              단일 편집으로 전 위치 동기.
+//          (c) 헌법 모달 §4 · 프로필 모달 open() 도 인라인 대신 PM_META 참조.
+//   [검증] grep 잔존 0 — 구 PM 명 7종 (선행 후보 명단) 전 위치 제거 확인.
 //   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.8';
+const CACHE_VERSION = 'v13.10';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

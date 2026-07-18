@@ -227,7 +227,13 @@
 //   [Layout] 여유 폭 활용: .hold-pm-3col 비율 0.85/1/1.35 → 0.8/1/1.4 ·
 //            도넛 캔버스 200 → 230px (좌 min 180 → 200).
 //   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.7';
+//
+// v13.8 (20260718) — PM_META 이름 정합 (7 PM 데뷔 전). 표시 계층만.
+//   [Data] NEXUS_PM_META.mint.ko: '조은서' → '민재훈' (실제 PM 명단 반영).
+//          단일 소스 (window.NEXUS_PM_META) 통해 도넛·랭킹·칩·일지 전 위치 동기.
+//          terra·nova·기타 PM 값은 dashboard 전역과 이미 정합 — 변경 없음.
+//   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
+const CACHE_VERSION = 'v13.8';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

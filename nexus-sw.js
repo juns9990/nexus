@@ -244,7 +244,10 @@
 //          (c) 헌법 모달 §4 · 프로필 모달 open() 도 인라인 대신 PM_META 참조.
 //   [검증] grep 잔존 0 — 구 PM 명 7종 (선행 후보 명단) 전 위치 제거 확인.
 //   매매·Aegis·미러·PWA 셸 무손. 캐시 무효화 bump.
-const CACHE_VERSION = 'v13.10';
+// v14.0 (20260726) — 실전 우선(real-first) UI: 실계좌 본편·sim 참고 강등,
+//   모드 칩 [PAPER]/[LIVE], 승인 달력 매매 이력 통합. 표시 계층 + 라벨.
+//   PC 원본(app/static) v14.0 분을 diff 이식. /nexus/ 경로 체계 무손.
+const CACHE_VERSION = 'v14.0';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

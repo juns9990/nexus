@@ -4689,6 +4689,61 @@
   }
   .h5-omitted b { color: var(--fg); font-weight: 600; }
 
+  /* ====================================================== */
+  /*  v14.0 — 실전 우선(real-first) UI                       */
+  /* ====================================================== */
+  /* 모드 칩 [PAPER]/[LIVE] */
+  .nx-mode-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono, monospace); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; padding: 2px 8px; border-radius: 6px;
+    background: rgba(56,189,248,0.16); color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.35); cursor: help; white-space: nowrap;
+  }
+  .nx-mode-chip.live {
+    background: rgba(239,68,68,0.18); color: #f87171;
+    border-color: rgba(239,68,68,0.5);
+  }
+  .nx-mode-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  /* 실계좌 배지 / stale 추정치 배지 */
+  .nx-real-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 1px 6px; border-radius: 5px; margin-left: 6px; vertical-align: middle;
+    background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3);
+  }
+  .nx-stale-badge {
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 5px;
+    margin-left: 6px; vertical-align: middle;
+    background: rgba(250,204,21,0.16); color: #facc15; border: 1px solid rgba(250,204,21,0.35);
+  }
+  /* sim 참고 섹션 — 강등(축소·저채도) */
+  .nx-section-title.nx-ref-title { color: var(--fg-muted); font-size: 12px; }
+  .nx-sim-badge.nx-ref-badge {
+    background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3);
+  }
+  .nx-ref-caption {
+    font-size: 11px; color: var(--fg-muted); margin: -4px 0 8px 0; line-height: 1.5;
+  }
+  .nx-sim-block.nx-ref-dim { opacity: 0.82; }
+  /* 보유 탭 — 실체결 대기 정직 표기 */
+  .nx-pos-awaiting {
+    padding: 14px; border: 1px dashed var(--border, #2a2f2e); border-radius: 8px;
+    background: rgba(56,189,248,0.05); color: var(--fg-dim, #b0b6bb);
+    font-size: 12.5px; line-height: 1.6; text-align: center;
+  }
+  .nx-pos-awaiting b { color: var(--fg-strong, #e6ebee); }
+  .nx-pos-awaiting .sub { display:block; font-size: 11px; color: var(--fg-muted); margin-top: 4px; }
+  /* 달력 — 실체결 청록점 / sim 점 */
+  .ev-cal-day .nx-trade-dot {
+    width: 5px; height: 5px; border-radius: 50%; display: inline-block; margin: 0 1px;
+  }
+  .ev-cal-day .nx-trade-dot.real { background: #2dd4bf; }
+  .ev-cal-day .nx-trade-dot.sim  { background: #94a3b8; }
+  .ev-cal-detail-card.trade { border-left: 3px solid #2dd4bf; }
+  .ev-cal-detail-card.trade.sim { border-left-color: #94a3b8; }
+  .ev-cal-trade-pm { font-size: 11px; color: var(--fg-dim); line-height: 1.6; }
+  .ev-cal-trade-ref { font-size: 10.5px; color: var(--fg-muted); }
+
 </style>
 </head>
 <body>
@@ -4736,7 +4791,9 @@
         </div>
       </div>
       <div class="m-header-right">
-        <span class="m-mode" data-bind="mode-label">—</span>
+        <span class="nx-mode-chip" id="nx-mode-chip-m" title="IB paper 계좌 실주문 검증 중 · 9월 live 예정">
+          <span class="dot"></span><span data-bind="mode-chip">PAPER</span>
+        </span>
         <span class="m-bell">🔔<span class="m-bell-badge" data-bind="bell-badge" style="display:none;">0</span></span>
       </div>
     </div>
@@ -4770,7 +4827,7 @@
       <div class="nx-perf-card">
         <div class="nx-perf-head">
           <div class="nx-perf-nav-wrap">
-            <div class="nx-perf-label">순자산가치</div>
+            <div class="nx-perf-label">순자산가치 <span class="nx-real-badge">실계좌</span><span class="nx-stale-badge js-nav-stale" style="display:none;">추정치 · 브로커 미연결</span></div>
             <div class="nx-perf-nav" data-bind="nav">—</div>
             <div class="nx-perf-fx" data-bind="nav-fx-note">환율 수집 중</div>
           </div>
@@ -4824,8 +4881,9 @@
       </div>
 
       <!-- (5b) v13.0 sim 성과 + PM 랭킹 -->
-      <div class="nx-section-title">sim 성과 <span class="nx-sim-badge">sim 가상</span></div>
-      <div class="nx-sim-block" data-bind="nx-sim-block">
+      <div class="nx-section-title nx-ref-title">sim 실험 성과 <span class="nx-sim-badge nx-ref-badge">참고 · 가상 검증</span></div>
+      <div class="nx-ref-caption">실주문과 무관한 가상 원장 — 전략 검증용 병행 회계 (8월 말까지). 위 실계좌가 본편.</div>
+      <div class="nx-sim-block nx-ref-dim" data-bind="nx-sim-block">
         <div class="nx-sim-vnav-card" data-bind="nx-sim-vnav">
           <div class="nx-sim-empty">sim 원장 수집 중…</div>
         </div>
@@ -5358,7 +5416,11 @@
       <span class="d-mast-meta">D47 · 개시 2026.03.18 · 격리계좌 ····XXXX</span>
     </div>
     <div class="d-mast-right">
-      <div class="item"><span class="mode" data-bind="mode-label">—</span></div>
+      <div class="item">
+        <span class="nx-mode-chip" id="nx-mode-chip-d" title="IB paper 계좌 실주문 검증 중 · 9월 live 예정">
+          <span class="dot"></span><span data-bind="mode-chip">PAPER</span>
+        </span>
+      </div>
       <div class="item ver" data-bind="d-mast-version">v—</div>
     </div>
   </header>
@@ -5410,7 +5472,7 @@
       <div class="nx-perf-card">
         <div class="nx-perf-head">
           <div class="nx-perf-nav-wrap">
-            <div class="nx-perf-label">순자산가치</div>
+            <div class="nx-perf-label">순자산가치 <span class="nx-real-badge">실계좌</span><span class="nx-stale-badge js-nav-stale" style="display:none;">추정치 · 브로커 미연결</span></div>
             <div class="nx-perf-nav" data-bind="nav">—</div>
             <div class="nx-perf-fx" data-bind="nav-fx-note">환율 수집 중</div>
           </div>
@@ -5468,8 +5530,9 @@
     </div>
 
     <!-- (5b) v13.0 sim 성과 + PM 랭킹 -->
-    <div class="nx-section-title">sim 성과 <span class="nx-sim-badge">sim 가상</span></div>
-    <div class="nx-sim-block" data-bind="nx-sim-block">
+    <div class="nx-section-title nx-ref-title">sim 실험 성과 <span class="nx-sim-badge nx-ref-badge">참고 · 가상 검증</span></div>
+    <div class="nx-ref-caption">실주문과 무관한 가상 원장 — 전략 검증용 병행 회계 (8월 말까지). 위 실계좌가 본편.</div>
+    <div class="nx-sim-block nx-ref-dim" data-bind="nx-sim-block">
       <div class="nx-sim-vnav-card" data-bind="nx-sim-vnav">
         <div class="nx-sim-empty">sim 원장 수집 중…</div>
       </div>
@@ -6280,7 +6343,8 @@
             <div class="h5-row"><span class="k">v13.6</span><span class="desc">레이아웃 잔손 2건 + 사이드카드 금액 버그 — 원장 half-split · 오늘 요약 인라인 흡수 · notional 폴백 · PM 카드 3열</span><span class="v muted">2026-07-16</span></div>
             <div class="h5-row"><span class="k">v13.7</span><span class="desc">PM 자본배분 카드 풀폭 — hold-row-2 grid→flex (hidden 도넛 셀이 explicit track 차지 문제 해결) · 3열 0.8/1/1.4 · 도넛 230px</span><span class="v muted">2026-07-16</span></div>
             <div class="h5-row"><span class="k">v13.8</span><span class="desc">PM_META 이름 정합 (7 PM 데뷔 전) — mint.ko 실 PM 명 반영. NEXUS_PM_META 단일 소스로 도넛·랭킹·칩·일지 동기</span><span class="v muted">2026-07-16</span></div>
-            <div class="h5-row"><span class="k">v13.10</span><span class="desc">PM 이름 전면 정본화 — tide 윤채영·terra 서지원·nova 한세라·pulse 백지안. 하드코딩 이름표를 [data-pm-name] 로 래핑 → NEXUS_PM_META 자동 동기. 헌법 §4·프로필 모달도 소스 참조</span><span class="v ok">현재</span></div>
+            <div class="h5-row"><span class="k">v13.10</span><span class="desc">PM 이름 전면 정본화 — tide 윤채영·terra 서지원·nova 한세라·pulse 백지안. 하드코딩 이름표를 [data-pm-name] 로 래핑 → NEXUS_PM_META 자동 동기. 헌법 §4·프로필 모달도 소스 참조</span><span class="v muted">2026-07-18</span></div>
+            <div class="h5-row"><span class="k">v14.0</span><span class="desc">실전 우선(real-first) — 실계좌 본편·sim 참고 강등 · 모드 칩 [PAPER]/[LIVE] · 실계좌 NAV stale 표기 · 승인 달력 매매 이력(실체결 청록점)</span><span class="v ok">현재</span></div>
           </div>
 
         </div>
@@ -6566,10 +6630,27 @@
 
       // ----- Phase / 모드 -----
       var phaseTxt = data.system.phase + ' · ' + data.system.mode + ' 모드';
-      if (data.system.broker_connected) phaseTxt += ' · 라이브';
-      else if (data.system.broker_connected === false) phaseTxt += ' · 단절';
+      if (data.system.broker_connected) phaseTxt += ' · 브로커 연결';
+      else if (data.system.broker_connected === false) phaseTxt += ' · 브로커 단절';
       bindAll('.cover-meta, [data-bind="phase-mode"]', phaseTxt);
-      _setBinds('mode-label', String(data.system.mode || '—'));
+      // v14.0 — 모드 칩: broker 계좌 종류 (paper/live). 필드 부재 시 paper 폴백 (현 config).
+      var brokerMode = String((data.system && data.system.broker_mode) || 'paper').toLowerCase();
+      var isLive = brokerMode === 'live';
+      _setBinds('mode-chip', isLive ? 'LIVE' : 'PAPER');
+      ['nx-mode-chip-m', 'nx-mode-chip-d'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle('live', isLive);
+        el.title = isLive
+          ? 'IB live 계좌 — 실자금 운용'
+          : 'IB paper 계좌 실주문 검증 중 · 9월 live 예정';
+      });
+      // v14.0 — 실계좌 NAV stale 표기 (브로커 미연결 or nav_history stale = 당일 미수집 이월).
+      var navStale = (data.system && data.system.broker_connected === false) ||
+                     (data.performance && data.performance.nav_is_stale === true);
+      document.querySelectorAll('.js-nav-stale').forEach(function(el){
+        el.style.display = navStale ? '' : 'none';
+      });
 
       // ----- 폰 헤더 메타 — D{day_in_phase} · {system.version} · SW v{CACHE_VERSION} -----
       var dayN = (data.system && typeof data.system.day_in_phase === 'number')
@@ -11116,14 +11197,44 @@
     if (n > 0) return 'D-' + n;
     return 'D+' + (-n);
   }
-  function _renderDayDetail(byDate, ymd, byApprovalDate) {
-    // v13.2 — approvals.history 도 함께 표시
-    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 이벤트 + 결재 내역이 보입니다.</div></div>';
+  function _tradeCardHtml(tr) {
+    // v14.0 — 그날 매매 요약 카드. 실체결 우선(청록), 0 이면 sim 참고(회색).
+    if (!tr) return '';
+    var realN = Number(tr.real_fills || 0);
+    var simN = Number(tr.sim_fills || 0);
+    if (realN <= 0 && simN <= 0) return '';
+    if (realN > 0) {
+      var usd = Number(tr.real_notional || 0);
+      var byPm = tr.real_by_pm || {};
+      var pmLines = Object.keys(byPm).map(function(pm){
+        var m = (window.NEXUS_PM_META || {})[pm] || {};
+        var s = byPm[pm];
+        return '<div class="ev-cal-trade-pm">· ' + _escapeHtmlNC(m.short || pm) + ' — '
+          + s.n + '건 · $' + Number(s.usd||0).toLocaleString('en-US',{maximumFractionDigits:0}) + '</div>';
+      }).join('');
+      return '<div class="ev-cal-detail-subhead">실체결 · ' + realN + '건</div>' +
+        '<div class="ev-cal-detail-card trade">' +
+          '<div class="ev-cal-detail-name">실계좌 체결 ' + realN + '건 · $'
+            + usd.toLocaleString('en-US',{maximumFractionDigits:0}) + '</div>' +
+          pmLines +
+        '</div>';
+    }
+    return '<div class="ev-cal-detail-subhead">매매 (참고)</div>' +
+      '<div class="ev-cal-detail-card trade sim">' +
+        '<div class="ev-cal-detail-name">실체결 0 · sim 가상 체결 ' + simN + '건</div>' +
+        '<div class="ev-cal-trade-ref">참고 · 가상 원장 (실주문 무관)</div>' +
+      '</div>';
+  }
+  function _renderDayDetail(byDate, ymd, byApprovalDate, byTrades) {
+    // v13.2 — approvals.history 도 함께 표시 · v14.0 — 매매 이력 통합
+    if (!ymd) return '<div class="ev-cal-detail"><div class="ev-cal-detail-empty">날짜를 누르면 그날 실체결 + 결재 + 이벤트가 보입니다.</div></div>';
     var evs = byDate[ymd] || [];
     var apps = (byApprovalDate && byApprovalDate[ymd]) || [];
+    var tr = (byTrades && byTrades[ymd]) || null;
+    var tradeHtml = _tradeCardHtml(tr);
     var wd = _weekdayKo(ymd);
     var dateHead = ymd + ' (' + wd + ')';
-    if (!evs.length && !apps.length) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + '</div><div class="ev-cal-detail-empty">이날엔 이벤트·결재 없음</div></div>';
+    if (!evs.length && !apps.length && !tradeHtml) return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + '</div><div class="ev-cal-detail-empty">이날엔 매매·이벤트·결재 없음</div></div>';
     var cardsHtml = evs.map(function(e) {
       var imp = e.importance || 'low';
       var type = e.type || 'indicator';
@@ -11165,10 +11276,13 @@
         '</div>';
       }).join('');
     }
-    var counts = evs.length + (apps.length ? ' · 결재 ' + apps.length : '');
-    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead + ' · 이벤트 ' + evs.length + counts.slice(String(evs.length).length) + '</div>' + cardsHtml + appsHtml + '</div>';
+    var trCount = tr ? (Number(tr.real_fills || 0) || Number(tr.sim_fills || 0)) : 0;
+    return '<div class="ev-cal-detail"><div class="ev-cal-detail-date">' + dateHead +
+      (trCount ? ' · 매매 ' + trCount : '') +
+      ' · 이벤트 ' + evs.length + (apps.length ? ' · 결재 ' + apps.length : '') + '</div>' +
+      tradeHtml + cardsHtml + appsHtml + '</div>';
   }
-  function renderCalendar(eventsData, approvalsData) {
+  function renderCalendar(eventsData, approvalsData, tradesData) {
     // v13.2 — 승인 이력(approvals.history) 통합. decided_at 날짜에 상태 색 점.
     if (!calState.ym) calState.ym = _ymToday();
     var events = (eventsData && Array.isArray(eventsData.events)) ? eventsData.events : [];
@@ -11186,6 +11300,7 @@
       if (!byDate[dt]) byDate[dt] = [];
       byDate[dt].push(e);
     });
+    var byTrades = tradesData || {};   // v14.0 — 일별 매매 이력 (실체결 우선 · sim 참고)
     // 결재 이력 by decided_at KST 날짜
     var byApp = {};
     history.forEach(function(a) {
@@ -11204,7 +11319,7 @@
     for (var i = 0; i < firstWeekday; i++) cells.push({ blank: true });
     for (var dnum = 1; dnum <= daysInMonth; dnum++) {
       var ymd = p.year + '-' + _padN(p.month + 1) + '-' + _padN(dnum);
-      cells.push({ day: dnum, ymd: ymd, events: byDate[ymd] || [], apps: byApp[ymd] || [], isToday: ymd === todayYmd });
+      cells.push({ day: dnum, ymd: ymd, events: byDate[ymd] || [], apps: byApp[ymd] || [], trades: byTrades[ymd] || null, isToday: ymd === todayYmd });
     }
     while (cells.length % 7 !== 0) cells.push({ blank: true });
     var titleStr = p.year + '년 ' + (p.month + 1) + '월';
@@ -11223,7 +11338,8 @@
       var classes = ['ev-cal-day', 'in-month'];
       if (c.isToday) classes.push('today');
       if (calState.selDay === c.ymd) classes.push('selected');
-      if (c.events.length || c.apps.length) classes.push('has-events');
+      var hasTrade = c.trades && (Number(c.trades.real_fills||0) > 0 || Number(c.trades.sim_fills||0) > 0);
+      if (c.events.length || c.apps.length || hasTrade) classes.push('has-events');
       var hasFomc = c.events.some(function(e) { return e.type === 'fomc'; });
       var eventDots = c.events.slice(0, 3).map(function(e) {
         return '<span class="dot ' + (e.importance || 'low') + '"></span>';
@@ -11232,16 +11348,25 @@
       var appDots = c.apps.slice(0, 3).map(function(a) {
         return '<span class="dot app-' + (a.status || 'pending') + '" title="' + _escapeHtmlNC((a.symbol||'') + ' ' + (a.status||'')) + '"></span>';
       }).join('');
+      // v14.0 — 매매 점: 실체결(청록) 우선, 없고 sim 만 있으면 회색점.
+      var tradeDots = '';
+      if (c.trades && Number(c.trades.real_fills||0) > 0) {
+        tradeDots = '<span class="nx-trade-dot real" title="실체결 ' + c.trades.real_fills + '건"></span>';
+      } else if (c.trades && Number(c.trades.sim_fills||0) > 0) {
+        tradeDots = '<span class="nx-trade-dot sim" title="sim 체결 ' + c.trades.sim_fills + '건 (참고)"></span>';
+      }
       return '<div class="' + classes.join(' ') + '" data-cal-day="' + c.ymd + '" role="button" tabindex="0">' +
         (hasFomc ? '<span class="fomc-badge">F</span>' : '') +
         '<span class="dnum">' + c.day + '</span>' +
-        (eventDots || appDots ? '<div class="dots">' + eventDots + appDots + '</div>' : '') +
+        (eventDots || appDots || tradeDots ? '<div class="dots">' + tradeDots + eventDots + appDots + '</div>' : '') +
       '</div>';
     }).join('') + '</div>';
     var legendHtml = '<div class="ev-cal-legend">' +
       '<span class="lg-item"><span class="dot high"></span>중요</span>' +
       '<span class="lg-item"><span class="dot medium"></span>보통</span>' +
       '<span class="lg-item"><span class="dot low"></span>참고</span>' +
+      '<span class="lg-item"><span class="nx-trade-dot real"></span>실체결</span>' +
+      '<span class="lg-item"><span class="nx-trade-dot sim"></span>sim(참고)</span>' +
       '<span class="lg-item"><span class="f">F</span>FOMC</span>' +
       '<span class="lg-item"><span class="dot app-approved"></span>승인</span>' +
       '<span class="lg-item"><span class="dot app-rejected"></span>반려</span>' +
@@ -11256,7 +11381,7 @@
       if (dt.indexOf(p.year + '-' + _padN(p.month + 1)) === 0) appMonthCount += byApp[dt].length;
     });
     var summaryHtml = '<div class="ev-cal-summary">이 달 이벤트 ' + monthCount + '건 · 결재 ' + appMonthCount + '건 · 다가오는 이벤트 ' + events.length + '건</div>';
-    var detailHtml = _renderDayDetail(byDate, calState.selDay, byApp);
+    var detailHtml = _renderDayDetail(byDate, calState.selDay, byApp, byTrades);
     var html = headHtml + wkHtml + gridHtml + legendHtml + summaryHtml + detailHtml;
     ['ev-cal-mobile', 'ev-cal-pc'].forEach(function(id) {
       var el = document.getElementById(id);
@@ -11269,14 +11394,14 @@
       var act = nav.getAttribute('data-cal-act');
       calState.ym = _shiftYm(calState.ym || _ymToday(), act === 'prev' ? -1 : 1);
       var data = window.nexusBackendData || {};
-      renderCalendar(data.events || {}, data.approvals || {});
+      renderCalendar(data.events || {}, data.approvals || {}, data.trades_calendar || {});
       return;
     }
     var dayCell = e.target.closest('[data-cal-day]');
     if (dayCell) {
       calState.selDay = dayCell.getAttribute('data-cal-day');
       var data2 = window.nexusBackendData || {};
-      renderCalendar(data2.events || {}, data2.approvals || {});
+      renderCalendar(data2.events || {}, data2.approvals || {}, data2.trades_calendar || {});
       return;
     }
   });
@@ -11290,7 +11415,7 @@
         renderPmDonut('nx-pm-donut-pc', data.portfolio || {}, data);
         renderRiskGauges(data);
         renderMarketDeltas(data);
-        renderCalendar(data.events || {}, data.approvals || {});
+        renderCalendar(data.events || {}, data.approvals || {}, data.trades_calendar || {});
       } catch (e) {
         console.warn('[NexusCharts] refresh 예외:', e && e.message);
       }
@@ -12555,8 +12680,8 @@
       : '—';
     host.innerHTML =
       '<div class="h2-empty">' +
-        '<div class="big">보유 없음</div>' +
-        '<div class="desc">다음 평가 KST 22:30 — Aegis 게이트 통과 시 진입</div>' +
+        '<div class="big">실보유 0 · 체결 대기</div>' +
+        '<div class="desc">주문 파이프 복구 중 · 다음 평가 KST 22:30 — Aegis 게이트 통과 시 진입</div>' +
         '<div class="cash-line">현금 (전액) ' + cashTxt + '</div>' +
       '</div>';
   }
@@ -12584,20 +12709,24 @@
       srcLabel = '포지션 ' + positions.length + '건 · 실계좌 잔고';
     } else if (sp && Array.isArray(sp.positions) && sp.positions.length > 0) {
       // v13.0 — sim_portfolio 원장 직결
+      // v14.0 — 실보유 0 이어도 sim 을 '메인'으로 승격하지 않는다 (① 혼동 방지).
+      //   실계좌가 본편: 0 이면 '체결 대기' 정직 표기. sim 은 참고 라벨 명시.
       rows = _simPositionsFromLedger(sp);
       isSim = true; isSimLedger = true; srcCls = 'sim';
-      srcBadgeTxt = 'sim — 원장';
-      srcLabel = 'sim 원장 ' + rows.length + '건 · 실보유 0 · virtual NAV $' +
+      srcBadgeTxt = '참고 · sim 가상';
+      srcLabel = '실보유 0 · 체결 대기 (주문 파이프 복구 중) — 아래는 참고용 sim 가상 원장 ' +
+                 rows.length + '건 · virtual NAV $' +
                  Number(sp.virtual_nav && sp.virtual_nav.current_nav_usd || 0).toLocaleString('en-US', {maximumFractionDigits: 0});
     } else {
       // 폴백: l3 이벤트 로그 근사
       var sim = _aggregateSimPositions(l3trades);
       if (sim.length > 0) {
-        rows = sim; isSim = true; srcCls = 'sim'; srcBadgeTxt = 'sim — 폴백';
-        srcLabel = 'sim 근사 ' + sim.length + '건 · 원장 부재 (l3 로그 폴백)';
+        rows = sim; isSim = true; srcCls = 'sim'; srcBadgeTxt = '참고 · sim 가상';
+        srcLabel = '실보유 0 · 체결 대기 (주문 파이프 복구 중) — 아래는 참고용 sim 근사 ' +
+                   sim.length + '건 · 원장 부재 (l3 로그 폴백)';
       } else {
-        rows = []; srcCls = 'empty'; srcBadgeTxt = '대기';
-        srcLabel = '포지션 0 · 다음 평가 KST 22:30';
+        rows = []; srcCls = 'empty'; srcBadgeTxt = '체결 대기';
+        srcLabel = '실보유 0 · 체결 대기 — 주문 파이프 복구 중 · 다음 평가 KST 22:30';
       }
     }
 

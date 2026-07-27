@@ -4739,6 +4739,12 @@
   }
   .ev-cal-day .nx-trade-dot.real { background: #2dd4bf; }
   .ev-cal-day .nx-trade-dot.sim  { background: #94a3b8; }
+  /* v14.0.1 — 범례 스코프: .ev-cal-day 밖(범례)에서 0px 렌더 결함 수정 */
+  .ev-cal-legend .nx-trade-dot {
+    width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+  }
+  .ev-cal-legend .nx-trade-dot.real { background: #2dd4bf; }
+  .ev-cal-legend .nx-trade-dot.sim  { background: #94a3b8; }
   .ev-cal-detail-card.trade { border-left: 3px solid #2dd4bf; }
   .ev-cal-detail-card.trade.sim { border-left-color: #94a3b8; }
   .ev-cal-trade-pm { font-size: 11px; color: var(--fg-dim); line-height: 1.6; }

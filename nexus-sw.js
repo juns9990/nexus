@@ -247,7 +247,8 @@
 // v14.0 (20260726) — 실전 우선(real-first) UI: 실계좌 본편·sim 참고 강등,
 //   모드 칩 [PAPER]/[LIVE], 승인 달력 매매 이력 통합. 표시 계층 + 라벨.
 //   PC 원본(app/static) v14.0 분을 diff 이식. /nexus/ 경로 체계 무손.
-const CACHE_VERSION = 'v14.0';
+// v14.0.1 (20260726) — 달력 범례 매매점 0px 렌더 결함 수정 (.ev-cal-legend .nx-trade-dot)
+const CACHE_VERSION = 'v14.0.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

@@ -248,7 +248,12 @@
 //   모드 칩 [PAPER]/[LIVE], 승인 달력 매매 이력 통합. 표시 계층 + 라벨.
 //   PC 원본(app/static) v14.0 분을 diff 이식. /nexus/ 경로 체계 무손.
 // v14.0.1 (20260726) — 달력 범례 매매점 0px 렌더 결함 수정 (.ev-cal-legend .nx-trade-dot)
-const CACHE_VERSION = 'v14.0.1';
+// v14.1 (20260730) — 승인 탭 주문 결재 카드 렌더. 밤사이 쌓인 order_pending 이
+//   승인 탭에 아예 표시되지 않던 회귀 수정 (발굴 카드만 렌더). 주문 카드(청록)
+//   + 개별/일괄 결재 버튼(/executor) + 발굴·주문 공통 종목 정보 강화
+//   (회사명·섹터·현재가·담당 PM 정본명·결재 사유·경과/TTL) + 처리 이력 병합.
+//   PC 원본(app/static) v14.1 분을 diff 이식. /nexus/ 경로 체계 무손.
+const CACHE_VERSION = 'v14.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

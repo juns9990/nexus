@@ -253,7 +253,17 @@
 //   + 개별/일괄 결재 버튼(/executor) + 발굴·주문 공통 종목 정보 강화
 //   (회사명·섹터·현재가·담당 PM 정본명·결재 사유·경과/TTL) + 처리 이력 병합.
 //   PC 원본(app/static) v14.1 분을 diff 이식. /nexus/ 경로 체계 무손.
-const CACHE_VERSION = 'v14.1';
+// v14.3 (20260803) — 실체결 첫 가동으로 드러난 실데이터 렌더 구멍 4건. 표시 계층만.
+//   ① 보유 상단 총보유가치·평가손익을 실계좌 기준으로 배선. 브로커 positions 는
+//      IBKR reqPositions 결과라 market_price·unrealized_pnl 이 항상 null 이고
+//      nav − cash 는 AccruedCash 가 섞여 총보유가치가 아니다 → broker /account
+//      의 stock_market_value_usd · unrealized_pnl_usd 를 정본으로 사용 (읽기 GET).
+//   ② 실계좌 포지션 섹션 전폭 + 8컬럼. 담당 PM 은 approvals.orders_history 의
+//      filled 주문 pm 코드 → NEXUS_PM_META 한국명·색점. sim 원장은 하단 [참고].
+//   ③ 이력 탭 실체결 항목 pm 코드(sur/nova) → 정본 한국명 + 색점.
+//   ④ 승인 달력 실체결 카드 동일 매핑.
+//   백엔드 무접촉 · 재시작 불필요. PC 원본(app/static) 과 동시 diff 이식.
+const CACHE_VERSION = 'v14.3';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

@@ -2709,6 +2709,12 @@
     font-family: var(--mono); font-size: 13px; color: var(--fg-muted);
   }
 
+  /* v14.3 — 이력 행 담당 PM 색점 (PC·폰 공통) */
+  .d-hist-pm-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    margin-right: 5px; vertical-align: middle; flex-shrink: 0;
+  }
+
   /* 이력 — 활동 피드 (notif.recent) */
   .d-history-list {
     display: flex; flex-direction: column; gap: 6px;
@@ -4262,6 +4268,43 @@
   }
   .h2-table tbody tr.sim .sym { color: var(--warn); }
 
+  /* v14.3 — 실계좌 포지션 테이블: 섹션 전폭 사용 (기존 width:auto 는 좁게 뭉침) */
+  .h2-table-real { width: 100%; table-layout: auto; }
+  .h2-table-real thead th { padding: 5px 10px; }
+  .h2-table-real tbody td { padding: 5px 10px; font-size: 11.5px; }
+  .h2-table-real .sym { font-size: 12px; }
+  /* 공용 시세 캐시로 평가한 현재가 — 브로커 직접 시세와 구분 */
+  .h2-table td.num.quote { color: var(--fg); border-bottom: 1px dotted rgba(148,163,184,0.35); }
+  .h2-approx { color: var(--fg-dim); font-size: 9px; margin-left: 2px; }
+
+  /* v14.3 — 하단 sim 원장 [참고] 섹션 (실계좌 본편과 시각 분리) */
+  .h2-sim-ref {
+    margin-top: 14px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: rgba(212,165,94,0.02);
+  }
+  .h2-sim-ref-head {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 12px; cursor: pointer;
+    font-size: 11px; color: var(--fg-muted);
+    user-select: none;
+  }
+  .h2-sim-ref-head:hover { background: rgba(212,165,94,0.05); }
+  .h2-sim-ref-head .caret { color: var(--fg-dim); width: 10px; }
+  .h2-sim-ref-head .tag {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    padding: 2px 7px; border-radius: 999px; letter-spacing: 0.04em;
+    background: rgba(212,165,94,0.10); color: var(--warn);
+    border: 1px solid var(--warn);
+  }
+  .h2-sim-ref-head .ttl { color: var(--fg); font-weight: 600; }
+  .h2-sim-ref-head .meta { font-family: var(--mono); color: var(--fg-muted); }
+  .h2-sim-ref-head .meta .pos { color: var(--positive); }
+  .h2-sim-ref-head .meta .neg { color: var(--negative); }
+  .h2-sim-ref-head .note { margin-left: auto; color: var(--fg-dim); font-size: 10px; }
+  .h2-sim-ref-body { padding: 0 10px 10px; }
+
   /* v13.2 — 위험 관리 통합 카드 (방어 + 게이트 요약 + 리스크) */
   .risk-unified-card {
     background: #101412; border: 1px solid #1c2320; border-radius: 12px;
@@ -4938,6 +4981,11 @@
   .ev-cal-detail-card.trade { border-left: 3px solid #2dd4bf; }
   .ev-cal-detail-card.trade.sim { border-left-color: #94a3b8; }
   .ev-cal-trade-pm { font-size: 11px; color: var(--fg-dim); line-height: 1.6; }
+  /* v14.3 — 결재 카드 PM 색점 (NEXUS_PM_META.color) */
+  .ev-cal-pm-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    margin-right: 5px; vertical-align: middle; flex-shrink: 0;
+  }
   .ev-cal-trade-ref { font-size: 10.5px; color: var(--fg-muted); }
 
 </style>
@@ -6541,7 +6589,8 @@
             <div class="h5-row"><span class="k">v13.8</span><span class="desc">PM_META 이름 정합 (7 PM 데뷔 전) — mint.ko 실 PM 명 반영. NEXUS_PM_META 단일 소스로 도넛·랭킹·칩·일지 동기</span><span class="v muted">2026-07-16</span></div>
             <div class="h5-row"><span class="k">v13.10</span><span class="desc">PM 이름 전면 정본화 — tide 윤채영·terra 서지원·nova 한세라·pulse 백지안. 하드코딩 이름표를 [data-pm-name] 로 래핑 → NEXUS_PM_META 자동 동기. 헌법 §4·프로필 모달도 소스 참조</span><span class="v muted">2026-07-18</span></div>
             <div class="h5-row"><span class="k">v14.0</span><span class="desc">실전 우선(real-first) — 실계좌 본편·sim 참고 강등 · 모드 칩 [PAPER]/[LIVE] · 실계좌 NAV stale 표기 · 승인 달력 매매 이력(실체결 청록점)</span><span class="v muted">2026-07-26</span></div>
-            <div class="h5-row"><span class="k">v14.1</span><span class="desc">승인 탭 주문 결재 카드(청록) — 종목·수량·금액·담당 PM·사유·TTL · 개별/일괄 결재 · 발굴 카드 회사명·섹터·현재가·근거 뉴스·배속 PM · 이력 주문+발굴 병합(만료 회색)</span><span class="v ok">현재</span></div>
+            <div class="h5-row"><span class="k">v14.1</span><span class="desc">승인 탭 주문 결재 카드(청록) — 종목·수량·금액·담당 PM·사유·TTL · 개별/일괄 결재 · 발굴 카드 회사명·섹터·현재가·근거 뉴스·배속 PM · 이력 주문+발굴 병합(만료 회색)</span><span class="v muted">2026-07-30</span></div>
+            <div class="h5-row"><span class="k">v14.3</span><span class="desc">실체결 첫 가동 실데이터 렌더 — 보유 상단 총보유가치·평가손익 실계좌 배선(broker stock_market_value_usd·unrealized_pnl_usd) · 실계좌 포지션 전폭 8컬럼(담당PM은 체결기록 pm→PM_META 한국명·색점, 현재가·손익·비중) · sim 원장 하단 [참고] 유지 · 이력/승인 달력 PM 코드 → 정본 한국명</span><span class="v ok">현재</span></div>
           </div>
 
         </div>
@@ -6806,6 +6855,19 @@
 
     function applyDashboard(data) {
       if (!data) return;
+      // ---------------------------------------------------------------
+      // v14.3 — 실계좌 positions 보강을 단 한 곳에서. 이후 모든 하위
+      //   렌더러(폰 카드 · PC 카드 · 보유 요약 · quick stats · B-layout 테이블)가
+      //   담당 PM · 현재가 · 손익 · 비중을 그대로 받는다.
+      //   브로커 positions 는 IBKR reqPositions 결과라 symbol/quantity/avg_cost 만
+      //   담고 나머지는 항상 null — 그대로 그리면 전부 '—' 로 떨어진다.
+      // ---------------------------------------------------------------
+      try {
+        var _R = window.NEXUS_REAL;
+        if (_R && Array.isArray(data.positions) && data.positions.length) {
+          data.positions = _R.enrich(data.positions, data, Number((data.nav && data.nav.value_usd) || 0));
+        }
+      } catch (e) { /* 보강 실패 시 원본 그대로 진행 */ }
       // ----- NAV: 브로커 연결 시 USD, 미연결 시 대기 안내 (20260705 오탐 폴백 제거) -----
       var navTxt;
       if (data.nav && data.nav.status === 'awaiting_broker') {
@@ -7270,36 +7332,47 @@
       // v14.1 — 크로스 IIFE 참조 수정: _pmMeta 는 PC B-layout IIFE 소유라 여기선
       //   ReferenceError (폰 이력 탭이 첫 원장 행에서 throw → 목록 빈 채로 중단).
       //   v13.1 renderSimBlock 과 같은 처방 — window.NEXUS_PM_META 경유 로컬 헬퍼.
+      // v14.3 — PM 표기는 short(영문 축약) 가 아니라 정본 한국명(ko) 사용.
+      var _pmKo = function(key) {
+        var m = _apprPmMeta(key);
+        return m.ko || m.short || key || '—';
+      };
       var ledger = (data.sim_portfolio && data.sim_portfolio.recent_ledger) || [];
       ledger.forEach(function(l) {
-        var pmMeta = _apprPmMeta(l.pm);
         items.push({
           ts: l.ts,
           type: 'sim ' + (l.action === 'sell' ? '매도' : '매수'),
-          text: (l.ticker || '?') + ' · ' + pmMeta.short + ' · ' + Number(l.shares).toFixed(3) + '주 @ $' +
+          pm: l.pm,
+          text: (l.ticker || '?') + ' · ' + _pmKo(l.pm) + ' · ' + Number(l.shares).toFixed(3) + '주 @ $' +
                 Number(l.fill_price).toFixed(2) + ' ($' + Number(l.notional_usd).toFixed(0) + ')',
         });
       });
       // 2) layer3 판단 (would_trade, 미체결도)
       var l3 = (data.layer3 && data.layer3.recent_would_trades) || [];
       l3.forEach(function(w) {
-        var pmMeta = _apprPmMeta(w.persona_key || w.persona || w.pm);
+        var wk = w.persona_key || w.persona || w.pm;
         items.push({
           ts: w.ts,
           type: '판단 ' + (w.action === 'sell' ? '매도' : '매수'),
-          text: (w.ticker || w.symbol || '?') + ' · ' + pmMeta.short + ' · 신호 ' +
+          pm: wk,
+          text: (w.ticker || w.symbol || '?') + ' · ' + _pmKo(wk) + ' · 신호 ' +
                 (w.signal_strength != null ? Number(w.signal_strength).toFixed(2) : '—') +
                 ' · 기대 ' + (w.net_expected_pct != null ? Number(w.net_expected_pct).toFixed(1) + '%' : '—') +
                 (w.executed === false ? ' (미체결)' : ''),
         });
       });
       // 3) 시스템 알림
+      // v14.3 — 실체결 알림 본문의 PM 코드(sur/nova)를 정본 한국명으로 치환.
+      //   NEXUS_PM_META 키 기준 치환 — 이름 목록 하드코딩 없음 (v13.10 원칙).
+      var _R = window.NEXUS_REAL || null;
       var nr = Array.isArray(notif && notif.recent) ? notif.recent : [];
       nr.forEach(function(n) {
+        var raw = n.summary || n.message || '';
         items.push({
           ts: n.ts || n.timestamp,
           type: n.type || '알림',
-          text: n.summary || n.message || '',
+          pm: (_R && _R.pmKeyInText) ? _R.pmKeyInText(raw) : null,
+          text: (_R && _R.pmCodesToKo) ? _R.pmCodesToKo(raw) : raw,
         });
       });
       if (items.length === 0) {
@@ -7317,11 +7390,16 @@
         var row = document.createElement('div');
         row.className = 'm-history-row';
         var timeTxt = n.ts ? _eventShortTime(n.ts) : '—';
+        // v14.3 — 담당 PM 색점 (NEXUS_PM_META.color 단일 소스)
+        var pmMeta = n.pm ? (window.NEXUS_PM_META || {})[n.pm] : null;
+        var dot = pmMeta
+          ? '<span class="d-hist-pm-dot" style="background:' + _escapeHtml(pmMeta.color) + ';" title="' +
+            _escapeHtml(pmMeta.ko || n.pm) + '"></span>' : '';
         row.innerHTML =
           '<div class="m-history-time">' + _escapeHtml(timeTxt) + '</div>' +
           '<div class="m-history-content">' +
             '<span class="verb">' + _escapeHtml(String(n.type)) + '</span>' +
-            '<span class="desc">' + _escapeHtml(String(n.text)) + '</span>' +
+            '<span class="desc">' + dot + _escapeHtml(String(n.text)) + '</span>' +
           '</div>';
         host.appendChild(row);
       });
@@ -7768,7 +7846,8 @@
         });
         Object.keys(pmAgg).sort(function(a, b){ return pmAgg[b].amt - pmAgg[a].amt; }).forEach(function(pk){
           var pm = pmAgg[pk];
-          var pmShort = (PM_META[pk] && PM_META[pk].short) || pk;
+          // v14.3 — 정본 한국명 (v13.10 단일 소스). short 는 영문 축약이라 표기 불일치.
+          var pmShort = (PM_META[pk] && (PM_META[pk].ko || PM_META[pk].short)) || pk;
           items.push({
             ts: bucket.ts, day: day, kind: 'sim-pm', cat: 'sim',
             time: '',
@@ -7810,12 +7889,22 @@
         var typeRaw = String(n.type || n.category || 'notif').toLowerCase();
         var isAegis = typeRaw.indexOf('aegis') >= 0 || typeRaw.indexOf('defense') >= 0 ||
                       typeRaw.indexOf('block') >= 0 || typeRaw.indexOf('breach') >= 0;
+        // v14.3 — 실체결 알림 본문의 PM 코드(sur/nova) 를 정본 한국명으로.
+        //   NEXUS_PM_META 키 기준 치환 + 담당 PM 색점 (하드코딩 없음).
+        var _R = window.NEXUS_REAL || null;
+        var rawSum = String(n.summary || n.message || n.text || '');
+        var koSum = (_R && _R.pmCodesToKo) ? _R.pmCodesToKo(rawSum) : rawSum;
+        var nPmKey = (_R && _R.pmKeyInText) ? _R.pmKeyInText(rawSum) : null;
+        var nPmMeta = nPmKey ? (PM_META[nPmKey] || null) : null;
+        var nDot = nPmMeta
+          ? '<span class="d-hist-pm-dot" style="background:' + _escapeHtml(nPmMeta.color) + ';" title="' +
+            _escapeHtml(nPmMeta.ko || nPmKey) + '"></span>' : '';
         items.push({
           ts: ts, day: day, kind: isAegis ? 'aegis' : 'sys', cat: isAegis ? 'aegis' : 'sys',
           time: _kstTime(ts),
           catLabel: isAegis ? 'AEGIS' : 'SYS',
           descHtml: '<span class="k">' + _escapeHtml(String(n.type || n.category || '알림')) + '</span> ' +
-                    '<span class="dim">' + _escapeHtml(String(n.summary || n.message || n.text || '')) + '</span>',
+                    '<span class="dim">' + nDot + _escapeHtml(koSum) + '</span>',
         });
       });
 
@@ -8074,6 +8163,27 @@
       // 투자/캐시 한 줄
       var invested = port.invested_usd;
       var cash = port.cash_usd;
+      // v14.3 — portfolio.invested_usd 는 positions[].market_value 를 더하는데
+      //   브로커가 시세를 안 주므로 항상 0 이다 (실보유 7종목인데 '투자 $0').
+      //   broker /account 의 stock_market_value_usd 가 정본. 없으면 취득가 합계로 폴백.
+      try {
+        var _pos = Array.isArray(positions) ? positions : [];
+        if (_pos.length > 0 && (invested == null || Number(invested) === 0)) {
+          var _acct = window.nexusBrokerAccount || null;
+          if (_acct && typeof _acct.stock_market_value_usd === 'number' && _acct.stock_market_value_usd > 0) {
+            invested = _acct.stock_market_value_usd;
+          } else {
+            var _cost = 0, _ok = true;
+            _pos.forEach(function(pp) {
+              var q = Number(pp.quantity != null ? pp.quantity : pp.qty);
+              var a = Number(pp.avg_cost != null ? pp.avg_cost : pp.average_cost);
+              if (!isFinite(q) || !isFinite(a)) { _ok = false; return; }
+              _cost += q * a;
+            });
+            if (_ok && _cost > 0) invested = _cost;
+          }
+        }
+      } catch (e) { /* 원본 값 유지 */ }
       var splitTxt = '투자 ' +
         (invested != null ? '$' + Number(invested).toLocaleString('en-US', {maximumFractionDigits: 0}) : '—') +
         ' · 캐시 ' +
@@ -9285,11 +9395,21 @@
         row.className = 'd-history-row ' + cls;
         var t = e.ts ? _eventShortTime(e.ts) : '—';
         var tk = e.ticker ? '<span class="tk">' + _escapeHtml(e.ticker) + '</span>' : '';
-        var summary = _escapeHtml(e.summary || e.type || '');
+        // v14.3 — 실체결(trade_filled) 등 알림 본문의 PM 코드(sur/nova)를 정본
+        //   한국명으로. 치환은 NEXUS_PM_META 키 기준 (v13.10 단일 소스 · 하드코딩 X).
+        //   앞에 담당 PM 색점을 붙여 어느 PM 의 체결인지 한눈에 보이게 한다.
+        var raw = String(e.summary || e.type || '');
+        var _R = window.NEXUS_REAL || null;
+        var pmKey = _R && _R.pmKeyInText ? _R.pmKeyInText(raw) : null;
+        var body = (_R && _R.pmCodesToKo) ? _R.pmCodesToKo(raw) : raw;
+        var pmMeta = pmKey ? (window.NEXUS_PM_META || {})[pmKey] : null;
+        var dot = pmMeta
+          ? '<span class="d-hist-pm-dot" style="background:' + _escapeHtml(pmMeta.color) + ';" title="' +
+            _escapeHtml(pmMeta.ko || pmKey) + '"></span>' : '';
         row.innerHTML =
           '<span class="t">' + t + '</span>' +
           '<span class="ico">' + _eventIcon(e.type) + '</span>' +
-          '<span class="desc">' + tk + summary + '</span>' +
+          '<span class="desc">' + tk + dot + _escapeHtml(body) + '</span>' +
           '<span class="meta">' + _escapeHtml(e.type || '') + '</span>';
         host.appendChild(row);
       });
@@ -10342,6 +10462,30 @@
       if (doc) _renderDevLog(doc);
     }
 
+    // v14.3 — 실계좌 총보유가치·평가손익 정본 소스.
+    //   /dashboard/api/snapshot 의 positions 는 IBKR reqPositions 결과라
+    //   market_price 가 없어 평가액을 계산할 수 없고, portfolio.invested_usd 는
+    //   그 null 들을 더해 0 으로 온다. nav − cash 도 AccruedCash(미지급이자)
+    //   가 섞여 총보유가치가 아니다. broker /account 의
+    //   stock_market_value_usd · unrealized_pnl_usd 가 유일한 정본.
+    //   읽기 전용 GET — 백엔드 코드 변경 없음, 재시작 불필요.
+    //   브로커 연결 상태일 때만 호출한다: /broker/account 는 미연결이면
+    //   connect() 를 시도하므로 30초 폴링이 재연결을 유발하지 않게 한다.
+    async function _fetchBrokerAccount(dashboard) {
+      var sys = (dashboard && dashboard.system) || {};
+      if (!sys.broker_connected) { window.nexusBrokerAccount = null; return; }
+      var acct = await fetchBackend('/broker/account');
+      if (!acct || typeof acct.stock_market_value_usd !== 'number') return;
+      acct._fetched_at = new Date().toISOString();
+      window.nexusBrokerAccount = acct;
+      // 스냅샷보다 늦게 도착하므로 보유 카드만 다시 그린다.
+      try {
+        if (typeof window.__pcBRefreshFromSnapshot === 'function') {
+          window.__pcBRefreshFromSnapshot();
+        }
+      } catch (e) { /* silent */ }
+    }
+
     async function refresh() {
       if (!backend.url) {
         updateSettingsUI();
@@ -10360,6 +10504,7 @@
         _updateFreshnessBanner(dashboard);
         updateSettingsUI();
         fetchAndRenderDevLog();
+        _fetchBrokerAccount(dashboard);   // v14.3 — 실계좌 평가액 정본 (await 안 함)
         return;
       }
       // 직결 실패 — Firestore mirror 폴백 시도
@@ -11756,10 +11901,16 @@
     if (realN > 0) {
       var usd = Number(tr.real_notional || 0);
       var byPm = tr.real_by_pm || {};
-      var pmLines = Object.keys(byPm).map(function(pm){
+      // v14.3 — PM 표기 정본화: 코드(sur/nova) 대신 NEXUS_PM_META 한국명 + 색점.
+      //   메타에 없는 키만 코드 그대로 노출 (새 PM 추가 시 즉시 눈에 띄게).
+      var pmLines = Object.keys(byPm).sort(function(a, b){
+        return Number((byPm[b]||{}).usd || 0) - Number((byPm[a]||{}).usd || 0);
+      }).map(function(pm){
         var m = (window.NEXUS_PM_META || {})[pm] || {};
         var s = byPm[pm];
-        return '<div class="ev-cal-trade-pm">· ' + _escapeHtmlNC(m.short || pm) + ' — '
+        return '<div class="ev-cal-trade-pm">' +
+          '<span class="ev-cal-pm-dot" style="background:' + _escapeHtmlNC(m.color || '#4b5563') + ';"></span>' +
+          _escapeHtmlNC(m.ko || pm) + ' — '
           + s.n + '건 · $' + Number(s.usd||0).toLocaleString('en-US',{maximumFractionDigits:0}) + '</div>';
       }).join('');
       return '<div class="ev-cal-detail-subhead">실체결 · ' + realN + '건</div>' +
@@ -12020,6 +12171,148 @@
   // v12.4 — 다른 IIFE (NexusCharts · renderHoldingsSummary) 에서도 재사용.
   //   7 PM 확장을 여러 곳에서 하드코딩하지 않도록 단일 소스.
   window.NEXUS_PM_META = PM_META;
+
+  // -----------------------------------------------------------------
+  // v14.3 — 실체결 표시 헬퍼 (표시 계층 전용 · 백엔드 무접촉)
+  //
+  //   실계좌 positions 는 IBKR reqPositions 결과라 구조적으로
+  //   { symbol, sec_type, exchange, currency, quantity, avg_cost } 만 담는다.
+  //   market_price · market_value · unrealized_pnl 은 항상 null 로 온다.
+  //   담당 PM(pm_key) 도 레거시 3 PM UNIVERSE 매칭이라 신규 PM
+  //   (nova · mint · terra · pulse) 이 산 종목은 null 로 온다.
+  //
+  //   아래 헬퍼가 같은 스냅샷 안의 실데이터로 그 구멍을 메운다:
+  //     · 담당 PM ← approvals.orders_history 의 status=filled 주문 pm 코드
+  //     · 현재가  ← sim_portfolio.positions[].market_price (공용 live 시세 캐시)
+  //   PM 이름·색은 NEXUS_PM_META 단일 소스만 경유 (v13.10 원칙 · 하드코딩 금지).
+  //   값을 만들어내지 않는다 — 소스가 없으면 null 로 두고 렌더에서 '—' 표시.
+  // -----------------------------------------------------------------
+  function _realFillPmByTicker(data) {
+    // ticker → pm 코드. orders_history 는 최신순이라 뒤에서부터 훑어
+    //   같은 종목이 여러 번 체결됐으면 최신 체결의 담당 PM 이 이긴다.
+    var map = {};
+    var oh = (data && data.approvals && data.approvals.orders_history) || [];
+    if (!Array.isArray(oh)) return map;
+    for (var i = oh.length - 1; i >= 0; i--) {
+      var o = oh[i] || {};
+      if (String(o.status || '').toLowerCase() !== 'filled') continue;
+      var tk = String(o.ticker || o.symbol || '').toUpperCase();
+      var pm = String(o.pm || o.persona_key || o.persona || '').toLowerCase();
+      if (tk && pm) map[tk] = pm;
+    }
+    return map;
+  }
+
+  function _quoteByTicker(data) {
+    // ticker → { price, at, src }. sim_portfolio.positions 의 market_price 는
+    //   해당 종목의 공용 시세 캐시(last_price_source: live) — sim 손익이 아니라
+    //   시세 그 자체라 실보유 수량에 곱해도 의미가 어긋나지 않는다.
+    var map = {};
+    var sp = (data && data.sim_portfolio) || null;
+    var arr = (sp && Array.isArray(sp.positions)) ? sp.positions : [];
+    arr.forEach(function(p) {
+      if (!p) return;
+      var tk = String(p.ticker || p.symbol || '').toUpperCase();
+      var px = Number(p.market_price);
+      if (!tk || !isFinite(px) || px <= 0) return;
+      map[tk] = { price: px, at: p.last_price_at || null, src: p.last_price_source || null };
+    });
+    return map;
+  }
+
+  function _enrichRealPositions(positions, data, navUsd) {
+    var pmMap = _realFillPmByTicker(data);
+    var qMap = _quoteByTicker(data);
+    var nav = Number(navUsd || 0);
+    var out = [];
+    (positions || []).forEach(function(p) {
+      if (!p) return;
+      var r = {};
+      for (var k in p) { if (Object.prototype.hasOwnProperty.call(p, k)) r[k] = p[k]; }
+      var tk = String(r.symbol || r.ticker || '').toUpperCase();
+      var qty = Number(r.quantity != null ? r.quantity : r.qty);
+      var avg = Number(r.avg_cost != null ? r.avg_cost : r.average_cost);
+      r._tk = tk;
+      r._cost_usd = (isFinite(qty) && isFinite(avg)) ? qty * avg : null;
+      // 담당 PM — 백엔드 pm_key 우선, 없으면 실체결 기록의 pm 코드
+      if (!r.pm_key && pmMap[tk]) { r.pm_key = pmMap[tk]; r._pm_from_fill = true; }
+      // pm_label 도 같이 채운다 — 폰/PC 포지션 카드 렌더러가 이 필드를 읽기 때문.
+      //   이름은 NEXUS_PM_META 단일 소스 (v13.10 원칙).
+      if (r.pm_key && (!r.pm_label || r.pm_label === '—')) {
+        var _m = (window.NEXUS_PM_META || {})[r.pm_key];
+        if (_m && _m.ko) r.pm_label = _m.ko;
+      }
+      // 현재가 — 브로커가 안 주므로(항상 null) 공용 시세 캐시로 보강
+      var q = qMap[tk];
+      if (r.market_price == null && q) {
+        r.market_price = q.price;
+        r._px_from_quote = true;
+        r._px_at = q.at;
+      }
+      var last = Number(r.market_price);
+      if (isFinite(last) && last > 0 && isFinite(qty)) {
+        if (r.market_value == null) r.market_value = qty * last;
+        if (r.unrealized_pnl == null && isFinite(avg)) r.unrealized_pnl = (last - avg) * qty;
+        if (r.unrealized_pnl_pct == null && isFinite(avg) && avg > 0) {
+          r.unrealized_pnl_pct = (last - avg) / avg * 100;
+        }
+      }
+      // 비중 — 평가액 우선. 시세 없는 행은 취득가 기준 (_w_from_cost 로 표기 구분).
+      var basis = (r.market_value != null) ? Number(r.market_value) : r._cost_usd;
+      if (r.actual_weight_pct == null && basis != null && nav > 0) {
+        r.actual_weight_pct = basis / nav * 100;
+        r._w_from_cost = (r.market_value == null);
+      }
+      out.push(r);
+    });
+    // 평가액(없으면 취득가) 내림차순
+    out.sort(function(a, b) {
+      var av = (a.market_value != null ? Number(a.market_value) : Number(a._cost_usd || 0));
+      var bv = (b.market_value != null ? Number(b.market_value) : Number(b._cost_usd || 0));
+      return bv - av;
+    });
+    return out;
+  }
+
+  // v14.3 — 자유 텍스트(notif.summary 등) 안의 PM 코드를 정본 한국명으로.
+  //   치환 대상 키는 NEXUS_PM_META 에서 뽑는다 — 이름 목록 하드코딩 없음.
+  //   audit id (20260803-225141-nova-AVGO) 처럼 식별자 안의 코드는 건드리지
+  //   않도록 앞뒤가 영숫자/하이픈이 아닌 경우에만 치환한다.
+  function _pmCodesToKo(text) {
+    var s = String(text == null ? '' : text);
+    if (!s) return s;
+    var meta = window.NEXUS_PM_META || {};
+    Object.keys(meta).forEach(function(key) {
+      var ko = meta[key] && meta[key].ko;
+      if (!ko || key === 'cash') return;
+      var re = new RegExp('(^|[^0-9A-Za-z_\\-])' + key + '(?![0-9A-Za-z_\\-])', 'gi');
+      s = s.replace(re, function(m, pre) { return pre + ko; });
+    });
+    return s;
+  }
+
+  // v14.3 — 텍스트에서 첫 번째로 등장하는 PM 키 (색점용). 없으면 null.
+  function _pmKeyInText(text) {
+    var s = String(text == null ? '' : text);
+    if (!s) return null;
+    var meta = window.NEXUS_PM_META || {};
+    var best = null, bestIdx = -1;
+    Object.keys(meta).forEach(function(key) {
+      if (key === 'cash') return;
+      var re = new RegExp('(^|[^0-9A-Za-z_\\-])' + key + '(?![0-9A-Za-z_\\-])', 'i');
+      var m = re.exec(s);
+      if (m && (bestIdx < 0 || m.index < bestIdx)) { bestIdx = m.index; best = key; }
+    });
+    return best;
+  }
+
+  window.NEXUS_REAL = {
+    pmByTicker: _realFillPmByTicker,
+    quoteByTicker: _quoteByTicker,
+    enrich: _enrichRealPositions,
+    pmCodesToKo: _pmCodesToKo,
+    pmKeyInText: _pmKeyInText,
+  };
 
   // v13.10 — 하드코딩 이름표(홈·협의체·설정·헌법 모달) 를 PM_META 로 자동 동기화.
   //   각 span 에 data-pm-name="<key>" 지정 → DOMContentLoaded 시 textContent 를
@@ -12993,7 +13286,9 @@
   }
   function _pmKeyFromTrade(w) {
     if (!w) return null;
-    return w.persona_key || w.persona || null;
+    // v14.3 — layer3.recent_would_trades 는 PM 을 pm 필드로 담아 온다.
+    //   persona_key/persona 만 보면 전부 null → 담당 PM 이 '—' 로 떨어진다.
+    return w.persona_key || w.persona || w.pm || null;
   }
 
   function _aggregateSimPositions(l3trades) {
@@ -13089,9 +13384,11 @@
       var tk = r.symbol;
       var pmKey = _pmKeyFromPos(r);
       var pmMeta = pmKey ? _pmMeta(pmKey) : null;
+      // v14.3 — 실계좌 행은 정본 한국명 (NEXUS_PM_META.ko), sim 행은 기존 short 유지.
+      var pmName = pmMeta ? (r._sim ? pmMeta.short : (pmMeta.ko || pmMeta.short)) : null;
       var pmHtml = pmMeta
         ? '<span class="pm-cell"><span class="swatch" style="background:' + _esc(pmMeta.color) + ';"></span>' +
-          _esc(pmMeta.short) + '</span>'
+          _esc(pmName) + '</span>'
         : '<span class="pm-cell"><span class="swatch"></span>—</span>';
       if (r._sim && r._simSource === 'ledger') {
         // v13.0 — sim_portfolio 원장 실값. 실계좌 렌더와 동일 필드 매핑 + sim 배지.
@@ -13129,6 +13426,9 @@
           '<td class="num">' + r._decisions + '회</td>' +
         '</tr>';
       }
+      // v14.3 — 실계좌 행: 8 컬럼 전부 채운다.
+      //   종목 · 담당PM · 수량 · 평단 · 현재가 · 손익$ · 손익% · 비중
+      //   담당 PM 은 실체결 기록에서 온 값이면 정본 한국명 + 색점 (NEXUS_PM_META).
       var qty = r.quantity != null ? r.quantity : r.qty;
       var avg = r.avg_cost != null ? r.avg_cost : r.average_cost;
       var last = r.market_price != null ? r.market_price : r.last_price;
@@ -13136,41 +13436,73 @@
       var pnlPct = r.unrealized_pnl_pct;
       var w = r.actual_weight_pct;
       var pnlCls = (pnl == null) ? 'neut' : (pnl >= 0 ? 'pos' : 'neg');
-      var pnlTxt = (pnl == null) ? '—' :
-        (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toLocaleString('en-US', {maximumFractionDigits: 0}) +
-        (pnlPct != null ? ' (' + _fmtPct(pnlPct, true) + ')' : '');
+      // v14.3 — 진입 당일 행 손익은 액수가 작다. |v| < 100 은 센트까지 표기.
+      var _pd = (pnl == null) ? 0 : (Math.abs(pnl) < 100 ? 2 : 0);
+      var pnlUsdTxt = (pnl == null) ? '—' :
+        (pnl >= 0 ? '+' : '−') + '$' +
+        Math.abs(pnl).toLocaleString('en-US', {minimumFractionDigits: _pd, maximumFractionDigits: _pd});
+      var pnlPctTxt = (pnlPct == null) ? '—' : _fmtPct(pnlPct, true);
+      var qtyTxt = (qty == null) ? '—'
+        : (Math.abs(Number(qty) % 1) > 0 ? Number(qty).toFixed(3) : String(Number(qty)));
+      var lastTxt = last ? '$' + Number(last).toFixed(2) : '—';
+      var lastCls = r._px_from_quote ? ' quote' : '';
+      var lastTitle = r._px_from_quote
+        ? ' title="공용 시세 캐시' + (r._px_at ? ' · ' + _esc(String(r._px_at).slice(11, 19)) + ' UTC' : '') +
+          ' — 브로커 잔고엔 시세가 없어 같은 종목의 live 쿼트로 평가"' : '';
+      var wTxt = (w == null) ? '—' : Number(w).toFixed(2) + '%';
+      var wTitle = r._w_from_cost ? ' title="시세 부재 — 취득가 기준 비중"' : '';
       return '<tr data-h2-tk="' + _esc(tk) + '" data-h2-pm="' + _esc(pmKey || '') + '">' +
         '<td><span class="sym">' + _esc(tk) + '</span></td>' +
         '<td>' + pmHtml + '</td>' +
-        '<td class="num">' + (qty != null ? qty : '—') + '</td>' +
+        '<td class="num">' + qtyTxt + '</td>' +
         '<td class="num">' + (avg ? '$' + Number(avg).toFixed(2) : '—') + '</td>' +
-        '<td class="num">' + (last ? '$' + Number(last).toFixed(2) : '—') + '</td>' +
-        '<td class="num pnl ' + pnlCls + '">' + pnlTxt + '</td>' +
-        '<td class="num">' + (w != null ? Number(w).toFixed(2) + '%' : '—') + '</td>' +
+        '<td class="num' + lastCls + '"' + lastTitle + '>' + lastTxt + '</td>' +
+        '<td class="num pnl ' + pnlCls + '">' + pnlUsdTxt + '</td>' +
+        '<td class="num pnl ' + pnlCls + '">' + pnlPctTxt + '</td>' +
+        '<td class="num"' + wTitle + '>' + wTxt + (r._w_from_cost ? '<span class="h2-approx">*</span>' : '') + '</td>' +
       '</tr>';
     };  // end _rowHtmlFor
 
     // v13.0 — sim ledger 소스면 손익/신호밴드 헤더 (l3 폴백은 여전히 기대/결정)
     var simLedger = rows.length && rows[0]._sim && rows[0]._simSource === 'ledger';
-    var col6 = simLedger ? '손익' : (isSim ? '기대' : '손익');
-    var col7 = simLedger ? '신호밴드' : (isSim ? '결정' : '비중');
-    var headHtml =
-      '<thead><tr>' +
-        '<th>종목</th>' +
-        '<th>담당 PM</th>' +
-        '<th class="num">수량</th>' +
-        '<th class="num">평단</th>' +
-        '<th class="num">현재가</th>' +
-        '<th class="num">' + col6 + '</th>' +
-        '<th class="num">' + col7 + '</th>' +
-      '</tr></thead>';
+    // v14.3 — 실계좌 테이블은 손익$ / 손익% 를 분리해 8 컬럼.
+    var isReal = !isSim;
+    var headHtml;
+    if (isReal) {
+      headHtml =
+        '<thead><tr>' +
+          '<th>종목</th>' +
+          '<th>담당 PM</th>' +
+          '<th class="num">수량</th>' +
+          '<th class="num">평단</th>' +
+          '<th class="num">현재가</th>' +
+          '<th class="num">손익 $</th>' +
+          '<th class="num">손익 %</th>' +
+          '<th class="num">비중</th>' +
+        '</tr></thead>';
+    } else {
+      var col6 = simLedger ? '손익' : '기대';
+      var col7 = simLedger ? '신호밴드' : '결정';
+      headHtml =
+        '<thead><tr>' +
+          '<th>종목</th>' +
+          '<th>담당 PM</th>' +
+          '<th class="num">수량</th>' +
+          '<th class="num">평단</th>' +
+          '<th class="num">현재가</th>' +
+          '<th class="num">' + col6 + '</th>' +
+          '<th class="num">' + col7 + '</th>' +
+        '</tr></thead>';
+    }
 
     // v13.6 — 원장 42행 flatten + half-split (사진1 #1).
     //   기존 date-group 접기 + column-count 는 단일 그룹(오늘 30+행)이 col1 을
     //   가득 채우고 col2 가 빔 → 우측 광활한 여백. flat sort + 이등분으로 교체.
     if (!simLedger) {
       var flat = rows.map(_rowHtmlFor).join('');
-      host.innerHTML = '<table class="h2-table">' + headHtml + '<tbody>' + flat + '</tbody></table>';
+      // v14.3 — 실계좌 테이블은 섹션 전폭 사용 (h2-table-real).
+      host.innerHTML = '<table class="h2-table' + (isReal ? ' h2-table-real' : '') + '">' +
+        headHtml + '<tbody>' + flat + '</tbody></table>';
       return;
     }
 
@@ -13221,6 +13553,75 @@
     host.innerHTML = '<div class="h2-ledger-cols">' + leftTable + rightTable + '</div>';
   }
 
+  // v14.3 — 실계좌가 본편일 때 하단에 붙는 sim 원장 [참고] 섹션.
+  //   sp 가 null 이면(=이미 sim 이 메인이거나 원장 없음) 섹션을 제거한다.
+  //   실계좌 테이블과 시각적으로 확실히 분리 — 접힘 기본, 클릭 시 펼침.
+  var _simRefOpen = false;
+  function _renderSimReferenceSection(sp) {
+    var block = document.querySelector('[data-bind="h2-holdings-block"]');
+    if (!block) return;
+    var host = block.querySelector('[data-bind="h2-sim-ref"]');
+    var have = !!(sp && Array.isArray(sp.positions) && sp.positions.length > 0);
+    if (!have) { if (host) host.remove(); return; }
+    if (!host) {
+      host = document.createElement('div');
+      host.className = 'h2-sim-ref';
+      host.setAttribute('data-bind', 'h2-sim-ref');
+      block.appendChild(host);
+    }
+    var rows = _simPositionsFromLedger(sp);
+    var vn = sp.virtual_nav || {};
+    var mvSum = 0;
+    rows.forEach(function(r) {
+      if (r.market_value != null) mvSum += Number(r.market_value);
+    });
+    var pnlU = Number(vn.unrealized_pnl_usd || 0);
+    var pnlCls = pnlU >= 0 ? 'pos' : 'neg';
+    var head =
+      '<div class="h2-sim-ref-head" data-h2-simref-toggle="1">' +
+        '<span class="caret">' + (_simRefOpen ? '▾' : '▸') + '</span>' +
+        '<span class="tag">참고</span>' +
+        '<span class="ttl">sim 가상 원장</span>' +
+        '<span class="meta">' + rows.length + '종목 · 평가 $' +
+          Math.round(mvSum).toLocaleString('en-US') +
+          ' · 미실현 <span class="' + pnlCls + '">' +
+          (pnlU >= 0 ? '+' : '−') + '$' + Math.abs(pnlU).toLocaleString('en-US', {maximumFractionDigits: 0}) +
+          '</span></span>' +
+        '<span class="note">실주문 무관 · 가상 검증</span>' +
+      '</div>';
+    if (!_simRefOpen) { host.innerHTML = head; return; }
+    var body = rows.map(function(r) {
+      var pmMeta = r.pm_key ? _pmMeta(r.pm_key) : null;
+      var pnl = r.unrealized_pnl_pct;
+      var cls = (pnl == null) ? 'neut' : (pnl >= 0 ? 'pos' : 'neg');
+      return '<tr class="sim">' +
+        '<td><span class="sym">' + _esc(r.symbol) + '</span></td>' +
+        '<td><span class="pm-cell"><span class="swatch" style="background:' +
+          _esc(pmMeta ? pmMeta.color : '#4b5563') + ';"></span>' +
+          _esc(pmMeta ? (pmMeta.ko || pmMeta.short) : '—') + '</span></td>' +
+        '<td class="num">' + (r.quantity != null ? Number(r.quantity).toFixed(2) : '—') + '</td>' +
+        '<td class="num">' + (r.avg_cost != null ? '$' + Number(r.avg_cost).toFixed(2) : '—') + '</td>' +
+        '<td class="num">' + (r.market_price != null ? '$' + Number(r.market_price).toFixed(2) : '—') + '</td>' +
+        '<td class="num pnl ' + cls + '">' + (pnl == null ? '—' : _fmtPct(pnl, true)) + '</td>' +
+      '</tr>';
+    }).join('');
+    host.innerHTML = head +
+      '<div class="h2-sim-ref-body">' +
+        '<table class="h2-table h2-table-real">' +
+          '<thead><tr><th>종목</th><th>담당 PM</th>' +
+            '<th class="num">수량</th><th class="num">평단</th>' +
+            '<th class="num">현재가</th><th class="num">손익 %</th></tr></thead>' +
+          '<tbody>' + body + '</tbody>' +
+        '</table>' +
+      '</div>';
+  }
+  document.addEventListener('click', function(ev) {
+    var t = ev.target.closest('[data-h2-simref-toggle]');
+    if (!t) return;
+    _simRefOpen = !_simRefOpen;
+    try { renderPcHoldingsV12(_snap()); } catch (e) {}
+  });
+
   function _renderHoldingsEmptyState(nav, portfolio) {
     var host = document.querySelector('[data-bind="h2-table-host"]');
     if (!host) return;
@@ -13253,6 +13654,14 @@
     var isSim = false, isSimLedger = false;
     var rows = positions.slice();
     var srcLabel = '', srcCls = 'empty', srcBadgeTxt = '—';
+
+    // v14.3 — 실계좌 행 보강: 담당 PM(실체결 기록) · 현재가(공용 시세) · 손익 · 비중.
+    //   브로커 positions 는 symbol/quantity/avg_cost 만 담고 나머지는 null 이다.
+    var _real = window.NEXUS_REAL || null;
+    var _navUsdForW = Number((data.nav && data.nav.value_usd) || 0);
+    if (positions.length > 0 && _real && typeof _real.enrich === 'function') {
+      try { rows = _real.enrich(positions, data, _navUsdForW); } catch (e) { rows = positions.slice(); }
+    }
 
     if (positions.length > 0) {
       isSim = false; srcCls = 'real'; srcBadgeTxt = '실계좌';
@@ -13298,6 +13707,73 @@
     else if (isSim) pnlSub = 'sim 근사 · 실 손익 없음';
     else pnlSub = havePnl ? '평단 대비' : '—';
 
+    // -----------------------------------------------------------------
+    // v14.3 — 실포지션이 있으면 상단 2 카드를 실계좌 기준으로 배선.
+    //   소스 우선순위 (정확한 것 → 덜 정확한 것):
+    //     1) broker /account · stock_market_value_usd + unrealized_pnl_usd
+    //        → IBKR 이 계산한 계좌 평가액·미실현. 유일한 정본.
+    //     2) 행 합계 (수량 × 공용 시세) — 시세가 전 종목 커버될 때만.
+    //     3) 취득가 합계 (수량 × 평단) — 시세 부재. '취득가 기준' 명시, 손익 '—'.
+    //   실포지션 0 일 때만 sim 값 + [참고] 라벨 폴백 (기존 동작 유지).
+    // -----------------------------------------------------------------
+    var totalSubTxt = null;   // null 이면 아래 기존 로직이 채운다
+    if (!isSim && rows.length > 0) {
+      var acct = window.nexusBrokerAccount || null;
+      var costSum = 0, haveCost = true, pxCovered = 0;
+      rows.forEach(function(pp) {
+        var c = (pp._cost_usd != null) ? Number(pp._cost_usd) : null;
+        if (c == null) haveCost = false; else costSum += c;
+        if (pp.market_value != null) pxCovered++;
+      });
+      var acctMv = acct && typeof acct.stock_market_value_usd === 'number'
+        ? Number(acct.stock_market_value_usd) : null;
+      var acctPnl = acct && typeof acct.unrealized_pnl_usd === 'number'
+        ? Number(acct.unrealized_pnl_usd) : null;
+      var _usd0 = function(v) {
+        return '$' + Number(v).toLocaleString('en-US', {maximumFractionDigits: 0});
+      };
+      var _signedUsd0 = function(v) {
+        // v14.3 — 진입 당일 손익은 $4.61 처럼 작다. 반올림으로 $5 가 되면
+        //   의미가 사라지므로 |v| < 100 은 센트까지 표기.
+        var d = Math.abs(v) < 100 ? 2 : 0;
+        return (v >= 0 ? '+' : '−') + '$' +
+          Math.abs(v).toLocaleString('en-US', {minimumFractionDigits: d, maximumFractionDigits: d});
+      };
+      if (acctMv != null && acctMv > 0) {
+        totalTxt = _usd0(acctMv);
+        totalSubTxt = '실계좌 · 브로커 평가액';
+        if (acctPnl != null) {
+          totalPnl = acctPnl; havePnl = true;
+          pnlTxt = _signedUsd0(acctPnl);
+          pnlCls = acctPnl >= 0 ? 'pos' : 'neg';
+          pnlSub = '실계좌 · 미실현'
+            + (haveCost && costSum > 0
+               ? ' ' + _fmtPct(acctPnl / costSum * 100, true) : '');
+        }
+      } else if (pxCovered === rows.length && totalMV > 0) {
+        totalTxt = _usd0(totalMV);
+        totalSubTxt = '평가액 · 시세 ' + pxCovered + '/' + rows.length;
+        if (havePnl) {
+          pnlTxt = _signedUsd0(totalPnl);
+          pnlCls = totalPnl >= 0 ? 'pos' : 'neg';
+          pnlSub = '평단 대비'
+            + (haveCost && costSum > 0 ? ' ' + _fmtPct(totalPnl / costSum * 100, true) : '');
+        }
+      } else if (haveCost && costSum > 0) {
+        // 시세가 전 종목을 못 덮음 → 총계를 시세·취득가 혼합으로 내면 틀린 값이 된다.
+        totalTxt = _usd0(costSum);
+        totalSubTxt = '취득가 기준 · 시세 ' + pxCovered + '/' + rows.length;
+        totalPnl = 0; havePnl = false;
+        pnlTxt = '—';
+        pnlCls = '';
+        pnlSub = '시세 ' + pxCovered + '/' + rows.length + ' · 평가손익 계산 불가';
+      }
+    } else if (isSim && rows.length > 0) {
+      // 실보유 0 → sim 값으로만 채우고 [참고] 임을 카드에서 못 박는다.
+      totalSubTxt = isSimLedger ? '[참고] sim 원장 · 평가액' : '[참고] sim 근사 · 계산 불가';
+      pnlSub = '[참고] ' + pnlSub;
+    }
+
     var navUsd = Number(nav.value_usd || 0);
     var cashUsd = Number(portfolio.cash_usd != null ? portfolio.cash_usd : (aegisLine.cash_pct != null && navUsd ? (aegisLine.cash_pct / 100 * navUsd) : 0));
     var cashPct = (aegisLine.cash_pct != null) ? Number(aegisLine.cash_pct)
@@ -13311,7 +13787,8 @@
     var c = document.querySelector('[data-bind="h2-cash-pct"]');
     var cs = document.querySelector('[data-bind="h2-cash-sub"]');
     if (t)  t.textContent = totalTxt;
-    if (ts) ts.textContent = isSimLedger ? 'sim 원장 · 평가액' : (isSim ? 'sim 근사 · 계산 불가' : '평가액 · USD');
+    if (ts) ts.textContent = totalSubTxt != null ? totalSubTxt
+      : (isSimLedger ? 'sim 원장 · 평가액' : (isSim ? 'sim 근사 · 계산 불가' : '평가액 · USD'));
     if (p) { p.textContent = pnlTxt; p.className = 'v ' + pnlCls; }
     if (ps) ps.textContent = pnlSub;
     if (c)  c.textContent = (cashPct == null ? '—' : Number(cashPct).toFixed(1) + '%');
@@ -13358,6 +13835,10 @@
     } else {
       _renderHoldingsTable(filtered, isSim);
     }
+
+    // v14.3 — 실계좌가 본편이어도 sim 원장은 하단 [참고] 섹션으로 남긴다.
+    //   (기존엔 실보유 ≥1 이면 sim 원장이 화면에서 통째로 사라졌다.)
+    _renderSimReferenceSection(isSim ? null : sp);
 
     // v13.3 — 사이드 카드: 오늘 매수/매도 건수·금액 + 최다 활동 PM
     _renderHoldingsSideCard(data);
@@ -13512,7 +13993,8 @@
         '<div class="h3-day-group">' +
           '<div class="h3-day-head">' + _dayLabel(k) + ' <span class="cnt">' + rows.length + '건</span></div>';
       rows.forEach(function(t) {
-        var pmKey = t.persona_key || t.persona || null;
+        // v14.3 — pm 필드 포함 (실체결 행이 담당 PM 없이 렌더되던 결함)
+        var pmKey = t.persona_key || t.persona || t.pm || null;
         var pmMeta = pmKey ? _pmMeta(pmKey) : null;
         var side = (t.action || t.intent || 'buy').toLowerCase();
         var gate = !!t.gate_pass;
@@ -13524,7 +14006,8 @@
             '<span class="t">' + _esc(_timeShort(t.ts)) + '</span>' +
             '<span class="pm">' +
               '<span class="dot" style="background:' + _esc(pmMeta ? pmMeta.color : 'var(--fg-dim)') + ';"></span>' +
-              _esc(pmMeta ? pmMeta.short : '—') +
+              /* v14.3 — 타임라인도 정본 한국명 (같은 탭 PM 칩과 표기 일치) */
+              _esc(pmMeta ? (pmMeta.ko || pmMeta.short) : '—') +
             '</span>' +
             '<span class="sym">' + _esc(t.ticker || t.symbol || '?') + '</span>' +
             '<span class="side ' + side + '">' + (side === 'buy' ? '매수' : '매도') + '</span>' +
@@ -13561,7 +14044,7 @@
     // PM 별 카운트 (필터에 사용) — 유형·기간 무관 전체 기준
     var pmCounts = {};
     trades.forEach(function(t) {
-      var k = t.persona_key || t.persona || 'unknown';
+      var k = t.persona_key || t.persona || t.pm || 'unknown';   // v14.3 — pm 필드 포함
       pmCounts[k] = (pmCounts[k] || 0) + 1;
     });
     var activePms = Object.keys(pmCounts).map(function(k) {
@@ -13576,7 +14059,7 @@
       : nowMs - (Number(_historyFilter.period) * 86400 * 1000);
     var filtered = trades.filter(function(t) {
       if (_historyFilter.pm !== 'all') {
-        var pk = t.persona_key || t.persona || 'unknown';
+        var pk = t.persona_key || t.persona || t.pm || 'unknown';   // v14.3 — pm 필드 포함
         if (pk !== _historyFilter.pm) return false;
       }
       if (_historyFilter.type !== 'all') {

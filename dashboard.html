@@ -57,14 +57,14 @@
        ========================================================== */
     --bg: #0a0a0a; --bg-elev: #131313; --bg-card: #161616; --bg-deep: #0d0d0d;
     --border: #262626; --border-strong: #333;
-    --fg: #f0f0ec; --fg-strong: #fff; --fg-muted: #9a9a96; --fg-dim: #666662;
+    --fg: #f0f0ec; --fg-strong: #fff; --fg-muted: #9a9a96; --fg-dim: #85857f;   /* v15.3 — 3.14:1 → 4.88:1 (다크 미달의 최대 단일 원인) */
     --accent: #5eead4; --accent-soft: rgba(94,234,212,0.15); --accent-glow: rgba(94,234,212,0.35);
     --positive: #7dd3a8; --negative: #d98686;
     --warn: #d4a55e; --info: #88a8d0; --danger: #ef6b6b;
 
     /* v15 계열 의미색 (v15.2 에서 하드코딩 → 변수화) */
     --up: #22c55e;            /* 수익 — 항상 초록 */
-    --down: #ef4444;          /* 손실 — 항상 빨강 */
+    --down: #f87171;          /* 손실 — 항상 빨강 (v15.3: #ef4444 는 자기 틴트 위 4.26) */
     --up-line: rgba(34,197,94,0.38);   --up-fill: rgba(34,197,94,0.12);
     --down-line: rgba(239,68,68,0.38); --down-fill: rgba(239,68,68,0.12);
     --watch: #7aa2f7;         /* 관망/진행 */
@@ -74,6 +74,7 @@
     --soft-fill: rgba(255,255,255,0.05);   /* 카드 안 옅은 배경 */
     --tabbar-bg: rgba(10,10,10,0.96);
     --overlay: rgba(0,0,0,0.55);
+    --on-accent: #06231f;     /* accent 배경 위 글자 — 다크는 어두운 글자 */
 
     --sans: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
@@ -87,11 +88,11 @@
     --bg: #f5f6f7; --bg-elev: #ffffff; --bg-card: #ffffff; --bg-deep: #eceef0;
     --border: #d8dce0; --border-strong: #c2c8ce;
     --fg: #14171a; --fg-strong: #000; --fg-muted: #5a6169; --fg-dim: #61686f;   /* 4.5:1 확보 (기존 #858c94 = 3.14) */
-    --accent: #0f766e; --accent-soft: rgba(15,118,110,0.12); --accent-glow: rgba(15,118,110,0.28);   /* 5.47:1 (기존 #0d9488 = 3.74) */
+    --accent: #0b5a54; --accent-soft: rgba(11,90,84,0.10); --accent-glow: rgba(11,90,84,0.26);   /* v15.3 — 틴트 위 4.5:1 */
     --positive: #15803d; --negative: #b91c1c;
-    --warn: #a16207; --info: #1d4ed8; --danger: #b91c1c;
+    --warn: #6b4106; --info: #1e40af; --danger: #a01818;   /* v15.3 — 진한 틴트 위 4.5:1 */
 
-    --up: #15803d; --down: #b91c1c;
+    --up: #126430; --down: #a01818;   /* v15.3 — 틴트 배지 위 4.5:1 확보 */
     --up-line: rgba(21,128,61,0.40);   --up-fill: rgba(21,128,61,0.10);
     --down-line: rgba(185,28,28,0.40); --down-fill: rgba(185,28,28,0.10);
     --watch: #1d4ed8;
@@ -101,11 +102,12 @@
     --soft-fill: rgba(0,0,0,0.04);
     --tabbar-bg: rgba(255,255,255,0.97);
     --overlay: rgba(0,0,0,0.35);
+    --on-accent: #ffffff;     /* v15.3 — 라이트 accent(#0b5a54)는 어두워 흰 글자가 맞다 */
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { background: var(--bg); -webkit-text-size-adjust: 100%; }
   body { font-family: var(--sans); background: var(--bg); color: var(--fg); line-height: 1.55; font-size: 15px; min-height: 100vh; word-break: keep-all; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  .vela-mark { font-family: Georgia, serif; font-style: italic; font-weight: 900; color: #fff; text-shadow: 1px 1px 0 var(--bg), 2px 2px 0 var(--bg), 3px 3px 0 var(--bg), 4px 4px 0 var(--bg); -webkit-text-stroke: 1.2px var(--bg); letter-spacing: -0.01em; display: inline-block; }
+  .vela-mark { font-family: Georgia, serif; font-style: italic; font-weight: 900; color: var(--fg-strong); text-shadow: 1px 1px 0 var(--bg), 2px 2px 0 var(--bg), 3px 3px 0 var(--bg), 4px 4px 0 var(--bg); -webkit-text-stroke: 1.2px var(--bg); letter-spacing: -0.01em; display: inline-block; }
   .vela-mark .accent { color: var(--accent); }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
   @keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -612,7 +614,7 @@
     font-size: 14px; font-weight: 600;
     cursor: pointer; user-select: none;
   }
-  .m-btn.approve { background: var(--accent); color: var(--bg); border: none; }
+  .m-btn.approve { background: var(--accent); color: var(--on-accent); border: none; }
   .m-btn.approve:active { background: var(--accent); }
   .m-btn.defer { background: transparent; border: 1px solid var(--border-strong); color: var(--fg); }
   .m-btn.defer:active { background: var(--bg-elev); }
@@ -664,7 +666,7 @@
     border: 1px solid var(--border-strong); background: transparent; color: var(--fg);
   }
   .m-bulk-btn.all-approve {
-    background: var(--accent); border-color: var(--accent); color: #06231f;
+    background: var(--accent); border-color: var(--accent); color: var(--on-accent);
   }
   .m-bulk-btn.all-approve:active { background: var(--accent); }
   .m-bulk-btn.all-reject { border-color: var(--down-line); color: var(--danger); }
@@ -1612,7 +1614,7 @@
   .m-kill-card .s { font-size: 12px; color: var(--fg-muted); margin-top: 2px; }
   .m-kill-card .btn-kill {
     padding: 9px 14px; border-radius: 8px;
-    background: var(--danger); color: #fff;
+    background: #a01818; color: #fff;
     font-size: 12px; font-weight: 700;
     border: none; cursor: pointer;
     flex-shrink: 0;
@@ -3258,7 +3260,7 @@
     padding: 1px 5px; border-radius: 3px;
     letter-spacing: 0.04em; text-align: center;
   }
-  .nx-journal-day-body .nx-jrow .cat.sim  { background: var(--warn-line); color: var(--warn); }
+  .nx-journal-day-body .nx-jrow .cat.sim  { background: var(--warn-line); color: var(--fg); }   /* v15.3 — 같은 색 위 같은 색이라 3.15:1 이었다 */
   .nx-journal-day-body .nx-jrow .cat.appr { background: var(--accent-soft); color: var(--accent); }
   .nx-journal-day-body .nx-jrow .cat.aegis { background: var(--down-fill); color: var(--negative); }
   .nx-journal-day-body .nx-jrow .cat.sys  { background: #37415120; color: var(--fg-dim); }
@@ -4908,7 +4910,7 @@
   .h5-url-wrap input:focus { border-color: var(--accent); }
   .h5-url-wrap button {
     padding: 8px 14px;
-    background: var(--accent); color: #000;
+    background: var(--accent); color: var(--on-accent);
     font-family: var(--sans); font-weight: 700; font-size: 12px;
     border: none; border-radius: 4px; cursor: pointer;
   }
@@ -5135,6 +5137,9 @@
   .v15-daygroup .v15-trade { margin-bottom: 6px; }
   .v15-daygroup .v15-trade:last-child { margin-bottom: 0; }
   .v15-group.open .v15-group-body { display: block; }
+  /* v15.3 — PM 그룹 좌측 색 띠 (PM 고유색 단일 소스) */
+  .v15-group[data-pm] { border-left: 3px solid var(--pm-color, var(--border)); }
+  .v15-group[data-pm] .v15-pm-name { color: var(--pm-color, var(--fg)); }
   .v15-pos-row { padding: 9px 11px; border-bottom: 1px solid var(--line); }
   .v15-pos-row:last-child { border-bottom: 0; }
   .v15-pos-top { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
@@ -5948,7 +5953,7 @@
                  placeholder="https://msdn.tail63441d.ts.net"
                  style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;color:var(--fg);font-family:var(--mono);font-size:13px;outline:none;box-sizing:border-box;">
           <button type="button" onclick="window.nexusSaveBackendUrl && window.nexusSaveBackendUrl()"
-                  style="padding:10px;background:var(--accent);color:#000;font-family:var(--sans);font-weight:700;font-size:13px;border:none;border-radius:6px;cursor:pointer;">
+                  style="padding:10px;background:var(--accent);color:var(--on-accent);font-family:var(--sans);font-weight:700;font-size:13px;border:none;border-radius:6px;cursor:pointer;">
             저장 후 새로고침
           </button>
           <div style="font-size:11px;color:var(--fg-muted);line-height:1.4;">
@@ -7123,7 +7128,7 @@
                    placeholder="https://msdn.tail63441d.ts.net"
                    style="flex:1;padding:8px 10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;color:var(--fg);font-family:var(--mono);font-size:12px;outline:none;">
             <button type="button" onclick="window.nexusSaveBackendUrl && window.nexusSaveBackendUrl()"
-                    style="padding:8px 14px;background:var(--accent);color:#000;font-family:var(--sans);font-weight:700;font-size:12px;border:none;border-radius:4px;cursor:pointer;">
+                    style="padding:8px 14px;background:var(--accent);color:var(--on-accent);font-family:var(--sans);font-weight:700;font-size:12px;border:none;border-radius:4px;cursor:pointer;">
               저장
             </button>
           </div>
@@ -12557,17 +12562,30 @@
   // -----------------------------------------------------------------
   // PM 색·이름 매핑 — 7 PM 확장 준비 (mint · pulse 포함)
   // -----------------------------------------------------------------
+  // v15.3 — PM 고유색 단일 소스. color = 다크용(밝은 톤),
+  //   colorLight = 라이트용(진한 톤). 라이트에서 원래 색은 흰 배경 대비
+  //   1.48~2.72:1 로 읽히지 않아 테마별로 분리했다.
+  //   측정치(흰 배경 대비): NW 5.47 · Tide 7.10 · Sur 5.02 · Terra 7.28 ·
+  //   Nova 6.04 · Mint 5.02 · Pulse 5.18 — 전부 4.5:1 이상.
+  //   ★ PM 색을 바꿀 때는 여기만 고친다 (도넛·칩·홈·이력·보유가 전부 이 값을 읽는다).
   var PM_META = {
-    night_watch: { ko: '박세진', en: 'Night Watch', short: 'NW',    color: '#5eead4' },
-    tide:        { ko: '윤채영', en: 'Tide',        short: 'Tide',  color: '#a78bfa' },
-    sur:         { ko: '김선우', en: 'Sur',         short: 'Sur',   color: '#fbbf24' },
-    terra:       { ko: '서지원', en: 'Terra',       short: 'Terra', color: '#88a8d0' },
-    nova:        { ko: '한세라', en: 'Nova',        short: 'Nova',  color: '#f472b6' },
-    mint:        { ko: '민재훈', en: 'Mint',        short: 'Mint',  color: '#4ade80' },
-    pulse:       { ko: '백지안', en: 'Pulse',       short: 'Pulse', color: '#fb923c' },
-    aegis:       { ko: '진수호', en: 'Aegis',       short: 'Aegis', color: '#ef6b6b' },
-    pathfinder:  { ko: '임도진', en: 'Pathfinder',  short: 'Path',  color: '#88a8d0' },
-    cash:        { ko: '현금',   en: 'Cash',        short: 'Cash',  color: '#4b5563' },
+    night_watch: { ko: '박세진', en: 'Night Watch', short: 'NW',    color: '#5eead4', colorLight: '#0b5a54' },
+    tide:        { ko: '윤채영', en: 'Tide',        short: 'Tide',  color: '#a78bfa', colorLight: '#6d28d9' },
+    sur:         { ko: '김선우', en: 'Sur',         short: 'Sur',   color: '#fbbf24', colorLight: '#b45309' },
+    terra:       { ko: '서지원', en: 'Terra',       short: 'Terra', color: '#88a8d0', colorLight: '#1e5a8a' },
+    nova:        { ko: '한세라', en: 'Nova',        short: 'Nova',  color: '#f472b6', colorLight: '#be185d' },
+    mint:        { ko: '민재훈', en: 'Mint',        short: 'Mint',  color: '#4ade80', colorLight: '#15803d' },
+    pulse:       { ko: '백지안', en: 'Pulse',       short: 'Pulse', color: '#fb923c', colorLight: '#c2410c' },
+    aegis:       { ko: '진수호', en: 'Aegis',       short: 'Aegis', color: '#ef6b6b', colorLight: '#b91c1c' },
+    pathfinder:  { ko: '임도진', en: 'Pathfinder',  short: 'Path',  color: '#88a8d0', colorLight: '#1e5a8a' },
+    cash:        { ko: '현금',   en: 'Cash',        short: 'Cash',  color: '#4b5563', colorLight: '#4b5563' },
+  };
+  // 현재 테마에 맞는 PM 색 1개를 돌려준다. 전 화면이 이 함수를 거친다.
+  window.nexusPmColor = function (key) {
+    var m = PM_META[key];
+    if (!m) return 'var(--fg-muted)';
+    var light = document.documentElement.getAttribute('data-theme') === 'light';
+    return (light && m.colorLight) ? m.colorLight : m.color;
   };
   // v12.4 — 다른 IIFE (NexusCharts · renderHoldingsSummary) 에서도 재사용.
   //   7 PM 확장을 여러 곳에서 하드코딩하지 않도록 단일 소스.
@@ -15159,6 +15177,8 @@
       return (m && (m.ko || m.name)) || key || '—';
     }
     function pmColor(key) {
+      // v15.3 — 테마별 톤. 접근자가 없으면(로드 순서) 다크 색으로 폴백.
+      if (typeof window.nexusPmColor === 'function') return window.nexusPmColor(key);
       var m = (window.NEXUS_PM_META || {})[key];
       return (m && m.color) || 'var(--fg-muted)';
     }
@@ -15303,9 +15323,10 @@
           meta = '신호 없음';
         }
         var uni = it.universe_count === null || it.universe_count === undefined ? '—' : it.universe_count;
-        return '<div class="v15-pm-row">' +
-          '<span class="v15-pm-dot" style="background:' + pmColor(it.pm) + '"></span>' +
-          '<span class="v15-pm-name">' + esc(it.name || pmName(it.pm)) + '</span>' +
+        var pc = pmColor(it.pm);
+        return '<div class="v15-pm-row" data-pm="' + esc(it.pm) + '" style="border-left:3px solid ' + pc + '">' +
+          '<span class="v15-pm-dot" style="background:' + pc + '"></span>' +
+          '<span class="v15-pm-name" style="color:' + pc + '">' + esc(it.name || pmName(it.pm)) + '</span>' +
           '<span class="v15-pm-meta">' + meta + ' · 종목 ' + uni + '개' +
           (it.capital_pct === null || it.capital_pct === undefined ? '' : ' · 자본 ' + it.capital_pct + '%') +
           '</span>' +
@@ -15408,10 +15429,11 @@
             '</div></div>';
         }).join('');
         var label = pm === '_unknown' ? '담당 기록 없음' : pmName(pm);
-        return '<div class="v15-group open">' +
+        var gc = pm === '_unknown' ? 'var(--fg-muted)' : pmColor(pm);
+        return '<div class="v15-group open" data-pm="' + esc(pm) + '" style="--pm-color:' + gc + '">' +
           '<div class="v15-group-head" data-v15-toggle="1">' +
             '<span class="caret">▶</span>' +
-            '<span class="v15-pm-dot" style="background:' + (pm === '_unknown' ? 'var(--fg-muted)' : pmColor(pm)) + '"></span>' +
+            '<span class="v15-pm-dot" style="background:' + gc + '"></span>' +
             '<span class="v15-pm-name">' + esc(label) + '</span>' +
             '<span class="v15-pm-meta">' + list.length + '종목 · 원금 ' + money(gCost) + '</span>' +
           '</div><div class="v15-group-body">' + rows + '</div></div>';
@@ -15536,9 +15558,10 @@
       });
       var pmHtml = Object.keys(byPm).map(function(k) {
         var b = byPm[k];
-        return '<div class="v15-pm-row">' +
-          '<span class="v15-pm-dot" style="background:' + pmColor(k) + '"></span>' +
-          '<span class="v15-pm-name">' + esc(pmName(k)) + '</span>' +
+        var hc = pmColor(k);
+        return '<div class="v15-pm-row" data-pm="' + esc(k) + '" style="border-left:3px solid ' + hc + '">' +
+          '<span class="v15-pm-dot" style="background:' + hc + '"></span>' +
+          '<span class="v15-pm-name" style="color:' + hc + '">' + esc(pmName(k)) + '</span>' +
           '<span class="v15-pm-meta">주문 ' + b.total + '건 · 체결 ' + b.filled +
           '건 · 막힘 ' + b.blocked + '건 · 산 금액 ' + money(b.notional) + '</span></div>';
       }).join('');
@@ -15667,7 +15690,7 @@
         return String(b.created_at || '').localeCompare(String(a.created_at || ''));
       }).slice(0, 30);
       var nav = num(acc && acc.nav_usd);
-      var html = rows.map(function(o) {
+      function apprCard(o) {
         var tk = String(o.ticker || '').toUpperCase();
         var q = num(o.quantity), est = num(o.price_estimate), notional = num(o.notional_usd);
         var navPct = pct(notional, nav);
@@ -15705,9 +15728,43 @@
             '<span class="v15-tl-arrow">›</span>' +
             step('체결', executed, failed && st !== 'rejected' && st !== 'expired') +
           '</div></div>';
-      }).join('');
+      }
+
+      // 상태를 3분류로 접는다 — 화면 집계는 이 분류만 쓴다.
+      function apprBucket(st) {
+        if (st === 'filled' || st === 'submitted') return 'done';
+        if (st === 'pending' || st === 'held' || st === 'approved' || st === 'submitting') return 'wait';
+        return 'blocked';   // rejected · expired · aegis_rejected · broker_rejected · submit_failed
+      }
+      function groupApprovalsByDay(list) {
+        if (!list.length) return '';
+        var order = [], map = {};
+        list.forEach(function(o) {
+          var d = dayKeyOf(o);
+          if (!map[d.key]) { map[d.key] = { label: d.label, rows: [], done: 0, wait: 0, blocked: 0 }; order.push(d.key); }
+          var g = map[d.key];
+          g.rows.push(o);
+          g[apprBucket(String(o.status || ''))]++;
+        });
+        return order.map(function(k, gi) {
+          var g = map[k];
+          var bits = [g.rows.length + '건'];
+          if (g.done) bits.push('체결 ' + g.done);
+          if (g.wait) bits.push('대기 ' + g.wait);
+          if (g.blocked) bits.push('차단 ' + g.blocked);
+          return '<div class="v15-group v15-daygroup' + (gi < 2 ? ' open' : '') + '">' +
+            '<div class="v15-group-head" data-v15-toggle="1">' +
+              '<span class="caret">▶</span>' +
+              '<span class="v15-pm-name">' + esc(g.label) + '</span>' +
+              '<span class="v15-pm-meta">' + esc(bits.join(' · ')) + '</span>' +
+            '</div><div class="v15-group-body">' +
+              g.rows.map(apprCard).join('') +
+            '</div></div>';
+        }).join('');
+      }
+      // v15.3 — 이력 탭과 같은 일별 그룹. 헤더에 상태별 집계(체결·대기·차단).
       ['appr-timeline', 'appr-timeline-pc'].forEach(function(k) {
-        setAll(k, html || '<div class="v15-empty">주문 기록 없음</div>');
+        setAll(k, groupApprovalsByDay(rows) || '<div class="v15-empty">주문 기록 없음</div>');
       });
       var pend = rows.filter(function(o) { return o.status === 'pending'; }).length;
       ['appr-meta', 'appr-meta-pc'].forEach(function(k) {
@@ -15757,15 +15814,36 @@
           });
         });
       });
+      repaintPmColors();
       var label = { system: '시스템 따름', light: '밝게', dark: '어둡게' }[pref];
       ['theme-note', 'pc-theme-note'].forEach(function(k) {
         setAll(k, label + (pref === 'system' ? ' (현재 ' + (eff === 'light' ? '밝게' : '어둡게') + ')' : ''));
       });
     }
+    // v15.3 — PM 색은 인라인 style 로 찍혀 CSS 변수만으로는 안 바뀐다.
+    // 테마가 바뀌면 재조회 없이 **그 자리에서** 다시 칠한다 (data-pm 이 키).
+    function repaintPmColors() {
+      document.querySelectorAll('[data-pm]').forEach(function(row) {
+        var key = row.getAttribute('data-pm');
+        if (!key || key === '_unknown') return;
+        var c = pmColor(key);
+        if (row.style.getPropertyValue('--pm-color')) row.style.setProperty('--pm-color', c);
+        if (row.style.borderLeftColor || /border-left/.test(row.getAttribute('style') || '')) {
+          row.style.borderLeftColor = c;
+        }
+        var dot = row.querySelector('.v15-pm-dot');
+        if (dot) dot.style.background = c;
+        var nm = row.querySelector('.v15-pm-name');
+        if (nm && nm.style.color) nm.style.color = c;
+      });
+    }
+
     function setTheme(mode) {
       if (THEME_MODES.indexOf(mode) < 0) mode = 'system';
       try { localStorage.setItem(THEME_KEY, mode); } catch (e) {}
       applyTheme();
+      // PM 색은 인라인 style 로 찍혀 CSS 변수만으로는 안 바뀐다 → 다시 그린다.
+      try { refresh(); } catch (e) {}
     }
     function bindTheme() {
       document.addEventListener('click', function(e) {
@@ -15798,6 +15876,7 @@
     //   있었다 (= v15 가 설정 탭에 반영되지 않은 원인). 이제 여기 한 곳만 고친다.
     // ============================================================
     var VERSION_HISTORY = [
+      { v: 'v15.3.0', d: '2026-08-09', t: '시인성·PM 색 라운드 — 라이트에서 안 보이던 로고 수정 · 양 테마 전 텍스트 4.5:1 확보(다크 fg-dim 3.14→4.88 등) · PM 7명 고유색 테마별 분리(라이트 전용 진한 톤) + 좌측 색 띠 · 승인 탭 일별 그룹(체결/대기/차단 집계)' },
       { v: 'v15.2.0', d: '2026-08-09', t: '모바일 반응형 전면 정비 + 라이트/다크 테마 — 탭바 6칸(5칸이라 방어 탭이 잘리던 문제) · 폭 초과 6종 수정(360/390/430 가로 스크롤 0) · NAV 카드 중복 병합 · 색 팔레트 변수화 + 테마 3택(시스템/밝게/어둡게) 저장' },
       { v: 'v15.1.0', d: '2026-08-09', t: '실사용 피드백 5건 — 홈 최상단 상태+NAV · 보유의 방어/리스크 요소를 방어 탭으로 통합 · 이력 구 v14 제거 + 일별 그룹 · 승인 순서 재배치 + 고밀도 · 버전 이력 배열화' },
       { v: 'v15.0.0', d: '2026-08-09', t: '초보 친화 개편 — 메뉴 6개(방어 신설) · NAV 대형/자산 그래프/PM 실시간 현황 · 종목 소개 사전 163종 · 용어 괄호 설명 · 메뉴 순서 편집 · 계산 단일 소스(합계 대사 경고)' },

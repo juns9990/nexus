@@ -75,6 +75,10 @@
     --tabbar-bg: rgba(10,10,10,0.96);
     --overlay: rgba(0,0,0,0.55);
     --on-accent: #06231f;     /* accent 배경 위 글자 — 다크는 어두운 글자 */
+    /* v15.4 — v15 CSS 가 쓰던 --line 이 정의된 적이 없어 border 가 통째로
+       무효였다(border:1px solid var(--line) → invalid → 0px).
+       프로젝트 표준 변수 --border 의 별칭으로 정의한다. */
+    --line: #262626;
 
     --sans: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
@@ -103,6 +107,7 @@
     --tabbar-bg: rgba(255,255,255,0.97);
     --overlay: rgba(0,0,0,0.35);
     --on-accent: #ffffff;     /* v15.3 — 라이트 accent(#0b5a54)는 어두워 흰 글자가 맞다 */
+    --line: #d8dce0;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { background: var(--bg); -webkit-text-size-adjust: 100%; }
@@ -4840,7 +4845,10 @@
   @media (max-width: 720px) {
     .h5-grid { grid-template-columns: 1fr; }
   }
-  @media (min-width: 1100px) {
+  /* v15.4 — 고아 여는 중괄호 제거. 이 @media (min-width:1100px) 는 본문도
+     닫는 괄호도 없어서, **이 지점 이후의 모든 CSS 규칙이 그 안에 갇혔다**.
+     결과: 1100px 미만(=폰)에서 v15 카드 스타일이 통째로 무시됨.
+     PC(1440px)에서는 조건을 만족해 정상 보였기에 지금까지 드러나지 않았다. */
   @media (max-width: 1099px) {
     .h5-grid { display: block; }
   }
@@ -15204,7 +15212,85 @@
         if (cls) el.className = el.className.replace(/\bv15-(up|down|flat)\b/g, '').trim() + ' ' + cls;
       });
     }
+    // ============================================================
+    // v15.4 — 데이터 어댑터 (단일 진입점)
+    //
+    // 두 배포 환경이 데이터를 얻는 방법이 다르다:
+    //   · PC 원본(localhost/Tailscale) → 백엔드 REST API 직결
+    //   · 폰(github.io 정적 호스팅)     → Firestore 미러 읽기 전용
+    // 종전에는 v15 렌더러가 무조건 REST 를 쳐서 github.io 에서 8종 전부
+    // 404 였다(= 데이터 전부 공백). 이제 렌더러는 api() 만 보고,
+    // 어디서 가져올지는 이 함수가 정한다.
+    //
+    // 미러는 **조회 전용**이다. 여기서 쓰기 경로를 만들지 않는다.
+    // ============================================================
+    var MIRROR_MAP = {
+      '/broker/account':        ['nexus_mirror/positions', 'account'],
+      '/dashboard/api/snapshot':['nexus_mirror/positions', 'snapshot'],
+      '/pm/activity':           ['nexus_mirror/pm_activity', null],
+      '/executor/history':      ['nexus_mirror/orders', 'history'],
+      '/executor/pending':      ['nexus_mirror/orders', 'pending'],
+      '/executor/counts':       ['nexus_mirror/orders', 'counts'],
+      '/executor/held':         ['nexus_mirror/orders', 'held'],
+      '/nav/history':           ['nexus_mirror/nav_history', null],
+      '/aegis/summary':         ['nexus_mirror/aegis', null]
+    };
+    function isMirrorHost() {
+      // 백엔드 URL 이 잡혀 있고 로컬/사설망이면 직결. 그 외(github.io 등)는 미러.
+      var b = window.nexusBackend;
+      var u = (b && b.url) ? String(b.url) : '';
+      if (u && /^https?:\/\/(127\.0\.0\.1|localhost|100\.|192\.168\.|10\.)/.test(u)) return false;
+      var h = location.hostname;
+      if (h === 'localhost' || h === '127.0.0.1') return false;
+      return true;
+    }
+    var _mirrorCache = {};
+    function mirrorDoc(path) {
+      if (_mirrorCache[path]) return _mirrorCache[path];
+      var fs = window.__nexusFirestore;
+      if (!fs || !fs.available || typeof fs.read !== 'function') {
+        return Promise.reject(new Error('mirror_unavailable'));
+      }
+      _mirrorCache[path] = fs.read(path).then(function(d) {
+        if (d && d.mirror_pushed_at_utc) {
+          window.__v15MirrorAt = String(d.mirror_pushed_at_utc).slice(5, 16).replace('T', ' ');
+          var age = Date.now() - Date.parse(d.mirror_pushed_at_utc);
+          window.__v15MirrorState = (age > 30 * 60000) ? 'stale' : 'ok';
+        } else { window.__v15MirrorState = 'ok'; }
+        // 10분 뒤 캐시 해제 — 미러는 5분 주기 갱신이라 그 이상 붙들지 않는다
+        setTimeout(function() { delete _mirrorCache[path]; }, 600000);
+        if (!d) throw new Error('mirror_empty:' + path);
+        return d;
+      }, function(e) {
+        window.__v15MirrorState = 'fail';
+        delete _mirrorCache[path]; throw e;
+      });
+      return _mirrorCache[path];
+    }
+    // 미러 환경에서 데이터가 아직/영영 없을 때 화면에 띄울 안내 문구.
+    // 숫자를 지어내지 않는다 — 왜 비었는지만 말한다.
+    function emptyNote(what) {
+      if (!isMirrorHost()) return what + ' 수집 중…';
+      var st = window.__v15MirrorState || 'loading';
+      if (st === 'fail') return '미러를 읽지 못했습니다 — 잠시 후 다시 열어 주세요';
+      if (st === 'stale') {
+        var at = window.__v15MirrorAt ? (' (마지막 갱신 ' + window.__v15MirrorAt + ')') : '';
+        return '장 마감 · 다음 갱신 22:30' + at;
+      }
+      return what + ' 불러오는 중…';
+    }
+
     function api(path) {
+      var bare = String(path).split('?')[0];
+      if (isMirrorHost()) {
+        var m = MIRROR_MAP[bare];
+        if (!m) return Promise.reject(new Error('no_mirror_for:' + bare));
+        return mirrorDoc(m[0]).then(function(d) {
+          var v = m[1] ? d[m[1]] : d;
+          if (v === undefined || v === null) throw new Error('mirror_field_missing:' + bare);
+          return v;
+        });
+      }
       var b = window.nexusBackend;
       var base = (b && b.url) ? b.url : '';
       return fetch(base + path, { cache: 'no-store' }).then(function(r) {
@@ -15439,7 +15525,7 @@
           '</div><div class="v15-group-body">' + rows + '</div></div>';
       }).join('');
       ['hold-groups', 'hold-groups-pc'].forEach(function(k) {
-        setAll(k, html || '<div class="v15-empty">보유 종목이 없습니다.</div>');
+        setAll(k, html || '<div class="v15-empty">' + esc(emptyNote('보유')) + '</div>');
       });
       ['hold-meta', 'hold-meta-pc'].forEach(function(k) {
         setAll(k, pos.length + '종목');
@@ -15494,7 +15580,7 @@
           '<span>' + esc(String(o.ticker || '')) + ' — ' + esc(plainReason(o)) + '</span></div>';
       }).join('');
       ['def-log', 'pc-def-log'].forEach(function(k) {
-        setAll(k, log || '<div class="v15-empty">기록 없음</div>');
+        setAll(k, log || '<div class="v15-empty">' + esc(emptyNote('차단 기록')) + '</div>');
       });
     }
     function gate(name, val, desc, tone) {
@@ -15542,7 +15628,7 @@
           '</div></div>';
       }).join('');
       ['hist-holdings', 'hist-holdings-pc'].forEach(function(k) {
-        setAll(k, hh || '<div class="v15-empty">보유 없음</div>');
+        setAll(k, hh || '<div class="v15-empty">' + esc(emptyNote('보유')) + '</div>');
       });
       ['hist-hold-meta', 'hist-hold-meta-pc'].forEach(function(k) { setAll(k, pos.length + '종목'); });
 
@@ -15566,7 +15652,7 @@
           '건 · 막힘 ' + b.blocked + '건 · 산 금액 ' + money(b.notional) + '</span></div>';
       }).join('');
       ['hist-pm', 'hist-pm-pc'].forEach(function(k) {
-        setAll(k, pmHtml || '<div class="v15-empty">기록 없음</div>');
+        setAll(k, pmHtml || '<div class="v15-empty">' + esc(emptyNote('PM 요약')) + '</div>');
       });
 
       // (3) 거래 건별 — v15.1: 일별 그룹 (날짜 헤더 탭으로 접기/펼치기)
@@ -15575,7 +15661,7 @@
       }).slice(0, 60);
       var tHtml = groupTradesByDay(sorted);
       ['hist-trades', 'hist-trades-pc'].forEach(function(k) {
-        setAll(k, tHtml || '<div class="v15-empty">거래 기록 없음</div>');
+        setAll(k, tHtml || '<div class="v15-empty">' + esc(emptyNote('거래 이력')) + '</div>');
       });
       ['hist-trade-meta', 'hist-trade-meta-pc'].forEach(function(k) {
         setAll(k, '최근 ' + sorted.length + '건');
@@ -15764,7 +15850,7 @@
       }
       // v15.3 — 이력 탭과 같은 일별 그룹. 헤더에 상태별 집계(체결·대기·차단).
       ['appr-timeline', 'appr-timeline-pc'].forEach(function(k) {
-        setAll(k, groupApprovalsByDay(rows) || '<div class="v15-empty">주문 기록 없음</div>');
+        setAll(k, groupApprovalsByDay(rows) || '<div class="v15-empty">' + esc(emptyNote('주문')) + '</div>');
       });
       var pend = rows.filter(function(o) { return o.status === 'pending'; }).length;
       ['appr-meta', 'appr-meta-pc'].forEach(function(k) {
@@ -15876,6 +15962,7 @@
     //   있었다 (= v15 가 설정 탭에 반영되지 않은 원인). 이제 여기 한 곳만 고친다.
     // ============================================================
     var VERSION_HISTORY = [
+      { v: 'v15.4.0', d: '2026-08-09', t: '폰(github.io) 렌더 근본 수정 — 닫히지 않은 @media(min-width:1100px) 때문에 이후 CSS 전체가 1100px 이상에서만 적용되던 결함 · 미정의 --line 변수로 카드 테두리 무효 · 데이터 어댑터(로컬=API / 미러=Firestore) · 미러 문서 5종 신설(positions·orders·pm_activity·nav_history·aegis)' },
       { v: 'v15.3.0', d: '2026-08-09', t: '시인성·PM 색 라운드 — 라이트에서 안 보이던 로고 수정 · 양 테마 전 텍스트 4.5:1 확보(다크 fg-dim 3.14→4.88 등) · PM 7명 고유색 테마별 분리(라이트 전용 진한 톤) + 좌측 색 띠 · 승인 탭 일별 그룹(체결/대기/차단 집계)' },
       { v: 'v15.2.0', d: '2026-08-09', t: '모바일 반응형 전면 정비 + 라이트/다크 테마 — 탭바 6칸(5칸이라 방어 탭이 잘리던 문제) · 폭 초과 6종 수정(360/390/430 가로 스크롤 0) · NAV 카드 중복 병합 · 색 팔레트 변수화 + 테마 3택(시스템/밝게/어둡게) 저장' },
       { v: 'v15.1.0', d: '2026-08-09', t: '실사용 피드백 5건 — 홈 최상단 상태+NAV · 보유의 방어/리스크 요소를 방어 탭으로 통합 · 이력 구 v14 제거 + 일별 그룹 · 승인 순서 재배치 + 고밀도 · 버전 이력 배열화' },

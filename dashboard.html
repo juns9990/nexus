@@ -5322,6 +5322,74 @@
 
   /* 가로 스크롤 최종 방어 — 어떤 자식도 뷰포트를 넘기지 못하게 */
   html, body { max-width: 100%; overflow-x: hidden; }
+  /* ==========================================================
+     v15.5 (2026-08-09) — 폰 화면 간결화
+     ★ 전부 @media (max-width: 1024px) 안에 둔다. PC(≥1025px) 렌더는 무변경.
+        (m-shell/d-shell 전환 브레이크포인트가 1025px 이다)
+     설명 텍스트는 **삭제하지 않는다** — 첫 화면에서 숨기고 ⓘ 로 펼친다.
+     ========================================================== */
+  @media (max-width: 1024px) {
+    /* 3-1. 밀도 — v15-dense 수준을 폰 기본값으로 */
+    .m-shell .v15-card { padding: 9px 10px; margin-bottom: 7px; border-radius: 10px; }
+    .m-shell .v15-card-head { margin-bottom: 6px; }
+    .m-shell .v15-title { font-size: 12.5px; }
+    .m-shell .v15-sub { font-size: 10.5px; }
+    .m-shell .v15-stat { padding: 7px 8px; }
+    .m-shell .v15-stat .v { font-size: 14px; }
+    .m-shell .v15-stat4 { gap: 6px; }
+    .m-shell .v15-pos-row { padding: 7px 9px; }
+    .m-shell .v15-pos-nums { gap: 3px 9px; margin-top: 4px; }
+    .m-shell .v15-trade { padding: 7px 8px; margin-bottom: 5px; }
+    .m-shell .v15-calc { margin-top: 3px; }
+    .m-shell .v15-why { margin-top: 5px; padding: 5px 7px; }
+    .m-shell .v15-group-head { padding: 8px 9px; }
+    .m-shell .v15-pm-row { padding: 7px 8px; }
+    .m-shell .v15-logrow { padding: 5px 2px; }
+    .m-shell .m-section-title { margin-top: 12px !important; margin-bottom: 6px; }
+    .m-shell .nx-perf-card, .m-shell .nx-mkt-line { margin-bottom: 8px; }
+
+    /* 3-2. 괄호 설명·부가 설명 — 기본 숨김, ⓘ 로 펼침 (텍스트는 그대로 있다) */
+    .m-shell .v15-term,
+    .m-shell .v15-stat .s,
+    .m-shell .v15-gate-item .s { display: none; }
+    .m-shell.m-terms-on .v15-term,
+    .m-shell.m-terms-on .v15-stat .s,
+    .m-shell.m-terms-on .v15-gate-item .s { display: inline; }
+    .m-shell.m-terms-on .v15-stat .s,
+    .m-shell.m-terms-on .v15-gate-item .s { display: block; }
+    .m-info-btn {
+      appearance: none; border: 1px solid var(--line); background: transparent;
+      color: var(--fg-muted); border-radius: 999px; width: 22px; height: 22px;
+      font-size: 11px; line-height: 1; cursor: pointer; flex-shrink: 0; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .m-shell.m-terms-on .m-info-btn {
+      color: var(--accent); border-color: var(--accent); background: var(--accent-soft);
+    }
+
+    /* 2. 홈 접힘 래퍼 */
+    .m-more { margin-top: 4px; }
+    .m-more-btn {
+      width: 100%; appearance: none; background: transparent; cursor: pointer;
+      border: 1px dashed var(--line); border-radius: 10px; color: var(--fg-muted);
+      padding: 9px; font-family: inherit; font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .m-more-btn .caret { transition: transform .15s; font-size: 10px; }
+    .m-more.open .m-more-btn .caret { transform: rotate(180deg); }
+    .m-more-body { display: none; margin-top: 7px; }
+    .m-more.open .m-more-body { display: block; }
+
+    /* 3-3. 목록 기본 개수 제한 — 넘치는 항목은 숨기고 "더 보기" 로 펼친다 */
+    .m-shell [data-m-limit] > .is-over { display: none; }
+    .m-shell [data-m-limit].is-expanded > .is-over { display: block; }
+    .m-more-inline {
+      width: 100%; appearance: none; background: transparent; cursor: pointer;
+      border: 1px dashed var(--line); border-radius: 8px; color: var(--fg-muted);
+      padding: 7px; font-family: inherit; font-size: 11.5px; margin-top: 6px;
+    }
+  }
+
   /* v15.2 — 테마 전환 UI */
   .v15-theme-btn {
     appearance: none; background: transparent; border: 1px solid var(--border);
@@ -5474,23 +5542,6 @@
         </div>
         <div class="v15-gap-note" data-v15="nav-chart-note"></div>
       </div>
-
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">PM 실시간 현황</div>
-          <div class="v15-sub" data-v15="pm-summary">—</div>
-        </div>
-        <div class="v15-pm-grid" data-v15="pm-grid">
-          <div class="v15-empty">PM 활동 수집 중…</div>
-        </div>
-      </div>
-
-      <!-- (2) 한 줄 이야기 -->
-      <div class="nx-story">
-        <div class="nx-story-main" data-bind="nx-story-main">상태 수집 중…</div>
-        <div class="nx-story-sub" data-bind="nx-story-sub">—</div>
-      </div>
-
       <!-- (4) 시장 한 줄 -->
       <div class="nx-mkt-line">
         <span>SPY <b data-bind="m-mkt-spy">—</b> <em data-bind="m-mkt-spy-d">—</em></span>
@@ -5498,6 +5549,23 @@
         <span>VIX <b data-bind="m-mkt-vix">—</b></span>
         <span>USD/KRW <b data-bind="fx-usdkrw">—</b> <em data-bind="fx-usdkrw-d">—</em></span>
       </div>
+
+      <!-- v15.5 — 폰 홈은 상태+NAV → 그래프 → 시장 요약까지만 첫 화면에 둔다.
+           아래 부가 카드는 **삭제가 아니라 접힘**이다 (탭하면 그대로 펼쳐진다). -->
+      <div class="m-more" data-m-more="home">
+        <button type="button" class="m-more-btn" data-m-more-toggle="home">
+          <span class="lbl">자세히 보기</span><span class="caret">▾</span>
+        </button>
+        <div class="m-more-body">
+      <!-- (2) 한 줄 이야기 -->
+      <div class="nx-story">
+        <div class="nx-story-main" data-bind="nx-story-main">상태 수집 중…</div>
+        <div class="nx-story-sub" data-bind="nx-story-sub">—</div>
+      </div>
+
+
+      <!-- v15.5 — PM 실시간 현황은 폰에서 제거(정보 과다). PC 홈에는 그대로 있다. -->
+
 
       <!-- (5) 운용진 데스크 + Aegis 한 줄 -->
       <div class="nx-section-title">운용진 데스크</div>
@@ -5557,6 +5625,9 @@
            - 시장 환경 4셀 → 시장 한 줄 (4)
            - 빠른 행동 → 위로 이동
            JS render 호환을 위해 일부 셀렉터는 위에서 유지. -->
+        </div>
+      </div>
+
     </section>
 
     <!-- ===== APPROVAL TAB ===== -->
@@ -5585,6 +5656,7 @@
         <div class="v15-card-head">
           <div class="v15-title">주문 진행 상황</div>
           <div class="v15-sub" data-v15="appr-meta">—</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div data-v15="appr-timeline"><div class="v15-empty">수집 중…</div></div>
       </div>
@@ -5606,6 +5678,7 @@
         <div class="v15-card-head">
           <div class="v15-title">PM별 보유</div>
           <div class="v15-sub" data-v15="hold-meta">—</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div data-v15="hold-groups"><div class="v15-empty">보유 수집 중…</div></div>
       </div>
@@ -5621,6 +5694,7 @@
         <div class="v15-card-head">
           <div class="v15-title">지금 갖고 있는 것</div>
           <div class="v15-sub" data-v15="hist-hold-meta">—</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div data-v15="hist-holdings"><div class="v15-empty">수집 중…</div></div>
       </div>
@@ -5632,6 +5706,7 @@
         <div class="v15-card-head">
           <div class="v15-title">거래 하나하나</div>
           <div class="v15-sub" data-v15="hist-trade-meta">—</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div data-v15="hist-trades"><div class="v15-empty">수집 중…</div></div>
       </div>
@@ -5684,6 +5759,7 @@
         <div class="v15-card-head">
           <div class="v15-title">Aegis 게이트 <span class="v15-term">(주문이 나가기 전 통과해야 하는 검사)</span></div>
           <div class="v15-sub" data-v15="def-meta">—</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div class="v15-gate" data-v15="def-gates">
           <div class="v15-empty">게이트 상태 수집 중…</div>
@@ -5694,6 +5770,7 @@
         <div class="v15-card-head">
           <div class="v15-title">오늘 검사 집계</div>
           <div class="v15-sub">검사 / 통과 / 차단</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div class="v15-stat4" data-v15="def-count">
           <div class="v15-stat"><span class="k">검사</span><span class="v">—</span></div>
@@ -5707,6 +5784,7 @@
         <div class="v15-card-head">
           <div class="v15-title">차단·통과 기록</div>
           <div class="v15-sub">최근 순</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div class="v15-loglist" data-v15="def-log">
           <div class="v15-empty">기록 수집 중…</div>
@@ -5775,6 +5853,7 @@
         <div class="v15-card-head">
           <div class="v15-title">화면 테마</div>
           <div class="v15-sub" data-v15="theme-note">—</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div class="v15-seg" data-v15="theme-seg">
           <button type="button" data-theme-set="system">시스템 따름</button>
@@ -5788,6 +5867,7 @@
         <div class="v15-card-head">
           <div class="v15-title">메뉴 순서 편집</div>
           <div class="v15-sub">끌어서 순서를 바꾸면 바로 저장됩니다</div>
+          <button type="button" class="m-info-btn" aria-pressed="false" title="설명 보기" aria-label="용어 설명 표시">ⓘ</button>
         </div>
         <div class="v15-menu-edit" data-v15="menu-order"></div>
         <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
@@ -15299,6 +15379,94 @@
       });
     }
 
+    // ============================================================
+    // v15.5 — 폰 간결화 (모바일 뷰 한정. PC 렌더에는 관여하지 않는다)
+    // ============================================================
+    //: m-shell/d-shell 전환과 같은 브레이크포인트. 이 아래가 '폰'이다.
+    function isPhoneWidth() {
+      try { return window.matchMedia('(max-width: 1024px)').matches; }
+      catch (e) { return false; }
+    }
+    //: 목록별 폰 기본 표시 개수 (넘치면 '더 보기')
+    var M_LIMITS = {
+      'hist-trades': 3,     // 이력 일별 그룹 최근 3일
+      'def-log': 5,         // 방어 차단 로그 최근 5건
+      'appr-timeline': 5    // 승인 처리 이력 최근 5건 (일별 그룹 5개)
+    };
+    // 렌더 후 호출 — 초과 항목에 .is-over 를 달고 '더 보기' 버튼을 붙인다.
+    // DOM 을 지우지 않는다(접근만 축약). PC 폭에서는 아무 것도 하지 않는다.
+    function applyMobileLimits() {
+      if (!isPhoneWidth()) return;
+      Object.keys(M_LIMITS).forEach(function(key) {
+        els(key).forEach(function(box) {
+          if (!box.closest('.m-shell')) return;
+          box.setAttribute('data-m-limit', '1');
+          var kids = Array.prototype.filter.call(box.children, function(el) {
+            return !el.classList.contains('m-more-inline');
+          });
+          var n = M_LIMITS[key], over = 0;
+          kids.forEach(function(el, i) {
+            var isOver = i >= n;
+            el.classList.toggle('is-over', isOver);
+            if (isOver) over++;
+          });
+          var btn = box.querySelector('.m-more-inline');
+          if (over <= 0) { if (btn) btn.remove(); box.classList.remove('is-expanded'); return; }
+          if (!btn) {
+            btn = document.createElement('button');
+            btn.type = 'button'; btn.className = 'm-more-inline';
+            btn.setAttribute('data-m-expand', key);
+            box.appendChild(btn);
+          }
+          btn.textContent = box.classList.contains('is-expanded')
+            ? '접기' : ('더 보기 (' + over + '개 더)');
+        });
+      });
+    }
+    function bindMobileUi() {
+      // 홈 부가 카드 접기/펼치기
+      document.addEventListener('click', function(e) {
+        var t = e.target.closest && e.target.closest('[data-m-more-toggle]');
+        if (t) {
+          var wrap = t.closest('.m-more');
+          if (wrap) {
+            wrap.classList.toggle('open');
+            var lbl = wrap.querySelector('.m-more-btn .lbl');
+            if (lbl) lbl.textContent = wrap.classList.contains('open') ? '접기' : '자세히 보기';
+          }
+          return;
+        }
+        // 목록 더 보기 / 접기
+        var ex = e.target.closest && e.target.closest('[data-m-expand]');
+        if (ex) {
+          var box = ex.parentElement;
+          if (box) { box.classList.toggle('is-expanded'); applyMobileLimits(); }
+          return;
+        }
+        // ⓘ — 용어·부가 설명 표시 토글 (텍스트는 원래 DOM 에 그대로 있다)
+        var info = e.target.closest && e.target.closest('.m-info-btn');
+        if (info) {
+          var shell = document.querySelector('.m-shell');
+          if (shell) {
+            shell.classList.toggle('m-terms-on');
+            var on = shell.classList.contains('m-terms-on');
+            try { localStorage.setItem('nexus.v15.mTerms', on ? '1' : '0'); } catch (err) {}
+            document.querySelectorAll('.m-info-btn').forEach(function(b) {
+              b.setAttribute('aria-pressed', on ? 'true' : 'false');
+              b.title = on ? '설명 숨기기' : '설명 보기';
+            });
+          }
+        }
+      });
+      // 저장된 설명 표시 상태 복원
+      try {
+        if (localStorage.getItem('nexus.v15.mTerms') === '1') {
+          var sh = document.querySelector('.m-shell');
+          if (sh) sh.classList.add('m-terms-on');
+        }
+      } catch (e) {}
+    }
+
     // ---------- 상태 ----------
     var state = { navDays: 30, account: null, navHist: null, pm: null, orders: null };
 
@@ -15962,6 +16130,7 @@
     //   있었다 (= v15 가 설정 탭에 반영되지 않은 원인). 이제 여기 한 곳만 고친다.
     // ============================================================
     var VERSION_HISTORY = [
+      { v: 'v15.5.0', d: '2026-08-09', t: '폰 화면 간결화(모바일 전용) — 홈 PM 현황 제거+폴링 중단 · 첫 화면 상태·NAV→그래프→시장까지, 나머지는 접힘 · 밀도 축소 · 괄호 설명 ⓘ 토글(숨김이지 삭제 아님) · 목록 기본 3/5/5건 + 더 보기. PC 렌더 무변경(d-shell 마크업 diff 0줄)' },
       { v: 'v15.4.0', d: '2026-08-09', t: '폰(github.io) 렌더 근본 수정 — 닫히지 않은 @media(min-width:1100px) 때문에 이후 CSS 전체가 1100px 이상에서만 적용되던 결함 · 미정의 --line 변수로 카드 테두리 무효 · 데이터 어댑터(로컬=API / 미러=Firestore) · 미러 문서 5종 신설(positions·orders·pm_activity·nav_history·aegis)' },
       { v: 'v15.3.0', d: '2026-08-09', t: '시인성·PM 색 라운드 — 라이트에서 안 보이던 로고 수정 · 양 테마 전 텍스트 4.5:1 확보(다크 fg-dim 3.14→4.88 등) · PM 7명 고유색 테마별 분리(라이트 전용 진한 톤) + 좌측 색 띠 · 승인 탭 일별 그룹(체결/대기/차단 집계)' },
       { v: 'v15.2.0', d: '2026-08-09', t: '모바일 반응형 전면 정비 + 라이트/다크 테마 — 탭바 6칸(5칸이라 방어 탭이 잘리던 문제) · 폭 초과 6종 수정(360/390/430 가로 스크롤 0) · NAV 카드 중복 병합 · 색 팔레트 변수화 + 테마 3택(시스템/밝게/어둡게) 저장' },
@@ -16126,8 +16295,12 @@
     function refresh() {
       var pAcc = api('/broker/account').then(function(d) { state.account = d; })
         .catch(function(e) { console.warn('[v15] /broker/account 실패', e); });
-      var pPm = api('/pm/activity').then(function(d) { state.pm = d; })
-        .catch(function(e) { console.warn('[v15] /pm/activity 실패', e); });
+      // v15.5 — PM 현황 카드는 폰 홈에서 제거됐다. 폰 폭이면 조회 자체를 건너뛴다
+      //   (안 그리는 데이터를 5분마다 받아오는 낭비 제거). PC 폭이면 그대로 조회.
+      var pPm = isPhoneWidth()
+        ? Promise.resolve()
+        : api('/pm/activity').then(function(d) { state.pm = d; })
+            .catch(function(e) { console.warn('[v15] /pm/activity 실패', e); });
       var pOrd = api('/executor/history?limit=80&raw=true').then(function(d) { state.orders = d; })
         .catch(function(e) { console.warn('[v15] /executor/history 실패', e); });
       var pPend = api('/executor/pending?raw=true').then(function(d) { state.pending = d; })
@@ -16154,12 +16327,15 @@
         renderApproval(merged, state.account);
         renderDefense(state.account, state.counts,
                       state.held ? state.held.count : null, merged);
+        applyMobileLimits();          // v15.5 — 렌더 후 폰 목록 개수 제한 재적용
       });
     }
 
     function init() {
       applyMenuOrder(); renderMenuEditor(); renderVersionHistory();
       applyTheme(); bindTheme();
+      bindMobileUi();
+      window.addEventListener('resize', applyMobileLimits);
       bindMenuDnd(); bindGroupToggle(); bindRange();
       loadNavHistory(); refresh();
       setInterval(refresh, POLL_MS);

@@ -5071,6 +5071,9 @@
   .v15-group-head .caret { font-size: 10px; color: var(--fg-muted); transition: transform .15s; }
   .v15-group.open .caret { transform: rotate(90deg); }
   .v15-group-body { display: none; border-top: 1px solid var(--line); }
+  .v15-daygroup .v15-group-body { padding: 8px; }
+  .v15-daygroup .v15-trade { margin-bottom: 6px; }
+  .v15-daygroup .v15-trade:last-child { margin-bottom: 0; }
   .v15-group.open .v15-group-body { display: block; }
   .v15-pos-row { padding: 9px 11px; border-bottom: 1px solid var(--line); }
   .v15-pos-row:last-child { border-bottom: 0; }
@@ -5123,6 +5126,26 @@
   .v15-tl-step.done { color: var(--fg); }
   .v15-tl-step.fail .dot { background: #dc2626; }
   .v15-tl-arrow { color: var(--fg-muted); font-size: 10px; }
+
+  /* v15.1 — 승인 "주문 진행 상황" 고밀도 모드.
+     데이터 한 건이 차지하는 세로 공간을 줄인다 (사용자 밀도 선호).
+     카드 패딩·행 간격·폰트만 줄이고 정보는 하나도 빼지 않는다. */
+  .v15-dense { padding: 9px 10px; }
+  .v15-dense .v15-card-head { margin-bottom: 6px; }
+  .v15-dense .v15-trade {
+    padding: 6px 8px; margin-bottom: 4px; border-radius: 8px;
+  }
+  .v15-dense .v15-trade:last-child { margin-bottom: 0; }
+  .v15-dense .v15-trade-head { gap: 5px; line-height: 1.3; }
+  .v15-dense .v15-tk { font-size: 12px; }
+  .v15-dense .v15-tk-desc {
+    font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .v15-dense .v15-pm-name { font-size: 11.5px; min-width: 0; }
+  .v15-dense .v15-calc { margin-top: 3px; font-size: 11px; }
+  .v15-dense .v15-tl { margin-top: 4px; gap: 4px; }
+  .v15-dense .v15-tl-step { font-size: 10px; }
+  .v15-dense .v15-badge { font-size: 10px; padding: 1px 6px; }
 
   /* 설정 — 메뉴 순서 편집 */
   .v15-menu-edit { border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
@@ -5202,6 +5225,45 @@
     <!-- ===== HOME TAB — Phase 2.13 내러티브 홈 ===== -->
     <section class="m-tab active" data-tab="home">
 
+      <!-- v15.1 — 장중/장외 상태 + 순자산가치를 홈 최상단으로 (이동만, 내용 불변) -->
+      <!-- (1) 헤더 — 가동 상태 + N초 카운터 -->
+      <div class="nx-status-bar" id="nx-status-bar">
+        <span class="nx-dot" data-bind-class="nx-status-dot"></span>
+        <span class="nx-status-label" data-bind="nx-status-label">상태 수집 중</span>
+        <span class="nx-status-since" data-bind="nx-status-since">—</span>
+      </div>
+
+      <!-- (3) 수익률 카드 -->
+      <div class="nx-perf-card">
+        <div class="nx-perf-head">
+          <div class="nx-perf-nav-wrap">
+            <div class="nx-perf-label">순자산가치 <span class="nx-real-badge">실계좌</span><span class="nx-stale-badge js-nav-stale" style="display:none;">추정치 · 브로커 미연결</span></div>
+            <div class="nx-perf-nav" data-bind="nav">—</div>
+            <div class="nx-perf-fx" data-bind="nav-fx-note">환율 수집 중</div>
+          </div>
+          <div class="nx-perf-cum">
+            <div class="l">누적</div>
+            <div class="v" data-bind="nx-perf-cum">기록 시작 전</div>
+          </div>
+        </div>
+        <div class="nx-chart-tabs" role="tablist" aria-label="NAV 기간">
+          <button type="button" class="nx-chart-tab" data-period="15D" data-target="nav-chart">15D</button>
+          <button type="button" class="nx-chart-tab" data-period="1M" data-target="nav-chart">1M</button>
+          <button type="button" class="nx-chart-tab" data-period="3M" data-target="nav-chart">3M</button>
+          <button type="button" class="nx-chart-tab active" data-period="ALL" data-target="nav-chart">전체</button>
+        </div>
+        <div class="nx-chart-host" id="nx-nav-chart-host">
+          <canvas id="nx-nav-chart" class="nx-chart-canvas" aria-label="NAV 추이 차트"></canvas>
+        </div>
+        <div class="nx-perf-cells">
+          <div class="nx-perf-cell"><div class="l">오늘</div><div class="v" data-bind="nx-perf-today">—</div></div>
+          <div class="nx-perf-cell"><div class="l">이번주</div><div class="v" data-bind="nx-perf-week">—</div></div>
+          <div class="nx-perf-cell"><div class="l">이번달</div><div class="v" data-bind="nx-perf-month">—</div></div>
+          <div class="nx-perf-cell"><div class="l">MDD</div><div class="v" data-bind="nx-perf-mdd">—</div></div>
+        </div>
+        <div class="nx-perf-foot" data-bind="nx-perf-foot">기록중 0일차</div>
+      </div>
+
       <!-- ===== v15 홈 상단 — NAV 대형 · 자산 그래프 · PM 현황 ===== -->
       <div class="v15-card">
         <div class="v15-nav-big">
@@ -5237,48 +5299,10 @@
         </div>
       </div>
 
-      <!-- (1) 헤더 — 가동 상태 + N초 카운터 -->
-      <div class="nx-status-bar" id="nx-status-bar">
-        <span class="nx-dot" data-bind-class="nx-status-dot"></span>
-        <span class="nx-status-label" data-bind="nx-status-label">상태 수집 중</span>
-        <span class="nx-status-since" data-bind="nx-status-since">—</span>
-      </div>
-
       <!-- (2) 한 줄 이야기 -->
       <div class="nx-story">
         <div class="nx-story-main" data-bind="nx-story-main">상태 수집 중…</div>
         <div class="nx-story-sub" data-bind="nx-story-sub">—</div>
-      </div>
-
-      <!-- (3) 수익률 카드 -->
-      <div class="nx-perf-card">
-        <div class="nx-perf-head">
-          <div class="nx-perf-nav-wrap">
-            <div class="nx-perf-label">순자산가치 <span class="nx-real-badge">실계좌</span><span class="nx-stale-badge js-nav-stale" style="display:none;">추정치 · 브로커 미연결</span></div>
-            <div class="nx-perf-nav" data-bind="nav">—</div>
-            <div class="nx-perf-fx" data-bind="nav-fx-note">환율 수집 중</div>
-          </div>
-          <div class="nx-perf-cum">
-            <div class="l">누적</div>
-            <div class="v" data-bind="nx-perf-cum">기록 시작 전</div>
-          </div>
-        </div>
-        <div class="nx-chart-tabs" role="tablist" aria-label="NAV 기간">
-          <button type="button" class="nx-chart-tab" data-period="15D" data-target="nav-chart">15D</button>
-          <button type="button" class="nx-chart-tab" data-period="1M" data-target="nav-chart">1M</button>
-          <button type="button" class="nx-chart-tab" data-period="3M" data-target="nav-chart">3M</button>
-          <button type="button" class="nx-chart-tab active" data-period="ALL" data-target="nav-chart">전체</button>
-        </div>
-        <div class="nx-chart-host" id="nx-nav-chart-host">
-          <canvas id="nx-nav-chart" class="nx-chart-canvas" aria-label="NAV 추이 차트"></canvas>
-        </div>
-        <div class="nx-perf-cells">
-          <div class="nx-perf-cell"><div class="l">오늘</div><div class="v" data-bind="nx-perf-today">—</div></div>
-          <div class="nx-perf-cell"><div class="l">이번주</div><div class="v" data-bind="nx-perf-week">—</div></div>
-          <div class="nx-perf-cell"><div class="l">이번달</div><div class="v" data-bind="nx-perf-month">—</div></div>
-          <div class="nx-perf-cell"><div class="l">MDD</div><div class="v" data-bind="nx-perf-mdd">—</div></div>
-        </div>
-        <div class="nx-perf-foot" data-bind="nx-perf-foot">기록중 0일차</div>
       </div>
 
       <!-- (4) 시장 한 줄 -->
@@ -5352,15 +5376,6 @@
     <!-- ===== APPROVAL TAB ===== -->
     <section class="m-tab" data-tab="approval">
 
-      <!-- ===== v15 승인 — 요청→검사→승인→체결 타임라인 ===== -->
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">주문 진행 상황</div>
-          <div class="v15-sub" data-v15="appr-meta">—</div>
-        </div>
-        <div data-v15="appr-timeline"><div class="v15-empty">수집 중…</div></div>
-      </div>
-
       <div class="m-section-title">승인 대기<span class="meta" data-bind="m-approval-meta">0건</span></div>
 
       <div data-bind="m-approval-body">
@@ -5378,6 +5393,15 @@
       <!-- 이벤트 달력 (D-day 리스트 대체) -->
       <div class="m-section-title" style="margin-top: 20px;">이벤트 달력<span class="meta">FOMC·지표·실적</span></div>
       <div class="ev-cal" id="ev-cal-mobile"></div>
+
+      <!-- ===== v15 승인 — 요청→검사→승인→체결 타임라인 ===== -->
+      <div class="v15-card v15-dense">
+        <div class="v15-card-head">
+          <div class="v15-title">주문 진행 상황</div>
+          <div class="v15-sub" data-v15="appr-meta">—</div>
+        </div>
+        <div data-v15="appr-timeline"><div class="v15-empty">수집 중…</div></div>
+      </div>
     </section>
 
     <!-- ===== POSITIONS TAB ===== -->
@@ -5400,56 +5424,110 @@
         <div data-v15="hold-groups"><div class="v15-empty">보유 수집 중…</div></div>
       </div>
 
-      <!-- A. 자산 구성 요약 -->
-      <div class="hold-summary">
-        <div class="hold-nav-row">
-          <div class="hold-nav-wrap">
-            <div class="hold-nav-label">순자산가치</div>
-            <div class="hold-nav-value" data-bind="nav">—</div>
-            <div class="hold-nav-fx" data-bind="nav-fx-note">환율 수집 중</div>
+
+    </section>
+
+    <!-- ===== HISTORY TAB ===== -->
+    <section class="m-tab" data-tab="history">
+
+      <!-- ===== v15 이력 — 현재 보유 · PM 요약 · 거래 건별 ===== -->
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">지금 갖고 있는 것</div>
+          <div class="v15-sub" data-v15="hist-hold-meta">—</div>
+        </div>
+        <div data-v15="hist-holdings"><div class="v15-empty">수집 중…</div></div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head"><div class="v15-title">PM별 요약</div></div>
+        <div data-v15="hist-pm"><div class="v15-empty">수집 중…</div></div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">거래 하나하나</div>
+          <div class="v15-sub" data-v15="hist-trade-meta">—</div>
+        </div>
+        <div data-v15="hist-trades"><div class="v15-empty">수집 중…</div></div>
+      </div>
+
+      <!-- 계층 3 · 장중 평가 (홈에서 이동 — 깊은 매매 분석은 이력 탭) -->
+      <div class="m-section-title" style="margin-top: 20px;">계층 3 · 장중 평가</div>
+      <div class="layer3-card" id="layer3-card-mobile">
+        <div class="l3-head">
+          <span class="l3-title">계층 3</span>
+          <span class="l3-mode simulate" data-bind="l3-mode">SIMULATE</span>
+          <span class="l3-mode-sub" data-bind="l3-mode-sub">관찰 중</span>
+          <button type="button" class="l3-test-btn" onclick="nexusLayer3TestNotify(this)">테스트 알림</button>
+          <span class="l3-meta" data-bind="l3-meta">—</span>
+        </div>
+        <div class="l3-stats">
+          <div class="l3-cell"><div class="l3-label">평가</div><div class="l3-val" data-bind="l3-evals">—</div></div>
+          <div class="l3-cell"><div class="l3-label" data-bind="l3-would-label">sim 체결</div><div class="l3-val would" data-bind="l3-would">—</div><div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div></div>
+          <div class="l3-cell"><div class="l3-label">스킵</div><div class="l3-val skipped" data-bind="l3-skipped">—</div></div>
+          <div class="l3-cell"><div class="l3-label">안전배수</div><div class="l3-val" data-bind="l3-mult">×3</div></div>
+        </div>
+        <div class="l3-section">
+          <div class="l3-section-title">스킵 사유</div>
+          <div class="l3-reasons" data-bind="l3-reasons"><div class="l3-empty">집계 없음</div></div>
+        </div>
+        <div class="l3-section">
+          <div class="l3-section-title">최근 sim 체결</div>
+          <div class="l3-trades" data-bind="l3-trades">
+            <div class="l3-empty">기록 없음</div>
           </div>
-          <div class="hold-cum">
-            <div class="l">누적</div>
-            <div class="v" data-bind="nx-perf-cum">기록 대기</div>
+        </div>
+      </div>
+
+      <div style="display:none;">
+        <div class="m-history-row">
+          <div class="m-history-time">22:31</div>
+          <div class="m-history-content">
+            <span class="verb entry">진입</span><span class="ticker">NVDA</span>
+            <span class="desc">11주 @ $144.62</span>
           </div>
-        </div>
-        <div class="hold-split" data-bind="hold-split">투자 — · 캐시 —</div>
-      </div>
-
-      <!-- PM 자본배분 — v13.5 : 도넛 밑 legend 제거 (3중 중복) · PM 상세 컴팩트 -->
-      <div class="hold-pm-card compact">
-        <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
-        <div class="hold-pm-2col">
-          <div class="pm-donut-side">
-            <div class="nx-chart-host" id="nx-pm-donut-host">
-              <canvas id="nx-pm-donut" class="nx-chart-canvas" aria-label="PM 자본배분 도넛"></canvas>
-            </div>
-          </div>
-          <div class="pm-data-side" data-bind="hold-pm-data-side"></div>
-        </div>
-        <div class="hold-pm-list compact" data-bind="hold-pm-list">
-          <div class="hold-empty">registry 대기</div>
+          <div class="m-history-pnl neutral">체결</div>
         </div>
       </div>
+    </section>
 
-      <!-- 자산 미니 도넛 (기존 sector — sectors 있을 때만 노출) -->
-      <div class="hold-donut-card" data-bind="hold-donut-card" style="display:none;">
-        <div class="hold-donut-title">자산 구성<span class="meta" data-bind="hold-donut-meta">—</span></div>
-        <div class="hold-donut-wrap">
-          <svg class="hold-donut" id="hold-donut-mobile" viewBox="0 0 64 64" aria-label="자산 도넛">
-            <circle cx="32" cy="32" r="22" fill="none" stroke="#1c2320" stroke-width="9"/>
-          </svg>
-          <div class="hold-donut-legend" data-bind="hold-donut-legend"></div>
+    <!-- ===== SETTINGS TAB ===== -->
+    <!-- ===== v15 방어 탭 (모바일) ===== -->
+    <section class="m-tab" data-tab="defense">
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">Aegis 게이트 <span class="v15-term">(주문이 나가기 전 통과해야 하는 검사)</span></div>
+          <div class="v15-sub" data-v15="def-meta">—</div>
+        </div>
+        <div class="v15-gate" data-v15="def-gates">
+          <div class="v15-empty">게이트 상태 수집 중…</div>
         </div>
       </div>
 
-      <!-- B. 포지션 카드 리스트 -->
-      <div class="m-section-title">포지션<span class="meta" data-bind="m-pos-meta">—</span></div>
-      <div class="hold-hint" data-bind="hold-hint">탭하면 매수 근거</div>
-      <div class="m-positions-list" data-bind="m-positions-list">
-        <div class="m-positions-empty">데이터 수집 중…</div>
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">오늘 검사 집계</div>
+          <div class="v15-sub">검사 / 통과 / 차단</div>
+        </div>
+        <div class="v15-stat4" data-v15="def-count">
+          <div class="v15-stat"><span class="k">검사</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">통과</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">차단</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">체결</span><span class="v">—</span></div>
+        </div>
       </div>
 
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">차단·통과 기록</div>
+          <div class="v15-sub">최근 순</div>
+        </div>
+        <div class="v15-loglist" data-v15="def-log">
+          <div class="v15-empty">기록 수집 중…</div>
+        </div>
+      </div>
+
+      <!-- v15.1 — 보유 탭에서 이동 (리스크 게이지 · 방어 상태판 · 리스크 메트릭) -->
       <!-- 리스크 게이지 (SVG 원형 — Chart.js dep 없음) -->
       <div class="m-section-title" style="margin-top: 20px;">리스크 게이지<span class="meta">실시간</span></div>
       <div class="gauge-wrap" id="nx-gauge-wrap-mobile"></div>
@@ -5502,116 +5580,7 @@
           </div>
         </div>
         <div class="rk-note" data-bind="risk-note">데이터 수집 중…</div>
-      </div>
-    </section>
-
-    <!-- ===== HISTORY TAB ===== -->
-    <section class="m-tab" data-tab="history">
-
-      <!-- ===== v15 이력 — 현재 보유 · PM 요약 · 거래 건별 ===== -->
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">지금 갖고 있는 것</div>
-          <div class="v15-sub" data-v15="hist-hold-meta">—</div>
-        </div>
-        <div data-v15="hist-holdings"><div class="v15-empty">수집 중…</div></div>
-      </div>
-      <div class="v15-card">
-        <div class="v15-card-head"><div class="v15-title">PM별 요약</div></div>
-        <div data-v15="hist-pm"><div class="v15-empty">수집 중…</div></div>
-      </div>
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">거래 하나하나</div>
-          <div class="v15-sub" data-v15="hist-trade-meta">—</div>
-        </div>
-        <div data-v15="hist-trades"><div class="v15-empty">수집 중…</div></div>
-      </div>
-
-      <div class="m-section-title">최근 활동<span class="meta">audit · 변경불가</span></div>
-
-      <div class="m-history-list" data-bind="m-history-list">
-        <div class="m-history-empty">최근 활동 없음</div>
-      </div>
-
-      <!-- 계층 3 · 장중 평가 (홈에서 이동 — 깊은 매매 분석은 이력 탭) -->
-      <div class="m-section-title" style="margin-top: 20px;">계층 3 · 장중 평가</div>
-      <div class="layer3-card" id="layer3-card-mobile">
-        <div class="l3-head">
-          <span class="l3-title">계층 3</span>
-          <span class="l3-mode simulate" data-bind="l3-mode">SIMULATE</span>
-          <span class="l3-mode-sub" data-bind="l3-mode-sub">관찰 중</span>
-          <button type="button" class="l3-test-btn" onclick="nexusLayer3TestNotify(this)">테스트 알림</button>
-          <span class="l3-meta" data-bind="l3-meta">—</span>
-        </div>
-        <div class="l3-stats">
-          <div class="l3-cell"><div class="l3-label">평가</div><div class="l3-val" data-bind="l3-evals">—</div></div>
-          <div class="l3-cell"><div class="l3-label" data-bind="l3-would-label">sim 체결</div><div class="l3-val would" data-bind="l3-would">—</div><div class="l3-sub" data-bind="l3-would-sub">매수 0 · 매도 0</div></div>
-          <div class="l3-cell"><div class="l3-label">스킵</div><div class="l3-val skipped" data-bind="l3-skipped">—</div></div>
-          <div class="l3-cell"><div class="l3-label">안전배수</div><div class="l3-val" data-bind="l3-mult">×3</div></div>
-        </div>
-        <div class="l3-section">
-          <div class="l3-section-title">스킵 사유</div>
-          <div class="l3-reasons" data-bind="l3-reasons"><div class="l3-empty">집계 없음</div></div>
-        </div>
-        <div class="l3-section">
-          <div class="l3-section-title">최근 sim 체결</div>
-          <div class="l3-trades" data-bind="l3-trades">
-            <div class="l3-empty">기록 없음</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 폐기: 데모 일자 그룹들 (raw notif feed 로 통합) -->
-      <div style="display:none;">
-        <div class="m-history-row">
-          <div class="m-history-time">22:31</div>
-          <div class="m-history-content">
-            <span class="verb entry">진입</span><span class="ticker">NVDA</span>
-            <span class="desc">11주 @ $144.62</span>
-          </div>
-          <div class="m-history-pnl neutral">체결</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== SETTINGS TAB ===== -->
-    <!-- ===== v15 방어 탭 (모바일) ===== -->
-    <section class="m-tab" data-tab="defense">
-
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">Aegis 게이트 <span class="v15-term">(주문이 나가기 전 통과해야 하는 검사)</span></div>
-          <div class="v15-sub" data-v15="def-meta">—</div>
-        </div>
-        <div class="v15-gate" data-v15="def-gates">
-          <div class="v15-empty">게이트 상태 수집 중…</div>
-        </div>
-      </div>
-
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">오늘 검사 집계</div>
-          <div class="v15-sub">검사 / 통과 / 차단</div>
-        </div>
-        <div class="v15-stat4" data-v15="def-count">
-          <div class="v15-stat"><span class="k">검사</span><span class="v">—</span></div>
-          <div class="v15-stat"><span class="k">통과</span><span class="v">—</span></div>
-          <div class="v15-stat"><span class="k">차단</span><span class="v">—</span></div>
-          <div class="v15-stat"><span class="k">체결</span><span class="v">—</span></div>
-        </div>
-      </div>
-
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">차단·통과 기록</div>
-          <div class="v15-sub">최근 순</div>
-        </div>
-        <div class="v15-loglist" data-v15="def-log">
-          <div class="v15-empty">기록 수집 중…</div>
-        </div>
-      </div>
-    </section>
+      </div>    </section>
 
     <section class="m-tab" data-tab="settings">
 
@@ -5984,55 +5953,12 @@
 
   <div class="pc-b-main">
 
-  <!-- ===== v15 홈 상단 (PC) — NAV 대형 · 자산 그래프 · PM 현황 ===== -->
-  <div class="v15-card">
-    <div class="v15-nav-big">
-      <div class="v15-nav-label">NAV <span class="v15-term">(내 돈 전체의 현재 가치)</span></div>
-      <div class="v15-nav-value" data-v15="pc-nav-value">—</div>
-      <div class="v15-nav-krw" data-v15="pc-nav-krw">—</div>
-      <div class="v15-nav-delta" data-v15="pc-nav-delta">—</div>
-    </div>
-  </div>
-  <div class="v15-card">
-    <div class="v15-card-head">
-      <div class="v15-title">자산 흐름</div>
-      <div class="v15-range" data-v15="pc-nav-range">
-        <button type="button" data-days="7">1주</button>
-        <button type="button" data-days="30" class="active">1달</button>
-        <button type="button" data-days="365">전체</button>
-      </div>
-    </div>
-    <div class="v15-chart-wrap" data-v15="pc-nav-chart">
-      <div class="v15-empty">자산 그래프 준비 중…</div>
-    </div>
-    <div class="v15-gap-note" data-v15="pc-nav-chart-note"></div>
-  </div>
-  <div class="v15-card">
-    <div class="v15-card-head">
-      <div class="v15-title">PM 실시간 현황</div>
-      <div class="v15-sub" data-v15="pc-pm-summary">—</div>
-    </div>
-    <div class="v15-pm-grid" data-v15="pc-pm-grid">
-      <div class="v15-empty">PM 활동 수집 중…</div>
-    </div>
-  </div>
-
-  <!-- ────────────────────────────────────────────── -->
-  <!--  PC 내러티브 7섹션 (모바일과 동일 위계)        -->
-  <!-- ────────────────────────────────────────────── -->
-  <div class="nx-narrative-pc">
-
+  <!-- v15.1 — 장중/장외 상태 + 순자산가치를 홈 최상단으로 (이동만, 내용 불변) -->
     <!-- (1) 헤더 상태 바 -->
     <div class="nx-status-bar nx-status-bar-pc">
       <span class="nx-dot" data-bind-class="nx-status-dot"></span>
       <span class="nx-status-label" data-bind="nx-status-label">상태 수집 중</span>
       <span class="nx-status-since" data-bind="nx-status-since">—</span>
-    </div>
-
-    <!-- (2) 한 줄 이야기 -->
-    <div class="nx-story nx-story-pc">
-      <div class="nx-story-main" data-bind="nx-story-main">상태 수집 중…</div>
-      <div class="nx-story-sub" data-bind="nx-story-sub">—</div>
     </div>
 
     <!-- (3) 수익률 + (4) 시장 한 줄 — 한 행 두 카드 -->
@@ -6077,6 +6003,50 @@
         </div>
         <div class="nx-mkt-meta" data-bind="m-mkt-meta">실시간</div>
       </div>
+    </div>
+
+  <!-- ===== v15 홈 상단 (PC) — NAV 대형 · 자산 그래프 · PM 현황 ===== -->
+  <div class="v15-card">
+    <div class="v15-nav-big">
+      <div class="v15-nav-label">NAV <span class="v15-term">(내 돈 전체의 현재 가치)</span></div>
+      <div class="v15-nav-value" data-v15="pc-nav-value">—</div>
+      <div class="v15-nav-krw" data-v15="pc-nav-krw">—</div>
+      <div class="v15-nav-delta" data-v15="pc-nav-delta">—</div>
+    </div>
+  </div>
+  <div class="v15-card">
+    <div class="v15-card-head">
+      <div class="v15-title">자산 흐름</div>
+      <div class="v15-range" data-v15="pc-nav-range">
+        <button type="button" data-days="7">1주</button>
+        <button type="button" data-days="30" class="active">1달</button>
+        <button type="button" data-days="365">전체</button>
+      </div>
+    </div>
+    <div class="v15-chart-wrap" data-v15="pc-nav-chart">
+      <div class="v15-empty">자산 그래프 준비 중…</div>
+    </div>
+    <div class="v15-gap-note" data-v15="pc-nav-chart-note"></div>
+  </div>
+  <div class="v15-card">
+    <div class="v15-card-head">
+      <div class="v15-title">PM 실시간 현황</div>
+      <div class="v15-sub" data-v15="pc-pm-summary">—</div>
+    </div>
+    <div class="v15-pm-grid" data-v15="pc-pm-grid">
+      <div class="v15-empty">PM 활동 수집 중…</div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────────── -->
+  <!--  PC 내러티브 7섹션 (모바일과 동일 위계)        -->
+  <!-- ────────────────────────────────────────────── -->
+  <div class="nx-narrative-pc">
+
+    <!-- (2) 한 줄 이야기 -->
+    <div class="nx-story nx-story-pc">
+      <div class="nx-story-main" data-bind="nx-story-main">상태 수집 중…</div>
+      <div class="nx-story-sub" data-bind="nx-story-sub">—</div>
     </div>
 
     <!-- (5) 운용진 데스크 -->
@@ -6453,171 +6423,7 @@
         <div data-v15="hold-groups-pc"><div class="v15-empty">보유 수집 중…</div></div>
       </div>
 
-      <!-- v12.1 — B-layout 보유 탭 (≥1100px). 3카드 + PM 칩 + 테이블. -->
-      <div class="h2-holdings-block" data-bind="h2-holdings-block">
-        <div class="h2-sum-grid">
-          <div class="h2-sum-card">
-            <div class="l">총 보유가치
-              <button type="button" class="nx-help-btn" data-help="position" aria-label="보유가치 도움말">?</button>
-            </div>
-            <div class="v" data-bind="h2-total-value">—</div>
-            <div class="s" data-bind="h2-total-sub">평가액 · USD</div>
-          </div>
-          <div class="h2-sum-card">
-            <div class="l">평가손익
-              <button type="button" class="nx-help-btn" data-help="pnl" aria-label="평가손익 도움말">?</button>
-            </div>
-            <div class="v" data-bind="h2-pnl">—</div>
-            <div class="s" data-bind="h2-pnl-sub">평단 대비</div>
-          </div>
-          <div class="h2-sum-card">
-            <div class="l">현금 비중
-              <button type="button" class="nx-help-btn" data-help="pm_owner" aria-label="현금 도움말">?</button>
-            </div>
-            <div class="v" data-bind="h2-cash-pct">—</div>
-            <div class="s" data-bind="h2-cash-sub">하한 —</div>
-          </div>
-        </div>
 
-        <div class="h2-chips" data-bind="h2-chips" role="tablist" aria-label="PM 필터"></div>
-
-        <div class="h2-source-bar">
-          <span data-bind="h2-source-label">포지션 —</span>
-          <span class="h2-today-inline" data-bind="h2-today-inline"></span>
-          <span class="h2-source-badge empty" data-bind="h2-source-badge">—</span>
-        </div>
-        <!-- v13.6 — sidecard 제거 (source-bar 인라인 흡수) · 원장 host 100% 폭 -->
-        <div data-bind="h2-table-host">
-          <div class="h2-empty">
-            <div class="big">데이터 수집 중…</div>
-            <div class="desc">첫 snapshot 도착 대기</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- A. 자산 구성 요약 -->
-      <div class="hold-summary">
-        <div class="hold-nav-row">
-          <div class="hold-nav-wrap">
-            <div class="hold-nav-label">순자산가치</div>
-            <div class="hold-nav-value" data-bind="nav">—</div>
-            <div class="hold-nav-fx" data-bind="nav-fx-note">환율 수집 중</div>
-          </div>
-          <div class="hold-cum">
-            <div class="l">누적</div>
-            <div class="v" data-bind="nx-perf-cum">기록 대기</div>
-          </div>
-        </div>
-        <div class="hold-split" data-bind="hold-split">투자 — · 캐시 —</div>
-      </div>
-
-      <div class="hold-row-2">
-        <div class="hold-pm-card compact">
-          <div class="hold-pm-title">PM 자본배분<span class="meta" data-bind="hold-pm-meta">목표 · 실제</span></div>
-          <!-- v13.6 — PC 3열: 좌 도넛 / 중 SIM NAV+실배분 / 우 PM 상세 스택 (사진2 #4) -->
-          <div class="hold-pm-3col">
-            <div class="pm-donut-side">
-              <div class="nx-chart-host" id="nx-pm-donut-host-pc">
-                <canvas id="nx-pm-donut-pc" class="nx-chart-canvas" aria-label="PM 자본배분 도넛 (PC)"></canvas>
-              </div>
-            </div>
-            <div class="pm-data-side" data-bind="hold-pm-data-side"></div>
-            <div class="pm-list-side">
-              <div class="hold-pm-list compact" data-bind="hold-pm-list">
-                <div class="hold-empty">registry 대기</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="hold-donut-card" data-bind="hold-donut-card" style="display:none;">
-          <div class="hold-donut-title">자산 구성<span class="meta" data-bind="hold-donut-meta">—</span></div>
-          <div class="hold-donut-wrap">
-            <svg class="hold-donut" id="hold-donut-pc" viewBox="0 0 64 64" aria-label="자산 도넛">
-              <circle cx="32" cy="32" r="22" fill="none" stroke="#1c2320" stroke-width="9"/>
-            </svg>
-            <div class="hold-donut-legend" data-bind="hold-donut-legend"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- B. 포지션 카드 리스트 -->
-      <div class="d-tab-section-title">
-        포지션
-        <span class="d-tab-section-meta" data-bind="d-positions-meta">— · 탭하면 매수 근거</span>
-      </div>
-      <div class="d-positions" data-bind="d-positions-list">
-        <div class="d-pos-empty">데이터 수집 중…</div>
-      </div>
-
-      <!-- 리스크 게이지 (SVG 원형) -->
-      <div class="d-tab-section-title">
-        리스크 게이지
-        <span class="d-tab-section-meta">실시간</span>
-      </div>
-      <div class="gauge-wrap" id="nx-gauge-wrap-pc"></div>
-
-      <!-- v13.2 — 위험 관리 통합 카드 (방어 6선 + Aegis 게이트 요약 + 리스크 통계 + nearmiss 헤드라인) -->
-      <div class="d-tab-section-title">
-        위험 관리 · 방어선 + 리스크 통계
-        <button type="button" class="nx-help-btn" data-help="defense_lines" aria-label="방어선 도움말">?</button>
-        <span class="d-tab-section-meta">12 게이트 · 6 방어선</span>
-      </div>
-      <div class="risk-unified-card">
-        <!-- nearmiss 헤드라인 -->
-        <div class="ru-headline" data-bind="ru-nearmiss">
-          <span class="ru-nearmiss-label">가장 가까운 방어선</span>
-          <span class="ru-nearmiss-val">계산 중…</span>
-        </div>
-        <!-- Aegis 게이트 요약 (통과/enforce/live 대기) -->
-        <div class="ru-gate-summary">
-          <span>Aegis 게이트: <span class="v" data-bind="ru-gate-pass">—</span></span>
-          <span>enforce <span class="v" data-bind="ru-gate-enf">—</span></span>
-          <span>Live 대기 <span class="v" data-bind="ru-gate-pending">—</span></span>
-        </div>
-        <!-- 방어 상태판 (기존 defense-board 를 이 카드 안에 포함) -->
-        <div class="defense-board" id="defense-board-pc">
-          <div class="db-head">
-            <span class="db-title">방어 6선 상태</span>
-            <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
-            <span class="db-meta" data-bind="defense-meta">—</span>
-          </div>
-          <div class="db-stats">
-            <span>고점 <span class="v" data-bind="defense-hwm">—</span></span>
-            <span>MDD <span class="v" data-bind="defense-mdd">—</span></span>
-            <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
-            <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
-          </div>
-          <div class="db-lines" data-bind="defense-lines"></div>
-          <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
-        </div>
-        <!-- 리스크 통계 (Sharpe/MDD/Beta/Vol) -->
-        <div class="ru-metrics-head">리스크 통계 <span class="d-tab-section-meta" data-bind="risk-meta">—</span></div>
-        <div class="risk-card" id="risk-card-pc">
-          <div class="rk-grid">
-            <div class="rk-cell">
-              <div class="rk-label">Sharpe (Rf 4.5%)</div>
-              <div class="rk-val na" data-bind="risk-sharpe">—</div>
-              <div class="rk-sub" data-bind="risk-sharpe-sub">초과수익/위험</div>
-            </div>
-            <div class="rk-cell">
-              <div class="rk-label">Max Drawdown</div>
-              <div class="rk-val na" data-bind="risk-mdd">—</div>
-              <div class="rk-sub" data-bind="risk-mdd-sub">60일 시계열</div>
-            </div>
-            <div class="rk-cell">
-              <div class="rk-label">Beta (vs SPY)</div>
-              <div class="rk-val na" data-bind="risk-beta">—</div>
-              <div class="rk-sub" data-bind="risk-beta-sub">시장 민감도</div>
-            </div>
-            <div class="rk-cell">
-              <div class="rk-label">변동성 (연율화)</div>
-              <div class="rk-val na" data-bind="risk-vol">—</div>
-              <div class="rk-sub" data-bind="risk-vol-sub">σ × √252</div>
-            </div>
-          </div>
-          <div class="rk-note" data-bind="risk-note">데이터 수집 중…</div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -6643,77 +6449,6 @@
           <div class="v15-sub" data-v15="hist-trade-meta-pc">—</div>
         </div>
         <div data-v15="hist-trades-pc"><div class="v15-empty">수집 중…</div></div>
-      </div>
-
-      <!-- v12.2 — 이력 탭 B-layout (≥1100px). 필터·미니바·타임라인. -->
-      <div class="h3-history-block" data-bind="h3-history-block">
-        <!-- 필터 바 -->
-        <div class="h3-filter-bar">
-          <div class="h3-filter-row">
-            <span class="h3-filter-label">PM</span>
-            <div class="h3-seg" data-bind="h3-pm-chips" role="tablist" aria-label="PM 필터"></div>
-            <span class="h3-mode-badge sim" data-bind="h3-mode-badge">sim
-              <button type="button" class="nx-help-btn" data-help="mode_badge" aria-label="모드 도움말">?</button>
-            </span>
-          </div>
-          <div class="h3-filter-row">
-            <span class="h3-filter-label">유형</span>
-            <div class="h3-seg" role="tablist" aria-label="유형 필터">
-              <button type="button" data-h3-type="all"  class="active">전체</button>
-              <button type="button" data-h3-type="buy">매수</button>
-              <button type="button" data-h3-type="sell">매도</button>
-            </div>
-            <span class="h3-filter-label" style="margin-left:14px;">기간</span>
-            <div class="h3-seg" role="tablist" aria-label="기간 필터">
-              <button type="button" data-h3-period="7">7D</button>
-              <button type="button" data-h3-period="30" class="active">30D</button>
-              <button type="button" data-h3-period="all">전체</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- v13.3 — 타임라인 + sim 체결 2열 그리드 (14일 미니바 제거) -->
-        <div class="h3-2col-wrap">
-          <div class="h3-col-left">
-            <div class="d-tab-section-title" style="margin-top:0;">
-              타임라인
-              <button type="button" class="nx-help-btn" data-help="timeline" aria-label="타임라인 도움말">?</button>
-              <span class="d-tab-section-meta" data-bind="h3-timeline-meta">—</span>
-            </div>
-            <div data-bind="h3-timeline-host">
-              <div class="h3-empty">
-                <div class="big">데이터 수집 중…</div>
-                <div class="desc">첫 snapshot 도착 대기</div>
-              </div>
-            </div>
-          </div>
-          <div class="h3-col-right">
-            <div class="d-tab-section-title" style="margin-top:0;">
-              기간 집계 · 주 단위
-              <span class="d-tab-section-meta" data-bind="h3-weekly-meta-pc">최근 4주</span>
-            </div>
-            <div class="h3-weekly-wrap" data-bind="h3-weekly-wrap-pc">
-              <div class="h3-empty"><div class="big">sim 원장 대기</div><div class="desc">주간 집계 계산 대기</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-tab-section-title" data-h3-hide="1">
-        최근 활동
-        <span class="d-tab-section-meta" data-bind="d-history-meta">audit · 변경불가</span>
-      </div>
-      <div class="d-history-list" data-bind="d-history-list">
-        <div class="d-history-empty">최근 활동 없음</div>
-      </div>
-
-      <!-- v13.0 — sim 체결 (실체결가 · 수량 · notional) — v13.3 : PC 에서는 h3-history-block 내부 2열 우측으로 이동 -->
-      <div class="d-tab-section-title" data-h3-hide="1">
-        sim 체결
-        <span class="d-tab-section-meta" data-bind="h3-ledger-meta">최근 20건</span>
-      </div>
-      <div class="h3-ledger-wrap" data-bind="h3-ledger-wrap" data-h3-hide="1">
-        <div class="h3-empty"><div class="big">sim 원장 대기</div></div>
       </div>
 
       <!-- 계층 3 · 장중 평가 (홈에서 이동 — 깊은 분석은 이력 탭) -->
@@ -6773,15 +6508,6 @@
   <section class="d-tab" data-tab="approval">
     <div class="d-tab-pad">
 
-      <!-- ===== v15 승인 타임라인 (PC) ===== -->
-      <div class="v15-card">
-        <div class="v15-card-head">
-          <div class="v15-title">주문 진행 상황</div>
-          <div class="v15-sub" data-v15="appr-meta-pc">—</div>
-        </div>
-        <div data-v15="appr-timeline-pc"><div class="v15-empty">수집 중…</div></div>
-      </div>
-
       <!-- v12.3 — 대기 승인 카드 최상단 (강조) -->
       <div class="d-tab-section-title">
         승인 대기
@@ -6818,6 +6544,15 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- ===== v15 승인 타임라인 (PC) ===== -->
+      <div class="v15-card v15-dense">
+        <div class="v15-card-head">
+          <div class="v15-title">주문 진행 상황</div>
+          <div class="v15-sub" data-v15="appr-meta-pc">—</div>
+        </div>
+        <div data-v15="appr-timeline-pc"><div class="v15-empty">수집 중…</div></div>
       </div>
     </div>
   </section>
@@ -6859,7 +6594,72 @@
           <div class="v15-empty">기록 수집 중…</div>
         </div>
       </div>
-    </div>
+
+      <!-- v15.1 — 보유 탭에서 이동 (리스크 게이지 · 위험 관리 통합 카드) -->
+      <!-- 리스크 게이지 (SVG 원형) -->
+      <div class="d-tab-section-title">
+        리스크 게이지
+        <span class="d-tab-section-meta">실시간</span>
+      </div>
+      <div class="gauge-wrap" id="nx-gauge-wrap-pc"></div>
+
+      <!-- v13.2 위험 관리 통합 카드 → v15.1 방어 탭으로 이동. Aegis 게이트 요약 줄은 위 v15 게이트 카드와 중복이라 제거(병합). 남은 것: 방어 6선 + 리스크 통계 + nearmiss -->
+      <div class="d-tab-section-title">
+        위험 관리 · 방어선 + 리스크 통계
+        <button type="button" class="nx-help-btn" data-help="defense_lines" aria-label="방어선 도움말">?</button>
+        <span class="d-tab-section-meta">12 게이트 · 6 방어선</span>
+      </div>
+      <div class="risk-unified-card">
+        <!-- nearmiss 헤드라인 -->
+        <div class="ru-headline" data-bind="ru-nearmiss">
+          <span class="ru-nearmiss-label">가장 가까운 방어선</span>
+          <span class="ru-nearmiss-val">계산 중…</span>
+        </div>
+        <!-- Aegis 게이트 요약 (통과/enforce/live 대기) -->
+        <!-- 방어 상태판 (기존 defense-board 를 이 카드 안에 포함) -->
+        <div class="defense-board" id="defense-board-pc">
+          <div class="db-head">
+            <span class="db-title">방어 6선 상태</span>
+            <span class="db-mode normal" data-bind="defense-mode">NORMAL</span>
+            <span class="db-meta" data-bind="defense-meta">—</span>
+          </div>
+          <div class="db-stats">
+            <span>고점 <span class="v" data-bind="defense-hwm">—</span></span>
+            <span>MDD <span class="v" data-bind="defense-mdd">—</span></span>
+            <span>NAV <span class="v" data-bind="defense-nav">—</span></span>
+            <span>일일 <span class="v" data-bind="defense-daily">—</span></span>
+          </div>
+          <div class="db-lines" data-bind="defense-lines"></div>
+          <div class="db-blocked" data-bind="defense-blocked" style="display:none;"></div>
+        </div>
+        <!-- 리스크 통계 (Sharpe/MDD/Beta/Vol) -->
+        <div class="ru-metrics-head">리스크 통계 <span class="d-tab-section-meta" data-bind="risk-meta">—</span></div>
+        <div class="risk-card" id="risk-card-pc">
+          <div class="rk-grid">
+            <div class="rk-cell">
+              <div class="rk-label">Sharpe (Rf 4.5%)</div>
+              <div class="rk-val na" data-bind="risk-sharpe">—</div>
+              <div class="rk-sub" data-bind="risk-sharpe-sub">초과수익/위험</div>
+            </div>
+            <div class="rk-cell">
+              <div class="rk-label">Max Drawdown</div>
+              <div class="rk-val na" data-bind="risk-mdd">—</div>
+              <div class="rk-sub" data-bind="risk-mdd-sub">60일 시계열</div>
+            </div>
+            <div class="rk-cell">
+              <div class="rk-label">Beta (vs SPY)</div>
+              <div class="rk-val na" data-bind="risk-beta">—</div>
+              <div class="rk-sub" data-bind="risk-beta-sub">시장 민감도</div>
+            </div>
+            <div class="rk-cell">
+              <div class="rk-label">변동성 (연율화)</div>
+              <div class="rk-val na" data-bind="risk-vol">—</div>
+              <div class="rk-sub" data-bind="risk-vol-sub">σ × √252</div>
+            </div>
+          </div>
+          <div class="rk-note" data-bind="risk-note">데이터 수집 중…</div>
+        </div>
+      </div>    </div>
   </section>
 
   <section class="d-tab" data-tab="settings">
@@ -6990,31 +6790,11 @@
               <div class="h5-card-title">대시보드 버전 히스토리
                 <button type="button" class="nx-help-btn" data-help="sw_version" aria-label="버전 도움말">?</button>
               </div>
-              <div class="h5-card-meta">최근 5차 리뉴얼</div>
+              <div class="h5-card-meta" data-v15="version-history-meta">—</div>
             </div>
-            <div class="h5-row"><span class="k">v12.0</span><span class="desc">홈 탭 — B안 사이드바 · 상세 패널 · ? 도움말</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.1</span><span class="desc">보유 탭 — 3 요약 카드 · PM 필터 · 실계좌/sim 배지</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.2</span><span class="desc">이력 탭 — 필터 · 14일 미니바 · 타임라인 · sim/live 모드</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.3</span><span class="desc">승인 탭 — 대기 카드 강조 · 2열 (달력 | 처리 이력)</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.4</span><span class="desc">PM 도넛 7 PM 대응 — 하드코딩 3 PM 제거 · NEXUS_PM_META 단일 소스</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.5</span><span class="desc">설정 탭 — 4그룹 재편 + 운용 파라미터 (신설, 읽기전용)</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.6</span><span class="desc">오프라인 배너 오탐 수정 — 판정 신호 분리 (offline / stale / market_closed)</span><span class="v muted">2026-07-05</span></div>
-            <div class="h5-row"><span class="k">v12.7</span><span class="desc">deploy 체계 복구 — PC 원본이 deploy 를 덮은 혼합 오염 되돌림</span><span class="v muted">2026-07-13</span></div>
-            <div class="h5-row"><span class="k">v12.8</span><span class="desc">설정 탭 백엔드 URL 저장 버그 수정 — h5 레이아웃 표시 계층만</span><span class="v muted">2026-07-14</span></div>
-            <div class="h5-row"><span class="k">v12.9</span><span class="desc">익명인증 코드 이식 — 폰 미러 read 복구</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.0</span><span class="desc">sim_portfolio 원장 직결 (보유·홈·이력) · 상세 패널 필드명 수정 · 미니바 A안 · 기간 칩 · sim NAV 축적 시작</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.1</span><span class="desc">v13.0 회귀 4건 수정 — 크로스 IIFE 참조 + 예외 격리</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.2</span><span class="desc">실화면 피드백 (버그 2 + UI 7) — 원장 그룹 접기 · sim 미니 라인 · 컴팩트 체결 · 방어 통합 카드</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.3</span><span class="desc">밀도 개선 라운드 — 5 PM 전원 표시 · 도넛 슬라이스 라벨 · 이력 2열 · 14일 미니바 제거 · 보유 사이드 카드</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.4</span><span class="desc">밀도 2차 + 일지 상세화 (실화면 피드백)</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.5</span><span class="desc">sim 시세 리셋 버그 + 카드 버그 2 + 레이아웃 2 — 원장 2열 · vNAV 필드명 · PM 실배분 sim 기준</span><span class="v muted">2026-07-15</span></div>
-            <div class="h5-row"><span class="k">v13.6</span><span class="desc">레이아웃 잔손 2건 + 사이드카드 금액 버그 — 원장 half-split · 오늘 요약 인라인 흡수 · notional 폴백 · PM 카드 3열</span><span class="v muted">2026-07-16</span></div>
-            <div class="h5-row"><span class="k">v13.7</span><span class="desc">PM 자본배분 카드 풀폭 — hold-row-2 grid→flex (hidden 도넛 셀이 explicit track 차지 문제 해결) · 3열 0.8/1/1.4 · 도넛 230px</span><span class="v muted">2026-07-16</span></div>
-            <div class="h5-row"><span class="k">v13.8</span><span class="desc">PM_META 이름 정합 (7 PM 데뷔 전) — mint.ko 실 PM 명 반영. NEXUS_PM_META 단일 소스로 도넛·랭킹·칩·일지 동기</span><span class="v muted">2026-07-16</span></div>
-            <div class="h5-row"><span class="k">v13.10</span><span class="desc">PM 이름 전면 정본화 — tide 윤채영·terra 서지원·nova 한세라·pulse 백지안. 하드코딩 이름표를 [data-pm-name] 로 래핑 → NEXUS_PM_META 자동 동기. 헌법 §4·프로필 모달도 소스 참조</span><span class="v muted">2026-07-18</span></div>
-            <div class="h5-row"><span class="k">v14.0</span><span class="desc">실전 우선(real-first) — 실계좌 본편·sim 참고 강등 · 모드 칩 [PAPER]/[LIVE] · 실계좌 NAV stale 표기 · 승인 달력 매매 이력(실체결 청록점)</span><span class="v muted">2026-07-26</span></div>
-            <div class="h5-row"><span class="k">v14.1</span><span class="desc">승인 탭 주문 결재 카드(청록) — 종목·수량·금액·담당 PM·사유·TTL · 개별/일괄 결재 · 발굴 카드 회사명·섹터·현재가·근거 뉴스·배속 PM · 이력 주문+발굴 병합(만료 회색)</span><span class="v muted">2026-07-30</span></div>
-            <div class="h5-row"><span class="k">v14.3</span><span class="desc">실체결 첫 가동 실데이터 렌더 — 보유 상단 총보유가치·평가손익 실계좌 배선(broker stock_market_value_usd·unrealized_pnl_usd) · 실계좌 포지션 전폭 8컬럼(담당PM은 체결기록 pm→PM_META 한국명·색점, 현재가·손익·비중) · sim 원장 하단 [참고] 유지 · 이력/승인 달력 PM 코드 → 정본 한국명</span><span class="v ok">현재</span></div>
+            <div class="h5-version-list" data-v15="version-history">
+              <div class="h5-row"><span class="desc">버전 이력 불러오는 중…</span></div>
+            </div>
           </div>
 
         </div>
@@ -15572,17 +15352,63 @@
         setAll(k, pmHtml || '<div class="v15-empty">기록 없음</div>');
       });
 
-      // (3) 거래 건별
+      // (3) 거래 건별 — v15.1: 일별 그룹 (날짜 헤더 탭으로 접기/펼치기)
       var sorted = rows.slice().sort(function(a, b) {
         return String(b.decided_at || b.created_at || '').localeCompare(String(a.decided_at || a.created_at || ''));
       }).slice(0, 60);
-      var tHtml = sorted.map(function(o) { return tradeCard(o); }).join('');
+      var tHtml = groupTradesByDay(sorted);
       ['hist-trades', 'hist-trades-pc'].forEach(function(k) {
         setAll(k, tHtml || '<div class="v15-empty">거래 기록 없음</div>');
       });
       ['hist-trade-meta', 'hist-trade-meta-pc'].forEach(function(k) {
         setAll(k, '최근 ' + sorted.length + '건');
       });
+    }
+
+    // 날짜 → "8월 5일 화" (KST 기준. 원장 ts 는 UTC 라 +9h 후 표기)
+    var WD = ['일', '월', '화', '수', '목', '금', '토'];
+    function dayKeyOf(o) {
+      var raw = String(o.decided_at || o.created_at || '');
+      if (!raw) return { key: '', label: '날짜 기록 없음' };
+      var d = new Date(raw.indexOf('Z') >= 0 || raw.indexOf('+') > 10 ? raw : raw + 'Z');
+      if (isNaN(d.getTime())) return { key: raw.slice(0, 10), label: raw.slice(0, 10) };
+      var kst = new Date(d.getTime() + 9 * 3600 * 1000);
+      var key = kst.toISOString().slice(0, 10);
+      return {
+        key: key,
+        label: (kst.getUTCMonth() + 1) + '월 ' + kst.getUTCDate() + '일 ' + WD[kst.getUTCDay()]
+      };
+    }
+    // 일별 그룹 — 헤더에 건수 + 매수/매도 합계. 합계는 백엔드 notional 원값 합산 후
+    // 마지막에 한 번만 반올림한다 (B-9 규칙 동일 적용).
+    function groupTradesByDay(list) {
+      if (!list.length) return '';
+      var order = [], map = {};
+      list.forEach(function(o) {
+        var d = dayKeyOf(o);
+        if (!map[d.key]) { map[d.key] = { label: d.label, rows: [], buy: 0, sell: 0 }; order.push(d.key); }
+        var g = map[d.key];
+        g.rows.push(o);
+        var n = num(o.notional_usd) || 0;
+        if (String(o.side || '').toLowerCase() === 'sell') g.sell += n; else g.buy += n;
+      });
+      return order.map(function(k, gi) {
+        var g = map[k];
+        var bits = [g.rows.length + '건'];
+        if (g.buy > 0) bits.push('매수 ' + money(g.buy, 0));
+        if (g.sell > 0) bits.push('매도 ' + money(g.sell, 0));
+        // 최근 이틀만 펼친 상태로 시작 (밀도 우선)
+        var open = gi < 2 ? ' open' : '';
+        return '<div class="v15-group v15-daygroup' + open + '">' +
+          '<div class="v15-group-head" data-v15-toggle="1">' +
+            '<span class="caret">▶</span>' +
+            '<span class="v15-pm-name">' + esc(g.label) + '</span>' +
+            '<span class="v15-pm-meta">' + esc(bits.join(' · ')) + '</span>' +
+          '</div>' +
+          '<div class="v15-group-body">' +
+            g.rows.map(function(o) { return tradeCard(o); }).join('') +
+          '</div></div>';
+      }).join('');
     }
 
     function tradeCard(o) {
@@ -15693,6 +15519,56 @@
       ['appr-meta', 'appr-meta-pc'].forEach(function(k) {
         setAll(k, '최근 ' + rows.length + '건 · 결재 대기 ' + pend + '건');
       });
+    }
+
+    // ============================================================
+    // 설정 — 대시보드 버전 이력 (v15.1)
+    //
+    // ★ 버전 올릴 때 규칙: **이 배열 맨 위에 한 줄만 추가**한다.
+    //     { v: '버전', d: 'YYYY-MM-DD', t: '한 줄 요약' }
+    //   화면은 배열 순서를 그대로 최신순으로 그린다 (정렬하지 않는다).
+    //   맨 위 항목에는 '현재' 배지가 자동으로 붙는다.
+    //   종전에는 이 목록이 설정 탭에 **하드코딩된 HTML** 이라 v14.3 에서 멈춰
+    //   있었다 (= v15 가 설정 탭에 반영되지 않은 원인). 이제 여기 한 곳만 고친다.
+    // ============================================================
+    var VERSION_HISTORY = [
+      { v: 'v15.1.0', d: '2026-08-09', t: '실사용 피드백 5건 — 홈 최상단 상태+NAV · 보유의 방어/리스크 요소를 방어 탭으로 통합 · 이력 구 v14 제거 + 일별 그룹 · 승인 순서 재배치 + 고밀도 · 버전 이력 배열화' },
+      { v: 'v15.0.0', d: '2026-08-09', t: '초보 친화 개편 — 메뉴 6개(방어 신설) · NAV 대형/자산 그래프/PM 실시간 현황 · 종목 소개 사전 163종 · 용어 괄호 설명 · 메뉴 순서 편집 · 계산 단일 소스(합계 대사 경고)' },
+      { v: 'v14.3', d: '2026-08-03', t: '실체결 첫 가동 실데이터 렌더 — 보유 상단 실계좌 배선 · 포지션 8컬럼(담당 PM 한국명·색점) · 이력/승인 달력 PM 코드 → 정본 한국명' },
+      { v: 'v14.1', d: '2026-07-30', t: '승인 탭 주문 결재 카드 — 개별/일괄 결재 · 발굴 카드 회사명·섹터·현재가·근거 뉴스 · 이력 주문+발굴 병합' },
+      { v: 'v14.0', d: '2026-07-26', t: '실전 우선(real-first) — 실계좌 본편·sim 참고 강등 · 모드 칩 [PAPER]/[LIVE] · NAV stale 표기' },
+      { v: 'v13.3', d: '2026-07-15', t: '밀도 개선 — 5 PM 전원 표시 · 도넛 슬라이스 라벨 · 이력 2열 · 보유 사이드 카드' },
+      { v: 'v13.10', d: '2026-07-18', t: 'PM 이름 전면 정본화 — 하드코딩 이름표를 [data-pm-name] 로 래핑 → NEXUS_PM_META 자동 동기' },
+      { v: 'v13.8', d: '2026-07-16', t: 'PM_META 이름 정합(7 PM 데뷔 전) — 도넛·랭킹·칩·일지 단일 소스 동기' },
+      { v: 'v13.7', d: '2026-07-16', t: 'PM 자본배분 카드 풀폭 — hold-row-2 grid→flex · 3열 비율 조정' },
+      { v: 'v13.6', d: '2026-07-16', t: '레이아웃 잔손 2건 + 사이드카드 금액 버그 — 원장 half-split · notional 폴백' },
+      { v: 'v13.5', d: '2026-07-15', t: 'sim 시세 리셋 버그 + 카드 버그 2 + 레이아웃 2 — 원장 2열 · PM 실배분 sim 기준' },
+      { v: 'v13.4', d: '2026-07-15', t: '밀도 2차 + 일지 상세화 (실화면 피드백)' },
+      { v: 'v13.2', d: '2026-07-15', t: '실화면 피드백(버그 2 + UI 7) — 원장 그룹 접기 · sim 미니 라인 · 방어 통합 카드' },
+      { v: 'v13.1', d: '2026-07-15', t: 'v13.0 회귀 4건 수정 — 크로스 IIFE 참조 + 예외 격리' },
+      { v: 'v13.0', d: '2026-07-15', t: 'sim_portfolio 원장 직결(보유·홈·이력) · 기간 칩 · sim NAV 축적 시작' },
+      { v: 'v12.9', d: '2026-07-15', t: '익명인증 코드 이식 — 폰 미러 read 복구' },
+      { v: 'v12.8', d: '2026-07-14', t: '설정 탭 백엔드 URL 저장 버그 수정' },
+      { v: 'v12.7', d: '2026-07-13', t: 'deploy 체계 복구 — PC 원본이 deploy 를 덮은 혼합 오염 되돌림' },
+      { v: 'v12.6', d: '2026-07-05', t: '오프라인 배너 오탐 수정 — 판정 신호 분리(offline / stale / market_closed)' },
+      { v: 'v12.5', d: '2026-07-05', t: '설정 탭 4그룹 재편 + 운용 파라미터(읽기전용)' },
+      { v: 'v12.4', d: '2026-07-05', t: 'PM 도넛 7 PM 대응 — NEXUS_PM_META 단일 소스' },
+      { v: 'v12.3', d: '2026-07-05', t: '승인 탭 — 대기 카드 강조 · 2열(달력 | 처리 이력)' },
+      { v: 'v12.2', d: '2026-07-05', t: '이력 탭 — 필터 · 타임라인 · sim/live 모드' },
+      { v: 'v12.1', d: '2026-07-05', t: '보유 탭 — 요약 카드 · PM 필터 · 실계좌/sim 배지' },
+      { v: 'v12.0', d: '2026-07-05', t: '홈 탭 — B안 사이드바 · 상세 패널 · ? 도움말' }
+    ];
+    function renderVersionHistory() {
+      var html = VERSION_HISTORY.map(function(r, i) {
+        return '<div class="h5-row">' +
+          '<span class="k">' + esc(r.v) + '</span>' +
+          '<span class="desc">' + esc(r.t) + '</span>' +
+          '<span class="v ' + (i === 0 ? 'ok' : 'muted') + '">' +
+            (i === 0 ? '현재' : esc(r.d)) + '</span></div>';
+      }).join('');
+      setAll('version-history', html);
+      setAll('version-history-meta',
+             VERSION_HISTORY.length + '개 버전 · 최신 ' + esc(VERSION_HISTORY[0].v));
     }
 
     // ============================================================
@@ -15849,7 +15725,7 @@
     }
 
     function init() {
-      applyMenuOrder(); renderMenuEditor();
+      applyMenuOrder(); renderMenuEditor(); renderVersionHistory();
       bindMenuDnd(); bindGroupToggle(); bindRange();
       loadNavHistory(); refresh();
       setInterval(refresh, POLL_MS);

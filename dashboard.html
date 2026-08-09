@@ -4988,6 +4988,154 @@
   }
   .ev-cal-trade-ref { font-size: 10.5px; color: var(--fg-muted); }
 
+  /* ==========================================================
+     v15 (2026-08-09) — 초보 친화 개편 공용 스타일
+     원칙: 기존 클래스는 건드리지 않는다. 전부 .v15- 접두사.
+     ========================================================== */
+  .v15-card {
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .v15-card-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin-bottom: 10px;
+  }
+  .v15-title { font-size: 13px; font-weight: 700; letter-spacing: -.2px; }
+  .v15-sub { font-size: 11px; color: var(--fg-muted); }
+  .v15-term { font-size: 11px; color: var(--fg-muted); font-weight: 400; }
+
+  /* 홈 — NAV 대형 */
+  .v15-nav-big { text-align: center; padding: 18px 8px 14px; }
+  .v15-nav-label { font-size: 11.5px; color: var(--fg-muted); margin-bottom: 6px; }
+  .v15-nav-value {
+    font-size: 34px; font-weight: 800; letter-spacing: -1px;
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .v15-nav-krw { font-size: 12px; color: var(--fg-muted); margin-top: 4px; }
+  .v15-nav-delta { margin-top: 8px; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .v15-up { color: var(--pos, #16a34a); }
+  .v15-down { color: var(--neg, #dc2626); }
+  .v15-flat { color: var(--fg-muted); }
+
+  /* 자산 그래프 */
+  .v15-chart-wrap { position: relative; width: 100%; }
+  .v15-chart-svg { width: 100%; height: 150px; display: block; overflow: visible; }
+  .v15-range { display: flex; gap: 6px; }
+  .v15-range button {
+    font-size: 11px; padding: 3px 9px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: transparent; color: var(--fg-muted);
+  }
+  .v15-range button.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .v15-empty {
+    padding: 18px 12px; text-align: center; font-size: 12px;
+    color: var(--fg-muted); line-height: 1.7;
+  }
+  .v15-gap-note { font-size: 10.5px; color: var(--fg-muted); margin-top: 6px; }
+
+  /* PM 활동 */
+  .v15-pm-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  @media (min-width: 720px) { .v15-pm-grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1100px) { .v15-pm-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  .v15-pm-row {
+    display: flex; align-items: center; gap: 9px; padding: 9px 10px;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--bg-soft, transparent);
+  }
+  .v15-pm-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .v15-pm-name { font-size: 12.5px; font-weight: 700; min-width: 48px; }
+  .v15-pm-meta { font-size: 11px; color: var(--fg-muted); flex: 1; min-width: 0; }
+  .v15-badge {
+    font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--line); white-space: nowrap;
+  }
+  .v15-badge.buy { color: #16a34a; border-color: #16a34a55; background: #16a34a14; }
+  .v15-badge.sell { color: #dc2626; border-color: #dc262655; background: #dc262614; }
+  .v15-badge.watch { color: #2563eb; border-color: #2563eb55; background: #2563eb14; }
+  .v15-badge.idle { color: var(--fg-muted); }
+
+  /* 요약 4칸 */
+  .v15-stat4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (min-width: 720px) { .v15-stat4 { grid-template-columns: repeat(4, 1fr); } }
+  .v15-stat {
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  }
+  .v15-stat .k { font-size: 10.5px; color: var(--fg-muted); display: block; margin-bottom: 4px; }
+  .v15-stat .v { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .v15-stat .s { font-size: 10.5px; color: var(--fg-muted); display: block; margin-top: 3px; }
+
+  /* PM 그룹 (보유) */
+  .v15-group { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+  .v15-group-head {
+    display: flex; align-items: center; gap: 8px; padding: 10px 11px;
+    cursor: pointer; user-select: none;
+  }
+  .v15-group-head .caret { font-size: 10px; color: var(--fg-muted); transition: transform .15s; }
+  .v15-group.open .caret { transform: rotate(90deg); }
+  .v15-group-body { display: none; border-top: 1px solid var(--line); }
+  .v15-group.open .v15-group-body { display: block; }
+  .v15-pos-row { padding: 9px 11px; border-bottom: 1px solid var(--line); }
+  .v15-pos-row:last-child { border-bottom: 0; }
+  .v15-pos-top { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+  .v15-tk { font-size: 12.5px; font-weight: 800; letter-spacing: .2px; }
+  .v15-tk-desc { font-size: 11px; color: var(--fg-muted); flex: 1; min-width: 0; }
+  .v15-pos-nums {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 5px;
+    font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums;
+  }
+  .v15-pos-nums b { color: var(--fg); font-weight: 600; }
+
+  /* 방어 탭 */
+  .v15-gate { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (min-width: 900px) { .v15-gate { grid-template-columns: repeat(3, 1fr); } }
+  .v15-gate-item { border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .v15-gate-item .k { font-size: 10.5px; color: var(--fg-muted); display: block; }
+  .v15-gate-item .v { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .v15-gate-item .s { font-size: 10.5px; color: var(--fg-muted); }
+  .v15-gate-item.ok { border-color: #16a34a44; }
+  .v15-gate-item.warn { border-color: #f59e0b66; }
+  .v15-gate-item.bad { border-color: #dc262666; }
+  .v15-loglist { max-height: 340px; overflow-y: auto; }
+  .v15-logrow {
+    display: flex; gap: 8px; align-items: baseline; padding: 7px 2px;
+    border-bottom: 1px solid var(--line); font-size: 11.5px;
+  }
+  .v15-logrow:last-child { border-bottom: 0; }
+  .v15-logrow .t { color: var(--fg-muted); font-size: 10.5px; white-space: nowrap; }
+
+  /* 이력 · 승인 타임라인 */
+  .v15-trade { border: 1px solid var(--line); border-radius: 10px; padding: 11px; margin-bottom: 8px; }
+  .v15-trade-head { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+  .v15-side { font-size: 10.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; }
+  .v15-side.buy { color: #16a34a; background: #16a34a18; }
+  .v15-side.sell { color: #dc2626; background: #dc262618; }
+  .v15-calc { font-size: 11.5px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .v15-why {
+    margin-top: 7px; padding: 7px 9px; border-radius: 8px;
+    background: var(--bg-soft, rgba(127,127,127,.08));
+    font-size: 11px; line-height: 1.6; color: var(--fg-muted);
+  }
+  .v15-why b { color: var(--fg); }
+  .v15-tl { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .v15-tl-step { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--fg-muted); }
+  .v15-tl-step .dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--line);
+  }
+  .v15-tl-step.done .dot { background: #16a34a; }
+  .v15-tl-step.done { color: var(--fg); }
+  .v15-tl-step.fail .dot { background: #dc2626; }
+  .v15-tl-arrow { color: var(--fg-muted); font-size: 10px; }
+
+  /* 설정 — 메뉴 순서 편집 */
+  .v15-menu-edit { border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .v15-menu-item {
+    display: flex; align-items: center; gap: 9px; padding: 9px 10px; margin-bottom: 6px;
+    border: 1px solid var(--line); border-radius: 8px; cursor: grab;
+    background: var(--bg-card); font-size: 12.5px;
+  }
+  .v15-menu-item:last-child { margin-bottom: 0; }
+  .v15-menu-item.dragging { opacity: .45; }
+  .v15-menu-item .grip { color: var(--fg-muted); font-size: 13px; }
+  .v15-menu-item .ord { font-size: 10.5px; color: var(--fg-muted); min-width: 14px; }
+
 </style>
 </head>
 <body>
@@ -5053,6 +5201,41 @@
 
     <!-- ===== HOME TAB — Phase 2.13 내러티브 홈 ===== -->
     <section class="m-tab active" data-tab="home">
+
+      <!-- ===== v15 홈 상단 — NAV 대형 · 자산 그래프 · PM 현황 ===== -->
+      <div class="v15-card">
+        <div class="v15-nav-big">
+          <div class="v15-nav-label">NAV <span class="v15-term">(내 돈 전체의 현재 가치)</span></div>
+          <div class="v15-nav-value" data-v15="nav-value">—</div>
+          <div class="v15-nav-krw" data-v15="nav-krw">—</div>
+          <div class="v15-nav-delta" data-v15="nav-delta">—</div>
+        </div>
+      </div>
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">자산 흐름</div>
+          <div class="v15-range" data-v15="nav-range">
+            <button type="button" data-days="7">1주</button>
+            <button type="button" data-days="30" class="active">1달</button>
+            <button type="button" data-days="365">전체</button>
+          </div>
+        </div>
+        <div class="v15-chart-wrap" data-v15="nav-chart">
+          <div class="v15-empty">자산 그래프 준비 중…</div>
+        </div>
+        <div class="v15-gap-note" data-v15="nav-chart-note"></div>
+      </div>
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">PM 실시간 현황</div>
+          <div class="v15-sub" data-v15="pm-summary">—</div>
+        </div>
+        <div class="v15-pm-grid" data-v15="pm-grid">
+          <div class="v15-empty">PM 활동 수집 중…</div>
+        </div>
+      </div>
 
       <!-- (1) 헤더 — 가동 상태 + N초 카운터 -->
       <div class="nx-status-bar" id="nx-status-bar">
@@ -5168,6 +5351,16 @@
 
     <!-- ===== APPROVAL TAB ===== -->
     <section class="m-tab" data-tab="approval">
+
+      <!-- ===== v15 승인 — 요청→검사→승인→체결 타임라인 ===== -->
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">주문 진행 상황</div>
+          <div class="v15-sub" data-v15="appr-meta">—</div>
+        </div>
+        <div data-v15="appr-timeline"><div class="v15-empty">수집 중…</div></div>
+      </div>
+
       <div class="m-section-title">승인 대기<span class="meta" data-bind="m-approval-meta">0건</span></div>
 
       <div data-bind="m-approval-body">
@@ -5189,6 +5382,24 @@
 
     <!-- ===== POSITIONS TAB ===== -->
     <section class="m-tab" data-tab="positions">
+
+      <!-- ===== v15 보유 — 요약 4칸 + PM 그룹 ===== -->
+      <div class="v15-card">
+        <div class="v15-stat4" data-v15="hold-stat4">
+          <div class="v15-stat"><span class="k">총 투자 원금</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">평가액</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">수익</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">기대 수익률</span><span class="v">연 7.2%</span><span class="s">16년 시뮬레이션 기준</span></div>
+        </div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">PM별 보유</div>
+          <div class="v15-sub" data-v15="hold-meta">—</div>
+        </div>
+        <div data-v15="hold-groups"><div class="v15-empty">보유 수집 중…</div></div>
+      </div>
+
       <!-- A. 자산 구성 요약 -->
       <div class="hold-summary">
         <div class="hold-nav-row">
@@ -5296,6 +5507,27 @@
 
     <!-- ===== HISTORY TAB ===== -->
     <section class="m-tab" data-tab="history">
+
+      <!-- ===== v15 이력 — 현재 보유 · PM 요약 · 거래 건별 ===== -->
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">지금 갖고 있는 것</div>
+          <div class="v15-sub" data-v15="hist-hold-meta">—</div>
+        </div>
+        <div data-v15="hist-holdings"><div class="v15-empty">수집 중…</div></div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head"><div class="v15-title">PM별 요약</div></div>
+        <div data-v15="hist-pm"><div class="v15-empty">수집 중…</div></div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">거래 하나하나</div>
+          <div class="v15-sub" data-v15="hist-trade-meta">—</div>
+        </div>
+        <div data-v15="hist-trades"><div class="v15-empty">수집 중…</div></div>
+      </div>
+
       <div class="m-section-title">최근 활동<span class="meta">audit · 변경불가</span></div>
 
       <div class="m-history-list" data-bind="m-history-list">
@@ -5344,7 +5576,58 @@
     </section>
 
     <!-- ===== SETTINGS TAB ===== -->
+    <!-- ===== v15 방어 탭 (모바일) ===== -->
+    <section class="m-tab" data-tab="defense">
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">Aegis 게이트 <span class="v15-term">(주문이 나가기 전 통과해야 하는 검사)</span></div>
+          <div class="v15-sub" data-v15="def-meta">—</div>
+        </div>
+        <div class="v15-gate" data-v15="def-gates">
+          <div class="v15-empty">게이트 상태 수집 중…</div>
+        </div>
+      </div>
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">오늘 검사 집계</div>
+          <div class="v15-sub">검사 / 통과 / 차단</div>
+        </div>
+        <div class="v15-stat4" data-v15="def-count">
+          <div class="v15-stat"><span class="k">검사</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">통과</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">차단</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">체결</span><span class="v">—</span></div>
+        </div>
+      </div>
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">차단·통과 기록</div>
+          <div class="v15-sub">최근 순</div>
+        </div>
+        <div class="v15-loglist" data-v15="def-log">
+          <div class="v15-empty">기록 수집 중…</div>
+        </div>
+      </div>
+    </section>
+
     <section class="m-tab" data-tab="settings">
+
+      <!-- ===== v15 메뉴 순서 편집 (끌어서 이동 · localStorage 저장) ===== -->
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">메뉴 순서 편집</div>
+          <div class="v15-sub">끌어서 순서를 바꾸면 바로 저장됩니다</div>
+        </div>
+        <div class="v15-menu-edit" data-v15="menu-order"></div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+          <button type="button" class="v15-badge" data-v15-action="menu-reset" style="cursor:pointer;">기본 순서로</button>
+          <span class="v15-sub" data-v15="menu-order-note"></span>
+        </div>
+      </div>
+
       <div class="m-kill-card">
         <div class="ico">⛔</div>
         <div class="text">
@@ -5630,6 +5913,13 @@
       </svg>
       <span class="lbl">보유</span>
     </button>
+    <button class="m-tabbtn" data-tab="defense" aria-label="방어망">
+      <svg class="ico-svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3l7 3v6c0 4.4-3 8.1-7 9-4-.9-7-4.6-7-9V6l7-3z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      <span class="lbl">방어</span>
+    </button>
     <button class="m-tabbtn" data-tab="history" aria-label="매매 이력">
       <svg class="ico-svg" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="9"/>
@@ -5675,6 +5965,7 @@
   <nav class="d-tabbar" aria-label="PC 탭 네비게이션">
     <button class="d-tabbtn active" data-tab="home" type="button">홈</button>
     <button class="d-tabbtn" data-tab="positions" type="button">보유</button>
+    <button class="d-tabbtn" data-tab="defense" type="button">방어</button>
     <button class="d-tabbtn" data-tab="history" type="button">이력</button>
     <button class="d-tabbtn" data-tab="approval" type="button">
       승인<span class="badge" data-bind="d-approval-badge">0</span>
@@ -5692,6 +5983,39 @@
   </aside>
 
   <div class="pc-b-main">
+
+  <!-- ===== v15 홈 상단 (PC) — NAV 대형 · 자산 그래프 · PM 현황 ===== -->
+  <div class="v15-card">
+    <div class="v15-nav-big">
+      <div class="v15-nav-label">NAV <span class="v15-term">(내 돈 전체의 현재 가치)</span></div>
+      <div class="v15-nav-value" data-v15="pc-nav-value">—</div>
+      <div class="v15-nav-krw" data-v15="pc-nav-krw">—</div>
+      <div class="v15-nav-delta" data-v15="pc-nav-delta">—</div>
+    </div>
+  </div>
+  <div class="v15-card">
+    <div class="v15-card-head">
+      <div class="v15-title">자산 흐름</div>
+      <div class="v15-range" data-v15="pc-nav-range">
+        <button type="button" data-days="7">1주</button>
+        <button type="button" data-days="30" class="active">1달</button>
+        <button type="button" data-days="365">전체</button>
+      </div>
+    </div>
+    <div class="v15-chart-wrap" data-v15="pc-nav-chart">
+      <div class="v15-empty">자산 그래프 준비 중…</div>
+    </div>
+    <div class="v15-gap-note" data-v15="pc-nav-chart-note"></div>
+  </div>
+  <div class="v15-card">
+    <div class="v15-card-head">
+      <div class="v15-title">PM 실시간 현황</div>
+      <div class="v15-sub" data-v15="pc-pm-summary">—</div>
+    </div>
+    <div class="v15-pm-grid" data-v15="pc-pm-grid">
+      <div class="v15-empty">PM 활동 수집 중…</div>
+    </div>
+  </div>
 
   <!-- ────────────────────────────────────────────── -->
   <!--  PC 내러티브 7섹션 (모바일과 동일 위계)        -->
@@ -6112,6 +6436,23 @@
   <section class="d-tab" data-tab="positions">
     <div class="d-tab-pad">
 
+      <!-- ===== v15 보유 — 요약 4칸 + PM 그룹 (PC) ===== -->
+      <div class="v15-card">
+        <div class="v15-stat4" data-v15="hold-stat4-pc">
+          <div class="v15-stat"><span class="k">총 투자 원금</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">평가액</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">수익</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">기대 수익률</span><span class="v">연 7.2%</span><span class="s">16년 시뮬레이션 기준</span></div>
+        </div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">PM별 보유</div>
+          <div class="v15-sub" data-v15="hold-meta-pc">—</div>
+        </div>
+        <div data-v15="hold-groups-pc"><div class="v15-empty">보유 수집 중…</div></div>
+      </div>
+
       <!-- v12.1 — B-layout 보유 탭 (≥1100px). 3카드 + PM 칩 + 테이블. -->
       <div class="h2-holdings-block" data-bind="h2-holdings-block">
         <div class="h2-sum-grid">
@@ -6284,6 +6625,26 @@
   <section class="d-tab" data-tab="history">
     <div class="d-tab-pad">
 
+      <!-- ===== v15 이력 (PC) ===== -->
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">지금 갖고 있는 것</div>
+          <div class="v15-sub" data-v15="hist-hold-meta-pc">—</div>
+        </div>
+        <div data-v15="hist-holdings-pc"><div class="v15-empty">수집 중…</div></div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head"><div class="v15-title">PM별 요약</div></div>
+        <div data-v15="hist-pm-pc"><div class="v15-empty">수집 중…</div></div>
+      </div>
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">거래 하나하나</div>
+          <div class="v15-sub" data-v15="hist-trade-meta-pc">—</div>
+        </div>
+        <div data-v15="hist-trades-pc"><div class="v15-empty">수집 중…</div></div>
+      </div>
+
       <!-- v12.2 — 이력 탭 B-layout (≥1100px). 필터·미니바·타임라인. -->
       <div class="h3-history-block" data-bind="h3-history-block">
         <!-- 필터 바 -->
@@ -6411,6 +6772,16 @@
   <!-- ===== APPROVAL TAB ===== -->
   <section class="d-tab" data-tab="approval">
     <div class="d-tab-pad">
+
+      <!-- ===== v15 승인 타임라인 (PC) ===== -->
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">주문 진행 상황</div>
+          <div class="v15-sub" data-v15="appr-meta-pc">—</div>
+        </div>
+        <div data-v15="appr-timeline-pc"><div class="v15-empty">수집 중…</div></div>
+      </div>
+
       <!-- v12.3 — 대기 승인 카드 최상단 (강조) -->
       <div class="d-tab-section-title">
         승인 대기
@@ -6452,8 +6823,61 @@
   </section>
 
   <!-- ===== SETTINGS TAB ===== -->
+  <!-- ===== v15 방어 탭 (PC) ===== -->
+  <section class="d-tab" data-tab="defense">
+    <div class="d-tab-pad">
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">Aegis 게이트 <span class="v15-term">(주문이 나가기 전 통과해야 하는 검사)</span></div>
+          <div class="v15-sub" data-v15="pc-def-meta">—</div>
+        </div>
+        <div class="v15-gate" data-v15="pc-def-gates">
+          <div class="v15-empty">게이트 상태 수집 중…</div>
+        </div>
+      </div>
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">오늘 검사 집계</div>
+          <div class="v15-sub">검사 / 통과 / 차단</div>
+        </div>
+        <div class="v15-stat4" data-v15="pc-def-count">
+          <div class="v15-stat"><span class="k">검사</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">통과</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">차단</span><span class="v">—</span></div>
+          <div class="v15-stat"><span class="k">체결</span><span class="v">—</span></div>
+        </div>
+      </div>
+
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">차단·통과 기록</div>
+          <div class="v15-sub">최근 순</div>
+        </div>
+        <div class="v15-loglist" data-v15="pc-def-log">
+          <div class="v15-empty">기록 수집 중…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="d-tab" data-tab="settings">
     <div class="d-tab-pad">
+
+      <!-- ===== v15 메뉴 순서 편집 (끌어서 이동 · localStorage 저장) ===== -->
+      <div class="v15-card">
+        <div class="v15-card-head">
+          <div class="v15-title">메뉴 순서 편집</div>
+          <div class="v15-sub">끌어서 순서를 바꾸면 바로 저장됩니다</div>
+        </div>
+        <div class="v15-menu-edit" data-v15="pc-menu-order"></div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+          <button type="button" class="v15-badge" data-v15-action="menu-reset" style="cursor:pointer;">기본 순서로</button>
+          <span class="v15-sub" data-v15="pc-menu-order-note"></span>
+        </div>
+      </div>
+
 
       <!-- v12.5 — 설정 탭 4그룹 2컬럼 (≥1100px). 좁은 화면은 기존 d-settings-grid 유지. -->
       <div class="h5-settings-block" data-bind="h5-settings-block">
@@ -7091,6 +7515,9 @@
     function renderFx(nav) {
       // nav.usd_to_krw / fx_source / fx_age_sec / fx_change_pct
       var rate = nav.usd_to_krw;
+      // v15 — 환율 단일 소스 공개 (v15 NAV 원화 표기가 이 값만 쓴다. 자체 조회 금지)
+      window.__nexusFxRate = (rate !== null && rate !== undefined && isFinite(rate))
+        ? Number(rate) : null;
       var src = nav.fx_source || 'mock';
       var age = nav.fx_age_sec;
       var chg = nav.fx_change_pct;
@@ -14596,6 +15023,849 @@
     document.addEventListener('DOMContentLoaded', refreshFromSnapshot);
   }
 })();
+
+  // ==========================================================
+  // v15 (2026-08-09) — 초보 친화 개편 스크립트
+  // 기존 렌더러는 그대로 두고, data-v15 컨테이너만 채운다.
+  // ==========================================================
+  (function(){
+  // 종목 소개 사전 — universe 163종. {ticker: "이름 — 하는 일 · 시장"}
+  // 사전에 없으면 티커만 표시한다 (추측 금지).
+  var V15_TICKERS = {
+    AAPL:'애플 — 아이폰·맥 제조 · 나스닥', ABBV:'애브비 — 제약(면역·항암) · 뉴욕',
+    ABNB:'에어비앤비 — 숙박 중개 플랫폼 · 나스닥', ABT:'애보트 — 의료기기·진단 · 뉴욕',
+    ACWI:'ACWI — 전 세계 주식 ETF · 나스닥', ADBE:'어도비 — 포토샵·PDF 소프트웨어 · 나스닥',
+    ADI:'아나로그디바이스 — 아날로그 반도체 · 나스닥', ADP:'ADP — 급여·인사 아웃소싱 · 나스닥',
+    ADSK:'오토데스크 — 설계(CAD) 소프트웨어 · 나스닥', AEP:'아메리칸일렉트릭파워 — 전력회사 · 나스닥',
+    AGG:'AGG — 미국 종합 채권 ETF · 뉴욕', AMAT:'어플라이드머티리얼즈 — 반도체 장비 · 나스닥',
+    AMD:'AMD — CPU·GPU 설계 · 나스닥', AMGN:'암젠 — 바이오 신약 · 나스닥',
+    AMZN:'아마존 — 전자상거래·클라우드 · 나스닥', ARM:'ARM — 반도체 설계 IP · 나스닥',
+    ASHR:'ASHR — 중국 본토 A주 ETF · 뉴욕', ASML:'ASML — 반도체 노광장비 독점 · 나스닥',
+    AVGO:'브로드컴 — 통신·AI 반도체 · 나스닥', AXP:'아메리칸익스프레스 — 신용카드 · 뉴욕',
+    BA:'보잉 — 항공기 제조 · 뉴욕', BAC:'뱅크오브아메리카 — 대형 은행 · 뉴욕',
+    BKNG:'부킹홀딩스 — 온라인 여행 예약 · 나스닥', BLK:'블랙록 — 세계 최대 자산운용 · 뉴욕',
+    C:'씨티그룹 — 글로벌 은행 · 뉴욕', CAT:'캐터필러 — 건설·광산 장비 · 뉴욕',
+    CCJ:'카메코 — 우라늄 채굴 · 뉴욕', CD:'첸스디지털 — 금융 서비스 · 나스닥',
+    CDNS:'케이던스 — 반도체 설계 소프트웨어 · 나스닥', CMCSA:'컴캐스트 — 케이블·미디어 · 나스닥',
+    COST:'코스트코 — 창고형 할인점 · 나스닥', CRM:'세일즈포스 — 고객관리 클라우드 · 뉴욕',
+    CSCO:'시스코 — 네트워크 장비 · 나스닥', CSX:'CSX — 화물 철도 · 나스닥',
+    CVX:'셰브론 — 석유·가스 · 뉴욕', DBA:'DBA — 농산물 선물 ETF · 뉴욕',
+    DBC:'DBC — 원자재 종합 ETF · 뉴욕', DIS:'디즈니 — 콘텐츠·테마파크 · 뉴욕',
+    DXCM:'덱스콤 — 연속 혈당측정기 · 나스닥', EEM:'EEM — 신흥국 주식 ETF · 뉴욕',
+    EFA:'EFA — 선진국(미국 제외) 주식 ETF · 뉴욕', EPI:'EPI — 인도 주식 ETF · 뉴욕',
+    EWA:'EWA — 호주 주식 ETF · 뉴욕', EWC:'EWC — 캐나다 주식 ETF · 뉴욕',
+    EWG:'EWG — 독일 주식 ETF · 뉴욕', EWJ:'EWJ — 일본 주식 ETF · 뉴욕',
+    EWT:'EWT — 대만 주식 ETF · 뉴욕', EWU:'EWU — 영국 주식 ETF · 뉴욕',
+    EWW:'EWW — 멕시코 주식 ETF · 뉴욕', EWY:'EWY — 한국 주식 ETF · 뉴욕',
+    EWZ:'EWZ — 브라질 주식 ETF · 뉴욕', EXC:'엑셀론 — 전력 유틸리티 · 나스닥',
+    EZA:'EZA — 남아공 주식 ETF · 뉴욕', FANG:'다이아몬드백에너지 — 셰일 석유 · 나스닥',
+    FAST:'패스널 — 산업용 부품 유통 · 나스닥', FTNT:'포티넷 — 네트워크 보안 · 나스닥',
+    FXI:'FXI — 중국 대형주 ETF · 뉴욕', GDX:'GDX — 금광 기업 ETF · 뉴욕',
+    GE:'GE — 항공엔진·전력설비 · 뉴욕', GILD:'길리어드 — 항바이러스 신약 · 나스닥',
+    GLD:'GLD — 금 현물 ETF · 뉴욕', GOOG:'알파벳(C) — 구글 모회사 · 나스닥',
+    GOOGL:'알파벳(A) — 구글 모회사 · 나스닥', GS:'골드만삭스 — 투자은행 · 뉴욕',
+    HD:'홈디포 — 건축자재 소매 · 뉴욕', HON:'허니웰 — 산업 자동화·항공 · 나스닥',
+    HYG:'HYG — 하이일드 회사채 ETF · 뉴욕', IBM:'IBM — 기업 IT·컨설팅 · 뉴욕',
+    IDXX:'아이덱스 — 동물 진단 장비 · 나스닥', IEF:'IEF — 미국 중기 국채 ETF · 나스닥',
+    IEMG:'IEMG — 신흥국 주식 ETF(저비용) · 뉴욕', INDA:'INDA — 인도 주식 ETF · 나스닥',
+    INTC:'인텔 — CPU 제조 · 나스닥', INTU:'인튜이트 — 세무·회계 소프트웨어 · 나스닥',
+    ISRG:'인튜이티브서지컬 — 수술 로봇 · 나스닥', IYR:'IYR — 미국 부동산 ETF · 뉴욕',
+    JNJ:'존슨앤드존슨 — 제약·의료기기 · 뉴욕', JPM:'JP모건 — 미국 최대 은행 · 뉴욕',
+    KDP:'큐리그닥터페퍼 — 음료 제조 · 나스닥', KLAC:'KLA — 반도체 검사장비 · 나스닥',
+    KO:'코카콜라 — 음료 · 뉴욕', KRE:'KRE — 미국 지역은행 ETF · 뉴욕',
+    KWEB:'KWEB — 중국 인터넷 기업 ETF · 뉴욕', LLY:'일라이릴리 — 비만·당뇨 신약 · 뉴욕',
+    LQD:'LQD — 우량 회사채 ETF · 뉴욕', LRCX:'램리서치 — 반도체 식각장비 · 나스닥',
+    LULU:'룰루레몬 — 요가·스포츠 의류 · 나스닥', MA:'마스터카드 — 카드 결제망 · 뉴욕',
+    MAR:'메리어트 — 호텔 체인 · 나스닥', MCD:'맥도날드 — 패스트푸드 · 뉴욕',
+    MCHI:'MCHI — 중국 주식 ETF · 나스닥', MDLZ:'몬델리즈 — 과자·스낵 · 나스닥',
+    MELI:'메르카도리브레 — 중남미 전자상거래 · 나스닥', META:'메타 — 페이스북·인스타그램 · 나스닥',
+    MNST:'몬스터베버리지 — 에너지 음료 · 나스닥', MRK:'머크 — 제약(항암제) · 뉴욕',
+    MRVL:'마벨 — 반도체 설계 · 나스닥', MS:'모건스탠리 — 투자은행 · 뉴욕',
+    MSFT:'마이크로소프트 — 윈도우·애저 클라우드 · 나스닥', MU:'마이크론 — 메모리 반도체 · 나스닥',
+    NFLX:'넷플릭스 — 영상 스트리밍 · 나스닥', NKE:'나이키 — 스포츠 용품 · 뉴욕',
+    NOW:'서비스나우 — 업무 자동화 클라우드 · 뉴욕', NVDA:'엔비디아 — AI GPU · 나스닥',
+    NXPI:'NXP — 차량용 반도체 · 나스닥', ODFL:'올드도미니언 — 화물 운송 · 나스닥',
+    ORCL:'오라클 — 데이터베이스·클라우드 · 뉴욕', ORLY:'오라일리 — 자동차 부품 소매 · 나스닥',
+    PANW:'팔로알토네트웍스 — 사이버 보안 · 나스닥', PAYX:'페이첵스 — 급여 아웃소싱 · 나스닥',
+    PCAR:'팩카 — 대형 트럭 제조 · 나스닥', PEP:'펩시코 — 음료·스낵 · 나스닥',
+    PG:'프록터앤드갬블 — 생활용품 · 뉴욕', PLTR:'팔란티어 — 데이터 분석 소프트웨어 · 나스닥',
+    PYPL:'페이팔 — 온라인 결제 · 나스닥', QCOM:'퀄컴 — 모바일 통신칩 · 나스닥',
+    REGN:'리제네론 — 바이오 신약 · 나스닥', ROST:'로스스토어 — 의류 할인점 · 나스닥',
+    RTX:'RTX — 방산·항공엔진 · 뉴욕', SBUX:'스타벅스 — 커피 체인 · 나스닥',
+    SCHW:'찰스슈왑 — 증권 중개 · 뉴욕', SHY:'SHY — 미국 단기 국채 ETF · 나스닥',
+    SLV:'SLV — 은 현물 ETF · 뉴욕', SMH:'SMH — 반도체 기업 ETF · 나스닥',
+    SNPS:'시놉시스 — 반도체 설계 소프트웨어 · 나스닥', SOXX:'SOXX — 반도체 ETF · 나스닥',
+    SPCX:'SPCX — 우주·항공 테마 ETF · 뉴욕', TIP:'TIP — 물가연동 국채 ETF · 뉴욕',
+    TLT:'TLT — 미국 장기 국채 ETF · 나스닥', TMO:'써모피셔 — 실험·분석 장비 · 뉴욕',
+    TMUS:'T모바일 — 이동통신 · 나스닥', TSLA:'테슬라 — 전기차·에너지 · 나스닥',
+    TSM:'TSMC — 반도체 위탁생산 1위 · 뉴욕', TUR:'TUR — 튀르키예 주식 ETF · 나스닥',
+    TXN:'텍사스인스트루먼트 — 아날로그 반도체 · 나스닥', UNG:'UNG — 천연가스 선물 ETF · 뉴욕',
+    UNH:'유나이티드헬스 — 건강보험 · 뉴욕', URA:'URA — 우라늄 기업 ETF · 뉴욕',
+    USO:'USO — 원유 선물 ETF · 뉴욕', V:'비자 — 카드 결제망 · 뉴욕',
+    VEUR:'VEUR — 유럽 주식 ETF · 런던', VGK:'VGK — 유럽 주식 ETF · 뉴욕',
+    VNQ:'VNQ — 미국 리츠(부동산) ETF · 뉴욕', VRTX:'버텍스 — 희귀질환 신약 · 나스닥',
+    VTV:'VTV — 미국 가치주 ETF · 뉴욕', VUG:'VUG — 미국 성장주 ETF · 뉴욕',
+    VWO:'VWO — 신흥국 주식 ETF · 뉴욕', WFC:'웰스파고 — 상업은행 · 뉴욕',
+    WMT:'월마트 — 대형 마트 · 뉴욕', XEL:'엑셀에너지 — 전력·가스 유틸리티 · 나스닥',
+    XLB:'XLB — 소재 섹터 ETF · 뉴욕', XLC:'XLC — 통신서비스 섹터 ETF · 뉴욕',
+    XLE:'XLE — 에너지 섹터 ETF · 뉴욕', XLF:'XLF — 금융 섹터 ETF · 뉴욕',
+    XLI:'XLI — 산업재 섹터 ETF · 뉴욕', XLK:'XLK — 기술 섹터 ETF · 뉴욕',
+    XLP:'XLP — 필수소비재 섹터 ETF · 뉴욕', XLRE:'XLRE — 부동산 섹터 ETF · 뉴욕',
+    XLU:'XLU — 유틸리티 섹터 ETF · 뉴욕', XLV:'XLV — 헬스케어 섹터 ETF · 뉴욕',
+    XLY:'XLY — 임의소비재 섹터 ETF · 뉴욕', XOM:'엑슨모빌 — 석유·가스 · 뉴욕',
+    XOP:'XOP — 석유·가스 시추 ETF · 뉴욕'
+  };
+  window.V15_TICKERS = V15_TICKERS;
+})();
+
+  // ============================================================
+  // v15 (2026-08-09) — 초보 친화 개편 렌더러
+  //
+  // 계산 원칙 (B-9):
+  //   · 화면은 백엔드 값을 **재계산하지 않는다**. 백엔드에 있는 값은 그대로 쓴다.
+  //   · 백엔드에 없는 파생값(비율 등)만 V15.pct() 한 곳에서 계산한다.
+  //   · 반올림은 원값으로 합산한 뒤 **마지막에 한 번만** 한다
+  //     (금액 2자리 · % 2자리). 중간 반올림을 더하면 합계가 틀어진다.
+  //   · 합계가 백엔드 값과 어긋나면 콘솔에 경고를 남긴다 (조용한 오차 금지).
+  // ============================================================
+  var V15 = (function() {
+    'use strict';
+
+    var TICKERS = window.V15_TICKERS || {};
+    var POLL_MS = 15000;              // 폴링 하한 15초 (설계서 B-2)
+    var TOL = 0.05;                   // 합계 대사 허용 오차 ($)
+
+    // ---------- 포맷 유틸 (단일 소스) ----------
+    function num(x) {
+      if (x === null || x === undefined || x === '') return null;
+      var v = typeof x === 'number' ? x : parseFloat(x);
+      return isFinite(v) ? v : null;
+    }
+    function money(x, digits) {
+      var v = num(x);
+      if (v === null) return '—';
+      return '$' + v.toLocaleString('en-US', {
+        minimumFractionDigits: digits === undefined ? 2 : digits,
+        maximumFractionDigits: digits === undefined ? 2 : digits
+      });
+    }
+    function moneySigned(x) {
+      var v = num(x);
+      if (v === null) return '—';
+      return (v > 0 ? '+' : v < 0 ? '−' : '') + money(Math.abs(v));
+    }
+    function pct(part, whole) {
+      var p = num(part), w = num(whole);
+      if (p === null || w === null || w === 0) return null;
+      return (p / w) * 100;
+    }
+    function pctText(v, signed) {
+      var x = num(v);
+      if (x === null) return '—';
+      var s = x.toFixed(2) + '%';
+      if (!signed) return s;
+      return (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toFixed(2) + '%';
+    }
+    function toneClass(v) {
+      var x = num(v);
+      if (x === null || x === 0) return 'v15-flat';
+      return x > 0 ? 'v15-up' : 'v15-down';
+    }
+    function esc(s) {
+      return String(s === null || s === undefined ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    function tickerDesc(tk) {
+      var t = String(tk || '').toUpperCase();
+      return TICKERS[t] || null;          // 사전에 없으면 null → 티커만 표시
+    }
+    function pmName(key) {
+      var m = (window.NEXUS_PM_META || {})[key];   // 단일 소스
+      return (m && (m.ko || m.name)) || key || '—';
+    }
+    function pmColor(key) {
+      var m = (window.NEXUS_PM_META || {})[key];
+      return (m && m.color) || 'var(--fg-muted)';
+    }
+    function reconcile(label, computed, backend) {
+      var c = num(computed), b = num(backend);
+      if (c === null || b === null) return;
+      if (Math.abs(c - b) > TOL) {
+        console.warn('[v15 합계 불일치] ' + label +
+                     ' 화면합=' + c.toFixed(2) + ' 백엔드=' + b.toFixed(2) +
+                     ' 차=' + (c - b).toFixed(2));
+      }
+    }
+    function els(key) {
+      return Array.prototype.slice.call(
+        document.querySelectorAll('[data-v15="' + key + '"]'));
+    }
+    function setAll(key, html) {
+      els(key).forEach(function(el) { el.innerHTML = html; });
+    }
+    function setText(key, text, cls) {
+      els(key).forEach(function(el) {
+        el.textContent = text;
+        if (cls) el.className = el.className.replace(/\bv15-(up|down|flat)\b/g, '').trim() + ' ' + cls;
+      });
+    }
+    function api(path) {
+      var b = window.nexusBackend;
+      var base = (b && b.url) ? b.url : '';
+      return fetch(base + path, { cache: 'no-store' }).then(function(r) {
+        if (!r.ok) throw new Error(path + ' ' + r.status);
+        return r.json();
+      });
+    }
+
+    // ---------- 상태 ----------
+    var state = { navDays: 30, account: null, navHist: null, pm: null, orders: null };
+
+    // ============================================================
+    // 홈 — NAV 대형
+    // ============================================================
+    function renderNav(acc) {
+      if (!acc) return;
+      ['nav-value', 'pc-nav-value'].forEach(function(k) {
+        setText(k, money(acc.nav_usd));
+      });
+      // 손익: 백엔드 unrealized_pnl_usd 그대로. % 는 원가 대비 (여기서만 계산).
+      var unreal = num(acc.unrealized_pnl_usd);
+      var mv = num(acc.stock_market_value_usd);
+      var cost = (unreal !== null && mv !== null) ? (mv - unreal) : null;
+      var rate = (cost && cost > 0) ? pct(unreal, cost) : null;
+      var txt = (unreal === null) ? '—'
+        : moneySigned(unreal) + (rate === null ? '' : ' (' + pctText(rate, true) + ')');
+      ['nav-delta', 'pc-nav-delta'].forEach(function(k) {
+        setText(k, txt, toneClass(unreal));
+      });
+      var krwRate = window.__nexusFxRate || null;
+      ['nav-krw', 'pc-nav-krw'].forEach(function(k) {
+        setText(k, krwRate ? ('약 ₩' + Math.round(num(acc.nav_usd) * krwRate).toLocaleString('ko-KR')) : '');
+      });
+    }
+
+    // ============================================================
+    // 홈 — 자산 그래프 (SVG, 결측일 끊김)
+    // ============================================================
+    function renderNavChart(hist) {
+      var pcKeys = ['nav-chart', 'pc-nav-chart'];
+      var noteKeys = ['nav-chart-note', 'pc-nav-chart-note'];
+      if (!hist || !hist.entries || hist.entries.length === 0) {
+        var msg = hist && hist.started_at
+          ? '아직 그릴 만큼 쌓이지 않았습니다 (기록 시작 ' + esc(hist.started_at) + ')'
+          : '기록 시작 전입니다 — 첫 기록은 다음 05:10 검사 때 쌓입니다.<br>' +
+            '<span style="opacity:.75">없는 과거는 만들지 않습니다.</span>';
+        pcKeys.forEach(function(k) { setAll(k, '<div class="v15-empty">' + msg + '</div>'); });
+        noteKeys.forEach(function(k) { setAll(k, ''); });
+        return;
+      }
+      var rows = hist.entries.slice();
+      var vals = rows.map(function(r) { return num(r.nav_usd); });
+      var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+      if (hi === lo) { hi = lo + 1; }
+      var W = 600, H = 150, PAD = 6;
+      function x(i) { return rows.length === 1 ? W / 2 : PAD + (i * (W - PAD * 2)) / (rows.length - 1); }
+      function y(v) { return H - PAD - ((v - lo) / (hi - lo)) * (H - PAD * 2); }
+
+      // 결측일(달력상 빠진 평일)에서 선을 끊는다 — 가짜 보간 금지.
+      var segs = [], cur = [];
+      for (var i = 0; i < rows.length; i++) {
+        if (i > 0) {
+          var d0 = new Date(rows[i - 1].date + 'T00:00:00Z');
+          var d1 = new Date(rows[i].date + 'T00:00:00Z');
+          var gapDays = Math.round((d1 - d0) / 86400000);
+          if (gapDays > 3) { if (cur.length) segs.push(cur); cur = []; }
+        }
+        cur.push([x(i), y(vals[i])]);
+      }
+      if (cur.length) segs.push(cur);
+
+      var paths = segs.map(function(sg) {
+        if (sg.length === 1) {
+          return '<circle cx="' + sg[0][0].toFixed(1) + '" cy="' + sg[0][1].toFixed(1) +
+                 '" r="2.5" fill="var(--accent, #2563eb)"/>';
+        }
+        return '<polyline fill="none" stroke="var(--accent, #2563eb)" stroke-width="2" ' +
+               'stroke-linejoin="round" stroke-linecap="round" points="' +
+               sg.map(function(p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') + '"/>';
+      }).join('');
+
+      var svg = '<svg class="v15-chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="자산 흐름">' +
+        '<line x1="' + PAD + '" y1="' + (H - PAD) + '" x2="' + (W - PAD) + '" y2="' + (H - PAD) +
+        '" stroke="var(--line)" stroke-width="1"/>' + paths + '</svg>';
+      pcKeys.forEach(function(k) { setAll(k, svg); });
+
+      var chg = hist.window_change_pct;
+      var note = rows.length + '일 기록 · ' + esc(rows[0].date) + ' ~ ' + esc(rows[rows.length - 1].date) +
+                 (chg === null || chg === undefined ? '' : ' · 구간 ' + pctText(chg, true)) +
+                 (segs.length > 1 ? ' · 선이 끊긴 곳은 기록이 없는 날입니다' : '');
+      noteKeys.forEach(function(k) { setAll(k, note); });
+    }
+
+    // ============================================================
+    // 홈 — PM 실시간 현황
+    // ============================================================
+    var STATUS_LABEL = {
+      buying_review: { t: '매수 검토', c: 'buy' },
+      selling_review: { t: '매도 검토', c: 'sell' },
+      watching: { t: '관망', c: 'watch' },
+      idle: { t: '대기', c: 'idle' }
+    };
+    function renderPmActivity(d) {
+      if (!d || !d.items) return;
+      var html = d.items.map(function(it) {
+        var st = STATUS_LABEL[it.status] || { t: it.status || '—', c: 'idle' };
+        var ts = it.top_signal;
+        var meta;
+        if (it.status === 'selling_review' && it.sell_candidate) {
+          meta = esc(it.sell_candidate.ticker) + ' 신호 약화 ' +
+                 num(it.sell_candidate.score).toFixed(2) + ' <span class="v15-term">(참고)</span>';
+        } else if (ts) {
+          meta = esc(ts.ticker) + ' ' + num(ts.score).toFixed(2) +
+                 ' / 기준 ' + num(it.threshold && it.threshold.buy).toFixed(2);
+        } else {
+          meta = '신호 없음';
+        }
+        var uni = it.universe_count === null || it.universe_count === undefined ? '—' : it.universe_count;
+        return '<div class="v15-pm-row">' +
+          '<span class="v15-pm-dot" style="background:' + pmColor(it.pm) + '"></span>' +
+          '<span class="v15-pm-name">' + esc(it.name || pmName(it.pm)) + '</span>' +
+          '<span class="v15-pm-meta">' + meta + ' · 종목 ' + uni + '개' +
+          (it.capital_pct === null || it.capital_pct === undefined ? '' : ' · 자본 ' + it.capital_pct + '%') +
+          '</span>' +
+          '<span class="v15-badge ' + st.c + '">' + st.t + '</span>' +
+          '</div>';
+      }).join('');
+      ['pm-grid', 'pc-pm-grid'].forEach(function(k) { setAll(k, html); });
+      var bs = d.by_status || {};
+      var sum = (d.in_session ? '장중' : '장외') + ' · 매수검토 ' + (bs.buying_review || 0) +
+                ' · 매도검토 ' + (bs.selling_review || 0) + ' · 관망 ' + (bs.watching || 0) +
+                ' · 대기 ' + (bs.idle || 0);
+      ['pm-summary', 'pc-pm-summary'].forEach(function(k) { setAll(k, esc(sum)); });
+    }
+
+    // ============================================================
+    // 보유 — 4칸 요약 + PM 그룹
+    // ============================================================
+    // 포지션 단일 소스 — /dashboard/api/snapshot 의 positions 를 우선한다.
+    // 이 배열은 백엔드가 이미 pm_key·market_price·unrealized_pnl 을 붙여 준다.
+    // (화면이 PM 을 추측하지 않는다 — 귀속은 백엔드 기록이 정본)
+    function positionsOf(acc) {
+      var snapPos = (state.snapshot && state.snapshot.positions) || null;
+      if (snapPos && snapPos.length) return snapPos;
+      return (acc && acc.positions) || [];
+    }
+    // 주문 원장에서 이 종목을 실제로 체결한 PM (백엔드 기록 조회일 뿐 추정 아님)
+    function pmFromLedger(tk) {
+      var rows = (state.merged && state.merged.items) || [];
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].status === 'filled' &&
+            String(rows[i].ticker || '').toUpperCase() === tk &&
+            String(rows[i].side || '').toLowerCase() === 'buy') {
+          return rows[i].pm || null;
+        }
+      }
+      return null;
+    }
+    function renderHoldings(acc) {
+      if (!acc) return;
+      var pos = positionsOf(acc);
+      if (!pos.length) return;
+      // 원가는 원값으로 합산 후 **마지막에 한 번** 반올림 (B-9)
+      var costSum = 0;
+      pos.forEach(function(p) {
+        var q = num(p.quantity), c = num(p.avg_cost);
+        if (q !== null && c !== null) costSum += q * c;
+      });
+      var mv = num(acc.stock_market_value_usd);
+      var unreal = num(acc.unrealized_pnl_usd);
+      reconcile('보유 원가 + 미실현 = 평가액', costSum + (unreal || 0), mv);
+      var rate = costSum > 0 ? pct(unreal, costSum) : null;
+
+      var stat =
+        '<div class="v15-stat"><span class="k">총 투자 원금</span><span class="v">' + money(costSum) + '</span>' +
+          '<span class="s">산 가격 기준</span></div>' +
+        '<div class="v15-stat"><span class="k">평가액</span><span class="v">' + money(mv) + '</span>' +
+          '<span class="s">지금 팔면 받는 값</span></div>' +
+        '<div class="v15-stat"><span class="k">수익 <span class="v15-term">(미실현: 아직 안 팔아 확정 전)</span></span>' +
+          '<span class="v ' + toneClass(unreal) + '">' + moneySigned(unreal) + '</span>' +
+          '<span class="s ' + toneClass(rate) + '">' + pctText(rate, true) + '</span></div>' +
+        '<div class="v15-stat"><span class="k">기대 수익률</span><span class="v">연 7.2%</span>' +
+          '<span class="s">16년 시뮬레이션 기준</span></div>';
+      ['hold-stat4', 'hold-stat4-pc'].forEach(function(k) { setAll(k, stat); });
+
+      // PM 그룹
+      var groups = {};
+      pos.forEach(function(p) {
+        // 1순위 snapshot.pm_key, 2순위 주문 원장의 체결 기록. 둘 다 없으면 미상.
+        // (어느 쪽이든 백엔드가 남긴 값이다 — 화면이 추측하지 않는다)
+        var pm = p.pm_key || pmFromLedger(String(p.symbol || '').toUpperCase()) || '_unknown';
+        (groups[pm] = groups[pm] || []).push(p);
+      });
+      var html = Object.keys(groups).map(function(pm) {
+        var list = groups[pm];
+        var gCost = 0;
+        list.forEach(function(p) {
+          var q = num(p.quantity), c = num(p.avg_cost);
+          if (q !== null && c !== null) gCost += q * c;
+        });
+        var rows = list.map(function(p) {
+          var tk = String(p.symbol || '').toUpperCase();
+          var q = num(p.quantity), c = num(p.avg_cost);
+          var mp = num(p.market_price), pv = num(p.market_value), up = num(p.unrealized_pnl);
+          // 수익률은 백엔드가 주면 그 값, 없으면 원가 대비로 여기서만 계산 (B-9)
+          var rp = num(p.unrealized_pnl_pct);
+          if (rp === null && up !== null && q !== null && c !== null && q * c > 0) rp = pct(up, q * c);
+          var desc = tickerDesc(tk);
+          return '<div class="v15-pos-row">' +
+            '<div class="v15-pos-top"><span class="v15-tk">' + esc(tk) + '</span>' +
+            '<span class="v15-tk-desc">' + (desc ? esc(desc) : '<span style="opacity:.6">소개 없음</span>') + '</span></div>' +
+            '<div class="v15-pos-nums">' +
+              '<span>주수 <b>' + (q === null ? '—' : q.toLocaleString()) + '</b></span>' +
+              '<span>평단가 <b>' + money(c) + '</b> <span class="v15-term">(평균 매수 가격)</span></span>' +
+              '<span>현재가 <b>' + (mp === null ? '기록 없음' : money(mp)) + '</b></span>' +
+              '<span>평가액 <b>' + (pv === null ? '기록 없음' : money(pv)) + '</b></span>' +
+              '<span class="' + toneClass(up) + '">손익 <b class="' + toneClass(up) + '">' +
+                (up === null ? '기록 없음' : moneySigned(up)) + '</b></span>' +
+              '<span class="' + toneClass(rp) + '">수익률 <b class="' + toneClass(rp) + '">' +
+                (rp === null ? '기록 없음' : pctText(rp, true)) + '</b></span>' +
+            '</div></div>';
+        }).join('');
+        var label = pm === '_unknown' ? '담당 기록 없음' : pmName(pm);
+        return '<div class="v15-group open">' +
+          '<div class="v15-group-head" data-v15-toggle="1">' +
+            '<span class="caret">▶</span>' +
+            '<span class="v15-pm-dot" style="background:' + (pm === '_unknown' ? 'var(--fg-muted)' : pmColor(pm)) + '"></span>' +
+            '<span class="v15-pm-name">' + esc(label) + '</span>' +
+            '<span class="v15-pm-meta">' + list.length + '종목 · 원금 ' + money(gCost) + '</span>' +
+          '</div><div class="v15-group-body">' + rows + '</div></div>';
+      }).join('');
+      ['hold-groups', 'hold-groups-pc'].forEach(function(k) {
+        setAll(k, html || '<div class="v15-empty">보유 종목이 없습니다.</div>');
+      });
+      ['hold-meta', 'hold-meta-pc'].forEach(function(k) {
+        setAll(k, pos.length + '종목');
+      });
+    }
+
+    // ============================================================
+    // 방어 — 게이트 실시간 수치 + 집계 + 로그
+    // ============================================================
+    function renderDefense(acc, counts, held, orders) {
+      var cash = num(acc && acc.cash_usd), nav = num(acc && acc.nav_usd);
+      var cashPct = pct(cash, nav);
+      var posCount = acc ? acc.positions_count : null;
+      var conn = !!(acc && acc.nav_usd);
+      var g = [];
+      g.push(gate('현금 하한', pctText(cashPct), '전체의 몇 %가 현금인가 · 최소 10% 유지',
+                  cashPct === null ? '' : (cashPct >= 10 ? 'ok' : 'bad')));
+      g.push(gate('종목 수 (G10)', (posCount === null ? '—' : posCount + ' / 8'),
+                  '동시에 가질 수 있는 종목 수 상한',
+                  posCount === null ? '' : (posCount >= 8 ? 'bad' : 'ok')));
+      var dayUse = counts ? (counts.filled || 0) : null;
+      g.push(gate('일일 예산', (dayUse === null ? '—' : dayUse + '건 체결'),
+                  '하루에 쓸 수 있는 매매 금액 한도(NAV 3%)', 'ok'));
+      g.push(gate('Gateway 연결', conn ? '연결됨' : '끊김',
+                  '증권사(IBKR) 와 이어져 있는가', conn ? 'ok' : 'bad'));
+      g.push(gate('킬 스위치', '해제', '누르면 전 매매를 즉시 멈추는 비상 정지', 'ok'));
+      g.push(gate('보류 대기', (held === null || held === undefined ? '—' : held + '건'),
+                  '결재는 됐지만 아직 못 나간 주문',
+                  (held || 0) > 0 ? 'warn' : 'ok'));
+      ['def-gates', 'pc-def-gates'].forEach(function(k) { setAll(k, g.join('')); });
+      var bad = g.filter(function(h) { return h.indexOf('v15-gate-item bad') >= 0; }).length;
+      ['def-meta', 'pc-def-meta'].forEach(function(k) {
+        setAll(k, bad === 0 ? '전 항목 정상' : (bad + '개 항목 주의'));
+      });
+
+      var c = counts || {};
+      var blocked = (c.aegis_rejected || 0) + (c.broker_rejected || 0);
+      var checked = (c.filled || 0) + blocked + (c.submitted || 0);
+      var stat =
+        '<div class="v15-stat"><span class="k">검사</span><span class="v">' + checked + '</span></div>' +
+        '<div class="v15-stat"><span class="k">통과</span><span class="v v15-up">' + ((c.filled || 0) + (c.submitted || 0)) + '</span></div>' +
+        '<div class="v15-stat"><span class="k">차단</span><span class="v v15-down">' + blocked + '</span></div>' +
+        '<div class="v15-stat"><span class="k">체결</span><span class="v">' + (c.filled || 0) + '</span></div>';
+      ['def-count', 'pc-def-count'].forEach(function(k) { setAll(k, stat); });
+
+      var rows = ((orders && orders.items) || []).slice().sort(function(a, b) {
+        return String(b.decided_at || b.created_at || '').localeCompare(String(a.decided_at || a.created_at || ''));
+      }).slice(0, 40);
+      var log = rows.map(function(o) {
+        var t = String(o.decided_at || o.created_at || '').slice(5, 16).replace('T', ' ');
+        return '<div class="v15-logrow"><span class="t">' + esc(t) + '</span>' +
+          '<span>' + esc(String(o.ticker || '')) + ' — ' + esc(plainReason(o)) + '</span></div>';
+      }).join('');
+      ['def-log', 'pc-def-log'].forEach(function(k) {
+        setAll(k, log || '<div class="v15-empty">기록 없음</div>');
+      });
+    }
+    function gate(name, val, desc, tone) {
+      return '<div class="v15-gate-item ' + (tone || '') + '">' +
+        '<span class="k">' + esc(name) + '</span>' +
+        '<span class="v">' + val + '</span>' +
+        '<span class="s">' + esc(desc) + '</span></div>';
+    }
+    // 게이트 사유를 일상어로 (백엔드 문자열을 그대로 노출하지 않는다)
+    function plainReason(o) {
+      var st = String(o.status || '');
+      var r = String(o.state_reason || '');
+      if (st === 'filled') return '샀습니다 (체결)';
+      if (st === 'rejected') return '내가 반려했습니다';
+      if (st === 'expired') return '기한이 지나 자동 폐기';
+      if (st === 'held') return '조건이 안 맞아 잠시 대기 중';
+      if (st === 'pending') return '내 결재를 기다리는 중';
+      if (st === 'submitted') return '증권사에 접수됨';
+      if (st === 'broker_rejected') return '증권사가 거절했습니다';
+      if (st === 'submit_failed') return '보내는 중 실패했습니다';
+      if (st === 'aegis_rejected') {
+        if (r.indexOf('포지션 수') >= 0) return '종목 수가 꽉 차서 막음 (8개 한도)';
+        if (r.indexOf('단일 종목') >= 0) return '한 종목에 너무 많이 몰려서 막음';
+        if (r.indexOf('섹터') >= 0) return '같은 업종에 너무 몰려서 막음';
+        if (r.indexOf('현금') >= 0) return '현금이 최소선 아래로 내려가서 막음';
+        if (r.indexOf('레버리지') >= 0) return '빚을 내는 셈이 되어 막음';
+        return '방어망이 막았습니다';
+      }
+      return st || '—';
+    }
+
+    // ============================================================
+    // 이력 — 보유 전체 · PM 요약 · 거래 건별
+    // ============================================================
+    function renderHistory(acc, orders) {
+      // (1) 현재 보유 전체
+      var pos = positionsOf(acc);
+      var hh = pos.map(function(p) {
+        var tk = String(p.symbol || '').toUpperCase();
+        var d = tickerDesc(tk), up = num(p.unrealized_pnl);
+        return '<div class="v15-pos-row"><div class="v15-pos-top">' +
+          '<span class="v15-tk">' + esc(tk) + '</span>' +
+          '<span class="v15-tk-desc">' + (d ? esc(d) : '<span style="opacity:.6">소개 없음</span>') + '</span>' +
+          '<span class="' + toneClass(up) + '">' + (up === null ? '기록 없음' : moneySigned(up)) + '</span>' +
+          '</div></div>';
+      }).join('');
+      ['hist-holdings', 'hist-holdings-pc'].forEach(function(k) {
+        setAll(k, hh || '<div class="v15-empty">보유 없음</div>');
+      });
+      ['hist-hold-meta', 'hist-hold-meta-pc'].forEach(function(k) { setAll(k, pos.length + '종목'); });
+
+      var rows = (orders && orders.items) || [];
+      // (2) PM 요약
+      var byPm = {};
+      rows.forEach(function(o) {
+        var k = o.pm || '_unknown';
+        var b = byPm[k] = byPm[k] || { filled: 0, blocked: 0, total: 0, notional: 0 };
+        b.total++;
+        if (o.status === 'filled') { b.filled++; b.notional += (num(o.notional_usd) || 0); }
+        if (o.status === 'aegis_rejected' || o.status === 'broker_rejected') b.blocked++;
+      });
+      var pmHtml = Object.keys(byPm).map(function(k) {
+        var b = byPm[k];
+        return '<div class="v15-pm-row">' +
+          '<span class="v15-pm-dot" style="background:' + pmColor(k) + '"></span>' +
+          '<span class="v15-pm-name">' + esc(pmName(k)) + '</span>' +
+          '<span class="v15-pm-meta">주문 ' + b.total + '건 · 체결 ' + b.filled +
+          '건 · 막힘 ' + b.blocked + '건 · 산 금액 ' + money(b.notional) + '</span></div>';
+      }).join('');
+      ['hist-pm', 'hist-pm-pc'].forEach(function(k) {
+        setAll(k, pmHtml || '<div class="v15-empty">기록 없음</div>');
+      });
+
+      // (3) 거래 건별
+      var sorted = rows.slice().sort(function(a, b) {
+        return String(b.decided_at || b.created_at || '').localeCompare(String(a.decided_at || a.created_at || ''));
+      }).slice(0, 60);
+      var tHtml = sorted.map(function(o) { return tradeCard(o); }).join('');
+      ['hist-trades', 'hist-trades-pc'].forEach(function(k) {
+        setAll(k, tHtml || '<div class="v15-empty">거래 기록 없음</div>');
+      });
+      ['hist-trade-meta', 'hist-trade-meta-pc'].forEach(function(k) {
+        setAll(k, '최근 ' + sorted.length + '건');
+      });
+    }
+
+    function tradeCard(o) {
+      var tk = String(o.ticker || '').toUpperCase();
+      var side = String(o.side || '').toLowerCase();
+      var q = num(o.quantity), est = num(o.price_estimate), notional = num(o.notional_usd);
+      var bo = (o.metadata && o.metadata.broker_outcome) || null;
+      var fill = bo ? num(bo.fill_price) : null;
+      var desc = tickerDesc(tk);
+
+      // 슬리피지 — 백엔드에 없는 파생값이므로 여기서만 계산
+      var slip = null;
+      if (fill !== null && est !== null && est > 0) {
+        slip = ((fill - est) / est) * 10000 * (side === 'buy' ? 1 : -1);
+      }
+      var calc = '주수 ' + (q === null ? '—' : q.toLocaleString()) +
+                 ' × ' + money(fill !== null ? fill : est) +
+                 ' = <b>' + money(notional) + '</b>';
+      var extra = '';
+      if (fill !== null && est !== null) {
+        extra = '<div class="v15-pos-nums"><span>예상가 ' + money(est) + '</span>' +
+          '<span>체결가 <b>' + money(fill) + '</b></span>' +
+          (slip === null ? '' : '<span>슬리피지 <b>' + (slip > 0 ? '+' : '') + slip.toFixed(1) +
+            'bp</b> <span class="v15-term">(예상가와 체결가의 차이)</span></span>') +
+          '<span>수수료 <span style="opacity:.6">기록 없음</span></span></div>';
+      }
+      // 산/판 이유 — rationale 있으면, 없으면 정직하게 "기록 없음"
+      var whyLabel = (side === 'sell') ? '왜 팔았나' : '왜 샀나';
+      var why;
+      var r = o.rationale;
+      if (r && (r.reason_text || (r.signal_score !== null && r.signal_score !== undefined))) {
+        var sc = num(r.signal_score), th = num(r.threshold);
+        why = '<b>' + whyLabel + '</b> — ' + (sc !== null && th !== null
+          ? '신호 점수 ' + sc.toFixed(2) + ' ≥ 기준 ' + th.toFixed(2) + '<br>'
+          : '') + esc(r.reason_text || '');
+      } else {
+        why = '<b>' + whyLabel + '</b> — <span style="opacity:.6">기록 없음</span> ' +
+              '<span class="v15-term">(이 기능이 생기기 전 주문입니다)</span>';
+      }
+      var pnlLine = '';
+      if (o.status === 'filled') {
+        pnlLine = '<span class="v15-term">진행 손익은 보유 탭에서 확인</span>';
+      }
+      return '<div class="v15-trade">' +
+        '<div class="v15-trade-head">' +
+          '<span class="v15-side ' + (side === 'sell' ? 'sell' : 'buy') + '">' +
+            (side === 'sell' ? '매도' : '매수') + '</span>' +
+          '<span class="v15-tk">' + esc(tk) + '</span>' +
+          '<span class="v15-tk-desc">' + (desc ? esc(desc) : '<span style="opacity:.6">소개 없음</span>') + '</span>' +
+          '<span class="v15-badge ' + (o.status === 'filled' ? 'buy' : o.status === 'aegis_rejected' ? 'sell' : 'idle') + '">' +
+            esc(plainReason(o)) + '</span>' +
+        '</div>' +
+        '<div class="v15-calc">' + calc + '</div>' + extra +
+        '<div class="v15-why">' + why + ' ' + pnlLine + '</div></div>';
+    }
+
+    // ============================================================
+    // 승인 — 요청 → 검사 → 승인 → 체결 타임라인
+    // ============================================================
+    function renderApproval(orders, acc) {
+      var rows = ((orders && orders.items) || []).slice().sort(function(a, b) {
+        return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+      }).slice(0, 30);
+      var nav = num(acc && acc.nav_usd);
+      var html = rows.map(function(o) {
+        var tk = String(o.ticker || '').toUpperCase();
+        var q = num(o.quantity), est = num(o.price_estimate), notional = num(o.notional_usd);
+        var navPct = pct(notional, nav);
+        var desc = tickerDesc(tk);
+        var st = String(o.status || '');
+        var decided = st !== 'pending';
+        var executed = ['filled', 'submitted'].indexOf(st) >= 0;
+        var failed = ['aegis_rejected', 'broker_rejected', 'submit_failed', 'rejected', 'expired'].indexOf(st) >= 0;
+        var resultBadge = st === 'filled' ? ['체결', 'buy']
+          : st === 'rejected' ? ['반려', 'sell']
+          : st === 'expired' ? ['만료', 'idle']
+          : st === 'aegis_rejected' ? ['방어망 차단', 'sell']
+          : st === 'held' ? ['대기 중', 'watch']
+          : st === 'pending' ? ['내 결재 대기', 'watch']
+          : [st, 'idle'];
+        function step(label, done, bad) {
+          return '<span class="v15-tl-step ' + (bad ? 'fail' : done ? 'done' : '') + '">' +
+                 '<span class="dot"></span>' + label + '</span>';
+        }
+        return '<div class="v15-trade">' +
+          '<div class="v15-trade-head">' +
+            '<span class="v15-pm-dot" style="background:' + pmColor(o.pm) + '"></span>' +
+            '<span class="v15-pm-name">' + esc(pmName(o.pm)) + '</span>' +
+            '<span class="v15-tk">' + esc(tk) + '</span>' +
+            '<span class="v15-tk-desc">' + (desc ? esc(desc) : '<span style="opacity:.6">소개 없음</span>') + '</span>' +
+            '<span class="v15-badge ' + resultBadge[1] + '">' + resultBadge[0] + '</span>' +
+          '</div>' +
+          '<div class="v15-calc">주수 ' + (q === null ? '—' : q.toLocaleString()) + ' × ' + money(est) +
+            ' = <b>' + money(notional) + '</b>' +
+            (navPct === null ? '' : ' <span class="v15-term">(내 돈의 ' + pctText(navPct) + ')</span>') + '</div>' +
+          '<div class="v15-tl">' +
+            step('요청', true, false) + '<span class="v15-tl-arrow">›</span>' +
+            step('검사', decided, false) + '<span class="v15-tl-arrow">›</span>' +
+            step('승인', decided && st !== 'rejected' && st !== 'expired', st === 'rejected' || st === 'expired') +
+            '<span class="v15-tl-arrow">›</span>' +
+            step('체결', executed, failed && st !== 'rejected' && st !== 'expired') +
+          '</div></div>';
+      }).join('');
+      ['appr-timeline', 'appr-timeline-pc'].forEach(function(k) {
+        setAll(k, html || '<div class="v15-empty">주문 기록 없음</div>');
+      });
+      var pend = rows.filter(function(o) { return o.status === 'pending'; }).length;
+      ['appr-meta', 'appr-meta-pc'].forEach(function(k) {
+        setAll(k, '최근 ' + rows.length + '건 · 결재 대기 ' + pend + '건');
+      });
+    }
+
+    // ============================================================
+    // 설정 — 메뉴 순서 편집 (끌기 · localStorage · 기본 순서 폴백)
+    // ============================================================
+    var MENU_DEFAULT = [
+      { tab: 'home', label: '홈' }, { tab: 'positions', label: '보유' },
+      { tab: 'defense', label: '방어' }, { tab: 'history', label: '이력' },
+      { tab: 'approval', label: '승인' }, { tab: 'settings', label: '설정' }
+    ];
+    var MENU_KEY = 'nexus.v15.menuOrder';
+    function menuOrder() {
+      try {
+        var raw = JSON.parse(localStorage.getItem(MENU_KEY) || 'null');
+        if (!Array.isArray(raw)) return MENU_DEFAULT.slice();
+        var valid = MENU_DEFAULT.map(function(m) { return m.tab; });
+        var out = raw.filter(function(t) { return valid.indexOf(t) >= 0; });
+        valid.forEach(function(t) { if (out.indexOf(t) < 0) out.push(t); });   // 누락 폴백
+        return out.map(function(t) {
+          return MENU_DEFAULT[MENU_DEFAULT.map(function(m) { return m.tab; }).indexOf(t)];
+        });
+      } catch (e) {
+        return MENU_DEFAULT.slice();
+      }
+    }
+    function applyMenuOrder() {
+      var order = menuOrder();
+      [['.m-tabbar', '.m-tabbtn'], ['.d-tabbar', '.d-tabbtn']].forEach(function(pair) {
+        var bar = document.querySelector(pair[0]);
+        if (!bar) return;
+        order.forEach(function(m) {
+          var btn = bar.querySelector(pair[1] + '[data-tab="' + m.tab + '"]');
+          if (btn) bar.appendChild(btn);
+        });
+      });
+    }
+    function renderMenuEditor() {
+      var order = menuOrder();
+      var html = order.map(function(m, i) {
+        return '<div class="v15-menu-item" draggable="true" data-tab="' + m.tab + '">' +
+          '<span class="grip">⠿</span><span class="ord">' + (i + 1) + '</span>' +
+          '<span>' + esc(m.label) + '</span></div>';
+      }).join('');
+      ['menu-order', 'pc-menu-order'].forEach(function(k) { setAll(k, html); });
+      ['menu-order-note', 'pc-menu-order-note'].forEach(function(k) {
+        setAll(k, '이 기기에만 저장됩니다');
+      });
+    }
+    function bindMenuDnd() {
+      var dragging = null;
+      document.addEventListener('dragstart', function(e) {
+        var it = e.target.closest && e.target.closest('.v15-menu-item');
+        if (!it) return;
+        dragging = it; it.classList.add('dragging');
+      });
+      document.addEventListener('dragend', function() {
+        if (dragging) dragging.classList.remove('dragging');
+        dragging = null;
+      });
+      document.addEventListener('dragover', function(e) {
+        var box = e.target.closest && e.target.closest('.v15-menu-edit');
+        if (!box || !dragging || !box.contains(dragging)) return;
+        e.preventDefault();
+        var over = e.target.closest('.v15-menu-item');
+        if (!over || over === dragging) return;
+        var rect = over.getBoundingClientRect();
+        var after = (e.clientY - rect.top) > rect.height / 2;
+        box.insertBefore(dragging, after ? over.nextSibling : over);
+      });
+      document.addEventListener('drop', function(e) {
+        var box = e.target.closest && e.target.closest('.v15-menu-edit');
+        if (!box) return;
+        e.preventDefault();
+        var tabs = Array.prototype.slice.call(box.querySelectorAll('.v15-menu-item'))
+          .map(function(el) { return el.dataset.tab; });
+        try { localStorage.setItem(MENU_KEY, JSON.stringify(tabs)); } catch (err) {}
+        applyMenuOrder(); renderMenuEditor();
+        if (window.nexusToast) window.nexusToast('메뉴 순서 저장됨', 'ok');
+      });
+      document.addEventListener('click', function(e) {
+        var btn = e.target.closest && e.target.closest('[data-v15-action="menu-reset"]');
+        if (!btn) return;
+        try { localStorage.removeItem(MENU_KEY); } catch (err) {}
+        applyMenuOrder(); renderMenuEditor();
+        if (window.nexusToast) window.nexusToast('기본 순서로 되돌림', 'ok');
+      });
+    }
+
+    // 그룹 접기/펼치기
+    function bindGroupToggle() {
+      document.addEventListener('click', function(e) {
+        var h = e.target.closest && e.target.closest('[data-v15-toggle]');
+        if (!h) return;
+        var g = h.closest('.v15-group');
+        if (g) g.classList.toggle('open');
+      });
+    }
+    // 기간 버튼
+    function bindRange() {
+      document.addEventListener('click', function(e) {
+        var b = e.target.closest && e.target.closest('.v15-range button');
+        if (!b) return;
+        state.navDays = parseInt(b.dataset.days, 10) || 30;
+        document.querySelectorAll('.v15-range button').forEach(function(x) {
+          x.classList.toggle('active', parseInt(x.dataset.days, 10) === state.navDays);
+        });
+        loadNavHistory();
+      });
+    }
+
+    // ============================================================
+    // 데이터 적재
+    // ============================================================
+    function loadNavHistory() {
+      return api('/nav/history?days=' + state.navDays).then(function(d) {
+        state.navHist = d; renderNavChart(d);
+      }).catch(function(e) {
+        console.warn('[v15] /nav/history 실패', e);
+        renderNavChart(null);
+      });
+    }
+    function refresh() {
+      var pAcc = api('/broker/account').then(function(d) { state.account = d; })
+        .catch(function(e) { console.warn('[v15] /broker/account 실패', e); });
+      var pPm = api('/pm/activity').then(function(d) { state.pm = d; })
+        .catch(function(e) { console.warn('[v15] /pm/activity 실패', e); });
+      var pOrd = api('/executor/history?limit=80&raw=true').then(function(d) { state.orders = d; })
+        .catch(function(e) { console.warn('[v15] /executor/history 실패', e); });
+      var pPend = api('/executor/pending?raw=true').then(function(d) { state.pending = d; })
+        .catch(function() { state.pending = null; });
+      var pCnt = api('/executor/counts').then(function(d) { state.counts = d; })
+        .catch(function() { state.counts = null; });
+      var pHeld = api('/executor/held').then(function(d) { state.held = d; })
+        .catch(function() { state.held = null; });
+      // 포지션 귀속(pm_key)·종목별 손익은 이 스냅샷이 정본
+      var pSnap = api('/dashboard/api/snapshot').then(function(d) { state.snapshot = d; })
+        .catch(function(e) { console.warn('[v15] /dashboard/api/snapshot 실패', e); });
+
+      return Promise.all([pAcc, pPm, pOrd, pPend, pCnt, pHeld, pSnap]).then(function() {
+        // pending + history 합본 (승인 타임라인·이력 공용)
+        var merged = { items: [] };
+        if (state.pending && state.pending.items) merged.items = merged.items.concat(state.pending.items);
+        if (state.orders && state.orders.items) merged.items = merged.items.concat(state.orders.items);
+        state.merged = merged;
+
+        if (state.account) { renderNav(state.account); }
+        if (state.account) { renderHoldings(state.account); }   // merged 확정 후 호출
+        if (state.pm) renderPmActivity(state.pm);
+        renderHistory(state.account, merged);
+        renderApproval(merged, state.account);
+        renderDefense(state.account, state.counts,
+                      state.held ? state.held.count : null, merged);
+      });
+    }
+
+    function init() {
+      applyMenuOrder(); renderMenuEditor();
+      bindMenuDnd(); bindGroupToggle(); bindRange();
+      loadNavHistory(); refresh();
+      setInterval(refresh, POLL_MS);
+      setInterval(loadNavHistory, 5 * 60 * 1000);   // 이력은 하루 1줄 — 5분이면 충분
+    }
+
+    return {
+      init: init, refresh: refresh, money: money, pct: pct, pctText: pctText,
+      tickerDesc: tickerDesc, plainReason: plainReason, menuOrder: menuOrder,
+      _state: state
+    };
+  })();
+  window.V15 = V15;
+  if (document.readyState !== 'loading') V15.init();
+  else document.addEventListener('DOMContentLoaded', V15.init);
+
 </script>
 
 </body>

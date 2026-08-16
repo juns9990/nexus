@@ -268,6 +268,8 @@ section[data-tab].active { display: block; }
 .btn.ok  { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .btn.no  { color: var(--down); border-color: var(--down); }
 .btn.wide { flex: 0 0 auto; padding: 8px 14px; }
+.t-appr-bulk { display: flex; gap: 8px; margin-bottom: 10px; }
+.t-appr-bulk[hidden] { display: none; }
 .daygrp { border-top: 1px solid var(--line); padding: 12px 0 4px; }
 .daygrp:first-child { border-top: none; }
 .daygrp-h { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
@@ -387,9 +389,20 @@ details.more[open] > summary::before { content: '▾ '; }
   white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg);
 }
 
-/* ---------- PC ---------- */
+/* ==================================================================
+   PC 와이드 레이아웃 (v16.1, 2026-08-16) — ≥1024px 에서만 적용.
+   모바일 렌더는 이 블록 밖이므로 한 픽셀도 바뀌지 않는다.
+
+   여백 리듬 3단계 스케일 — "빈 공간"과 "숨 쉬는 여백"의 차이는 일관성이다.
+     --sp-in   20px  카드 내부 패딩
+     --sp-card 20px  카드 사이
+     --sp-sec  32px  섹션 사이
+   임의 여백(inline margin, .stack 14px 등)은 이 안에서 전부 무효화한다.
+   ================================================================== */
 @media (min-width: 1024px) {
-  body { padding-bottom: 24px; }
+  :root { --sp-in: 20px; --sp-card: 20px; --sp-sec: 32px; }
+
+  body { padding-bottom: var(--sp-sec); }
   .nx-tabs {
     position: sticky; top: 0; bottom: auto;
     grid-template-columns: none; display: flex; justify-content: center; gap: 4px;
@@ -397,11 +410,67 @@ details.more[open] > summary::before { content: '▾ '; }
   }
   .nx-tabs button { height: 48px; flex-direction: row; gap: 7px; font-size: 13px; padding: 0 18px; }
   .nx-head { position: static; }
-  .two { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 14px; align-items: start; }
-  .two > * { margin-top: 0 !important; }
-  .gauges { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .chart-wrap svg { height: 210px; }
+
+  /* 1. 콘텐츠 최대폭 — 초와이드에서 무한 확장 금지 */
+  main { max-width: 1360px; padding: var(--sp-sec) var(--sp-sec) 0; }
+  .card { padding: var(--sp-in); }
+  .card.tight { padding: 14px; }
   #toast { bottom: 24px; }
+  .gauges { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-card); }
+
+  /* 2. 홈 — 좌 7 : 우 5. 좌열 = 내 자산 → 그래프 → 달력, 우열 = 보유.
+        달력을 하단 분리에서 좌열로 끌어올려 그래프 아래 공백을 채운다. */
+  section[data-tab="home"] .night-line { margin-top: 0 !important; margin-bottom: var(--sp-card); }
+  .two {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: var(--sp-card); row-gap: var(--sp-card);
+    align-items: start;            /* 두 열 상단 정렬 */
+    margin-top: 0 !important;
+  }
+  .two > * { margin-top: 0 !important; }
+  .two > .stack     { grid-column: 1; grid-row: 1; }
+  .two > .home-hold { grid-column: 2; grid-row: 1 / span 3; }
+  .two > .home-cal-t{ grid-column: 1; grid-row: 2; margin: 0; align-self: end; }
+  .two > .home-cal  { grid-column: 1; grid-row: 3; }
+  .stack > * + * { margin-top: var(--sp-card); }
+
+  /* 5. 그래프 — 와이드에서 납작해 보이던 것 보정 (210 → 315, 1.5배) */
+  .chart-wrap svg { height: 315px; }
+
+  /* 달력 칸은 정사각(aspect-ratio 1:1)이라 좌열이 넓어질수록 세로로 늘어난다.
+     와이드에서는 높이를 고정해 '큰 빈 칸' 이 되지 않게 한다. */
+  .cal-cell { aspect-ratio: auto; height: 48px; }
+  .cal-dow { padding: 2px 0 6px; }
+
+  /* 3. 매매 — 좌 결재 대기 / 우 이번 주.
+     ★ 두 열을 **독립 흐름**으로 둔다. 한 그리드에 6개 항목을 직접 얹으면 행이
+        열 사이에 공유돼, 높은 '이번 주' 카드가 행 높이를 밀어올리고 결재 목록이
+        화면 밖(y≈3000)으로 내려간다. 열 래퍼는 모바일에서 스타일이 없어 무영향. */
+  section[data-tab="trade"].active {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--sp-sec);
+    align-items: start;
+  }
+  section[data-tab="trade"] > .t-left  { grid-column: 1; min-width: 0; }
+  section[data-tab="trade"] > .t-right { grid-column: 2; min-width: 0; }
+  .t-left > .sec-t:first-child, .t-right > .sec-t:first-child { margin-top: 0; }
+  /* '이번 주' 는 하루 수십 건이 쌓이면 3,000px 를 넘는다. 2열 균형이 무너지고
+     스크롤도 못 쓰게 되므로 화면 높이로 제한하고 카드 안에서 스크롤시킨다. */
+  .t-week { max-height: calc(100vh - 220px); overflow-y: auto; }
+
+  /* 4. 섹션 리듬 통일 — 방어·설정 등 단열 탭 */
+  section[data-tab="defense"].active,
+  section[data-tab="settings"].active { display: flex; flex-direction: column; gap: 0; }
+  .sec-t { margin: var(--sp-sec) 2px 10px; }
+  section[data-tab] > .sec-t:first-child { margin-top: 0; }
+  .stack > * + * { margin-top: var(--sp-card); }
+}
+
+/* 초와이드에서도 좌우 여백이 과하게 벌어지지 않도록 상한만 둔다 */
+@media (min-width: 1600px) {
+  main { padding-left: var(--sp-sec); padding-right: var(--sp-sec); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -455,7 +524,7 @@ details.more[open] > summary::before { content: '▾ '; }
       </div>
 
       <!-- ③ 보유 -->
-      <div class="card">
+      <div class="card home-hold">
         <div class="card-h"><div class="t">보유</div><div class="spacer"></div>
           <div class="slot-note" id="slot-note">—</div></div>
         <div id="holdings"><div class="empty">불러오는 중…</div></div>
@@ -465,45 +534,56 @@ details.more[open] > summary::before { content: '▾ '; }
           <div class="faint" id="reserve-note" style="margin-top:8px;"></div>
         </details>
       </div>
-    </div>
 
-    <!-- ④ 달력 -->
-    <div class="sec-t">달력</div>
-    <div class="card">
-      <div class="cal-head">
-        <button type="button" class="cal-nav" id="cal-prev" aria-label="이전 달">‹</button>
-        <div class="m" id="cal-month">—</div>
-        <button type="button" class="cal-nav" id="cal-next" aria-label="다음 달">›</button>
-        <div class="spacer" style="flex:1 1 auto"></div>
-        <button type="button" class="cal-nav" id="cal-today" aria-label="오늘" style="width:auto;padding:0 10px;font-size:12px;">오늘</button>
+      <!-- ④ 달력
+           v16.1: DOM 상 .two 의 3·4번째 자식으로 들어왔다. 모바일에서 .two 는
+           그냥 블록이라 흐름 순서(내 자산 → 그래프 → 보유 → 달력)와 간격이
+           종전과 동일하다. ≥1024px 에서만 그리드 배치로 좌열에 합류시킨다. -->
+      <div class="sec-t home-cal-t">달력</div>
+      <div class="card home-cal">
+        <div class="cal-head">
+          <button type="button" class="cal-nav" id="cal-prev" aria-label="이전 달">‹</button>
+          <div class="m" id="cal-month">—</div>
+          <button type="button" class="cal-nav" id="cal-next" aria-label="다음 달">›</button>
+          <div class="spacer" style="flex:1 1 auto"></div>
+          <button type="button" class="cal-nav" id="cal-today" aria-label="오늘" style="width:auto;padding:0 10px;font-size:12px;">오늘</button>
+        </div>
+        <div class="cal-grid" id="cal-dow"></div>
+        <div class="cal-grid" id="cal-grid" role="grid"></div>
+        <div class="cal-legend">
+          <span><i class="dot fill"></i>실체결</span>
+          <span><i class="dot event"></i>이벤트</span>
+          <span><i class="dot issue"></i>이슈</span>
+        </div>
+        <div class="day-card" id="day-card"><div class="faint">날짜를 누르면 그날의 실체결·결재·이벤트·일지를 봅니다.</div></div>
       </div>
-      <div class="cal-grid" id="cal-dow"></div>
-      <div class="cal-grid" id="cal-grid" role="grid"></div>
-      <div class="cal-legend">
-        <span><i class="dot fill"></i>실체결</span>
-        <span><i class="dot event"></i>이벤트</span>
-        <span><i class="dot issue"></i>이슈</span>
-      </div>
-      <div class="day-card" id="day-card"><div class="faint">날짜를 누르면 그날의 실체결·결재·이벤트·일지를 봅니다.</div></div>
     </div>
   </section>
 
   <!-- ================= 매매 ================= -->
+  <!-- v16.1: class 만 붙였다 (구조·순서 무변경). ≥1024px 에서 좌=결재 대기,
+       우=이번 주 2열로 배치하는 데 쓰인다. 모바일은 종전 흐름 그대로. -->
   <section data-tab="trade">
-    <div class="sec-t">결재 대기</div>
-    <div id="appr-bulk" hidden style="display:flex;gap:8px;margin-bottom:10px;">
-      <button type="button" class="btn ok" id="bulk-approve">전체 승인</button>
-      <button type="button" class="btn no" id="bulk-reject">전체 반려</button>
+    <div class="t-left">
+      <div class="sec-t t-appr-t">결재 대기</div>
+      <!-- inline style="display:flex" 는 [hidden] 의 display:none 을 이겨버린다.
+           대기 0건에도 버튼이 보이던 원인 — 클래스로 옮긴다. -->
+      <div id="appr-bulk" class="t-appr-bulk" hidden>
+        <button type="button" class="btn ok" id="bulk-approve">전체 승인</button>
+        <button type="button" class="btn no" id="bulk-reject">전체 반려</button>
+      </div>
+      <div id="appr-list" class="t-appr-list"><div class="card"><div class="empty">불러오는 중…</div></div></div>
     </div>
-    <div id="appr-list"><div class="card"><div class="empty">불러오는 중…</div></div></div>
 
-    <div class="sec-t">이번 주</div>
-    <div class="card">
-      <div class="card-h"><div class="t" id="week-range">—</div><div class="spacer"></div>
-        <div class="s" id="week-sum">—</div></div>
-      <div id="week-list"><div class="empty">불러오는 중…</div></div>
+    <div class="t-right">
+      <div class="sec-t t-week-t">이번 주</div>
+      <div class="card t-week">
+        <div class="card-h"><div class="t" id="week-range">—</div><div class="spacer"></div>
+          <div class="s" id="week-sum">—</div></div>
+        <div id="week-list"><div class="empty">불러오는 중…</div></div>
+      </div>
+      <div class="muted t-week-note" style="margin-top:10px;padding:0 2px;">지난주 이전 기록은 홈 달력에서 날짜를 눌러 봅니다.</div>
     </div>
-    <div class="muted" style="margin-top:10px;padding:0 2px;">지난주 이전 기록은 홈 달력에서 날짜를 눌러 봅니다.</div>
   </section>
 
   <!-- ================= 방어 ================= -->

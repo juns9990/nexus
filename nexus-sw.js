@@ -263,7 +263,7 @@
 //   ③ 이력 탭 실체결 항목 pm 코드(sur/nova) → 정본 한국명 + 색점.
 //   ④ 승인 달력 실체결 카드 동일 매핑.
 //   백엔드 무접촉 · 재시작 불필요. PC 원본(app/static) 과 동시 diff 이식.
-const CACHE_VERSION = 'v15.6.0';
+const CACHE_VERSION = 'v16.0.0';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.
@@ -283,6 +283,8 @@ const OPTIONAL_ASSETS = [
 function isApiRequest(url) {
   const p = url.pathname;
   if (p.indexOf('/dashboard/api/') === 0) return true;
+  // v16 — 일지 인덱스는 매일 갱신되는 데이터. 정적 캐시하면 묵는다.
+  if (p.indexOf('/dashboard/nexus-journal.json') === 0) return true;
   if (p.indexOf('/api/') === 0) return true;
   if (p.indexOf('/snapshot') >= 0) return true;
   if (p.indexOf('/health') === 0) return true;

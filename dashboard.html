@@ -198,6 +198,29 @@ section[data-tab].active { display: block; }
 /* ★ 고정 요소 — "뭐 하는 곳 · 시장 · 담당 PM" 한 줄 소개. 어떤 개편에서도 유지한다. */
 .hold-intro { font-size: 12px; color: var(--fg-dim); margin-top: 3px; line-height: 1.45; overflow-wrap: anywhere; }
 .hold-qty { font-family: var(--mono); font-size: 11px; color: var(--fg-faint); margin-top: 4px; }
+/* A-3 — 강신호 예비 슬롯으로 들어온 종목 */
+.badge-res {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.02em;
+  padding: 2px 6px; border-radius: 999px;
+  color: var(--warn); background: var(--warn-fill); white-space: nowrap;
+}
+/* D-3 — 야간 자동 결재 작동 중 한 줄 */
+.night-line {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); border-radius: var(--r);
+  padding: 10px 14px; font-size: 13px; background: var(--card);
+}
+.night-line .dot-on { width: 7px; height: 7px; border-radius: 50%; background: var(--up); flex: 0 0 auto; }
+.night-line .dot-off { width: 7px; height: 7px; border-radius: 50%; background: var(--fg-faint); flex: 0 0 auto; }
+.night-line .lim { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--fg-dim); }
+/* A-2 — PM 슬롯 막대 */
+.pmslot { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line-soft); }
+.pmslot:first-child { border-top: none; }
+.pmslot .nm { flex: 0 0 74px; font-size: 12px; }
+.pmslot .cells { display: flex; gap: 4px; flex: 1 1 auto; }
+.pmslot .cell { width: 15px; height: 15px; border-radius: 4px; border: 1px solid currentColor; }
+.pmslot .cell.on { background: currentColor; }
+.pmslot .n { flex: 0 0 auto; font-family: var(--mono); font-size: 11px; color: var(--fg-dim); }
 .hold-right { flex: 0 0 auto; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .hold-right .amt { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 600; }
 .slot-note { font-size: 12px; color: var(--fg-dim); font-family: var(--mono); }
@@ -336,6 +359,34 @@ details.more[open] > summary::before { content: '▾ '; }
   max-width: calc(100vw - 32px);
 }
 
+/* ---------- 비상정지 배너 · 모달 (E-2 ①③) ---------- */
+#kill-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 120;
+  background: var(--down); color: #fff; text-align: center;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.02em; padding: 10px 14px;
+}
+#modal {
+  position: fixed; inset: 0; z-index: 110;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+#modal[hidden] { display: none; }
+.modal-box {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+  width: 100%; max-width: 720px; max-height: 82vh; display: flex; flex-direction: column;
+}
+.modal-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid var(--line);
+  font-size: 14px; font-weight: 700;
+}
+.modal-head button { margin-left: auto; color: var(--fg-dim); font-size: 15px; }
+#modal-body {
+  margin: 0; padding: 16px; overflow: auto; flex: 1 1 auto;
+  font-family: var(--mono); font-size: 12px; line-height: 1.6;
+  white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg);
+}
+
 /* ---------- PC ---------- */
 @media (min-width: 1024px) {
   body { padding-bottom: 24px; }
@@ -369,7 +420,14 @@ details.more[open] > summary::before { content: '▾ '; }
 <main>
   <!-- ================= 홈 ================= -->
   <section data-tab="home" class="active">
-    <div class="two">
+    <!-- D-3 — 야간 자동 결재 상태 한 줄 -->
+    <div class="night-line" id="night-line" hidden>
+      <span class="dot-on" id="night-dot"></span>
+      <span id="night-txt">—</span>
+      <span class="lim" id="night-lim"></span>
+    </div>
+
+    <div class="two" style="margin-top:14px;">
       <div class="stack">
         <!-- ① 내 자산 -->
         <div class="card">
@@ -401,6 +459,11 @@ details.more[open] > summary::before { content: '▾ '; }
         <div class="card-h"><div class="t">보유</div><div class="spacer"></div>
           <div class="slot-note" id="slot-note">—</div></div>
         <div id="holdings"><div class="empty">불러오는 중…</div></div>
+        <details class="more" id="pmslot-wrap" hidden>
+          <summary>PM 슬롯</summary>
+          <div id="pmslots"></div>
+          <div class="faint" id="reserve-note" style="margin-top:8px;"></div>
+        </details>
       </div>
     </div>
 
@@ -428,6 +491,10 @@ details.more[open] > summary::before { content: '▾ '; }
   <!-- ================= 매매 ================= -->
   <section data-tab="trade">
     <div class="sec-t">결재 대기</div>
+    <div id="appr-bulk" hidden style="display:flex;gap:8px;margin-bottom:10px;">
+      <button type="button" class="btn ok" id="bulk-approve">전체 승인</button>
+      <button type="button" class="btn no" id="bulk-reject">전체 반려</button>
+    </div>
     <div id="appr-list"><div class="card"><div class="empty">불러오는 중…</div></div></div>
 
     <div class="sec-t">이번 주</div>
@@ -500,6 +567,9 @@ details.more[open] > summary::before { content: '▾ '; }
       <div class="srow"><div class="k">Phase</div><div class="v" id="set-phase">—</div></div>
       <div class="srow"><div class="k">Aegis 게이트</div><div class="v" id="set-gates">—</div></div>
       <div class="srow"><div class="k">보유 슬롯 상한</div><div class="v mono" id="set-slots">—</div></div>
+      <div class="srow"><div class="k">강신호 예비 슬롯</div><div class="v mono" id="set-reserve">—</div></div>
+      <div class="srow"><div class="k">야간 자동 결재 (T3)</div><div class="v" id="set-night">—</div></div>
+      <div class="srow"><div class="k">야간 한도</div><div class="v mono" id="set-night-lim">—</div></div>
       <div class="srow"><div class="k">개시</div><div class="v mono" id="set-started">—</div></div>
     </div>
 
@@ -524,10 +594,18 @@ details.more[open] > summary::before { content: '▾ '; }
       <div class="srow"><div class="k">방어 모드 변경</div><div class="v">발생 시 즉시</div></div>
     </div>
 
+    <div class="sec-t">보고</div>
+    <div class="card">
+      <div class="srow"><div class="k">일일 리포트</div><div class="v"><button type="button" class="btn wide" id="open-briefing">열기</button></div></div>
+      <div class="srow"><div class="k">운영 헌법</div><div class="v"><button type="button" class="btn wide" id="open-mandate">열기</button></div></div>
+    </div>
+
     <div class="sec-t">비상정지 · 점검</div>
     <div class="card">
       <div class="srow"><div class="k">긴급 정지</div><div class="v"><button type="button" class="btn no wide" id="kill-btn">정지</button></div></div>
+      <div class="srow"><div class="k">비상정지 해제</div><div class="v"><button type="button" class="btn wide" id="kill-release">해제</button></div></div>
       <div class="srow"><div class="k">비상정지 토큰</div><div class="v"><button type="button" class="btn wide" id="kill-token">입력</button></div></div>
+      <div class="srow"><div class="k">토큰 저장 여부</div><div class="v mono" id="kill-token-state">—</div></div>
       <div class="srow"><div class="k">Telegram 테스트</div><div class="v"><button type="button" class="btn wide" id="tg-test">발송</button></div></div>
     </div>
 
@@ -552,6 +630,18 @@ details.more[open] > summary::before { content: '▾ '; }
     </div>
   </section>
 </main>
+
+<div id="kill-banner" hidden role="alert">비상정지 발동됨 — 매매 중단</div>
+
+<div id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <div id="modal-title">—</div>
+      <button type="button" id="modal-close" aria-label="닫기">✕</button>
+    </div>
+    <pre id="modal-body"></pre>
+  </div>
+</div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -840,20 +930,32 @@ details.more[open] > summary::before { content: '▾ '; }
       return r.json();
     });
   }
-  function post(path, body) {
+  function post(path, body, headers) {
     if (isMirrorHost()) return Promise.reject(new Error('read_only_mirror'));
     var base = backend.url || '';
-    var opt = { method: 'POST', cache: 'no-store' };
-    if (body !== undefined) { opt.headers = { 'Content-Type': 'application/json' }; opt.body = JSON.stringify(body); }
+    var opt = { method: 'POST', cache: 'no-store', headers: headers || {} };
+    if (body !== undefined) {
+      opt.headers = Object.assign({ 'Content-Type': 'application/json' }, opt.headers);
+      opt.body = JSON.stringify(body);
+    }
     return fetch(base + path, opt).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok) throw new Error(d.detail || d.message || (path + ' ' + r.status));
+        return d;
+      });
+    });
+  }
+  function apiText(path) {
+    if (isMirrorHost()) return Promise.reject(new Error('read_only_mirror'));
+    return fetch((backend.url || '') + path, { cache: 'no-store' }).then(function (r) {
       if (!r.ok) throw new Error(path + ' ' + r.status);
-      return r.json().catch(function () { return {}; });
+      return r.text();
     });
   }
 
   // ---------- 상태 ----------
   var S = { snap: null, navHist: null, pending: null, history: null, journal: null,
-            calMonth: null, calSel: null, chartRange: 'all', weekOpen: {} };
+            night: null, calMonth: null, calSel: null, chartRange: 'all', weekOpen: {} };
 
   // ==================================================================
   // 탭
@@ -1056,15 +1158,64 @@ details.more[open] > summary::before { content: '▾ '; }
     var d = base.indexOf(' — ');
     return d >= 0 ? base.slice(0, d) : tk;
   }
+  // D-3 — 야간 자동 결재 작동 중 한 줄 (홈 최상단)
+  function renderNight() {
+    var n = S.night, line = $('night-line');
+    if (!line) return;
+    if (!n || typeof n.enabled !== 'boolean') { line.hidden = true; return; }
+    line.hidden = false;
+    var on = !!n.enabled;
+    $('night-dot').className = on ? 'dot-on' : 'dot-off';
+    var used = num(n.budget_used_pct), rem = num(n.budget_remaining_pct);
+    $('night-txt').textContent = on
+      ? ('야간 자동 결재 작동 중 · ' + (n.window_kst || '') + ' KST' +
+         (n.in_window ? ' (지금 창 안)' : ' (창 밖 — 대기)') +
+         (n.approved_tonight ? ' · 오늘 밤 ' + n.approved_tonight + '건' : ''))
+      : '야간 자동 결재 꺼짐 — 아침 결재로 넘어갑니다';
+    $('night-lim').textContent = on
+      ? ('건당 ≤' + (n.night_order_max_pct != null ? n.night_order_max_pct : '—') + '% · 누적 ' +
+         (used === null ? '—' : used.toFixed(2)) + '/' +
+         (n.night_budget_pct != null ? n.night_budget_pct : '—') + '%')
+      : '';
+  }
+
   function renderHoldings() {
     var box = $('holdings'); if (!box) return;
     var s = S.snap || {};
     var pos = (s.positions || []).filter(function (p) { return num(p.quantity); });
     var slots = (s.portfolio || {}).slots || {};
-    var mx = num(slots.max), used = num(slots.used);
+    var mx = num(slots.max), used = num(slots.used), perPm = num(slots.per_pm);
     $('slot-note').textContent = (mx === null)
       ? (pos.length + '종목')
-      : ((used === null ? pos.length : used) + ' / ' + mx + ' 슬롯');
+      : ((used === null ? pos.length : used) + ' / ' + mx + ' 슬롯' +
+         (perPm ? ' · PM당 ' + perPm : ''));
+
+    // A-2/A-3 — PM 슬롯 막대 + 예비 재원 (펼침)
+    var wrap = $('pmslot-wrap'), grid = $('pmslots');
+    var byPm = slots.by_pm || [];
+    if (wrap && grid) {
+      if (!perPm || !byPm.length) { wrap.hidden = true; }
+      else {
+        wrap.hidden = false;
+        grid.innerHTML = byPm.map(function (r) {
+          var c = pmColor(r.pm);
+          var cells = '';
+          for (var i = 0; i < r.max; i++) cells += '<span class="cell' + (i < r.used ? ' on' : '') + '"></span>';
+          return '<div class="pmslot" style="color:' + c + '">' +
+            '<div class="nm" style="color:var(--fg)">' + esc(pmName(r.pm)) + '</div>' +
+            '<div class="cells">' + cells + '</div>' +
+            '<div class="n">' + r.used + '/' + r.max + '</div></div>';
+        }).join('');
+        var rv = slots.reserve || {};
+        var un = num(slots.unassigned);
+        $('reserve-note').textContent =
+          '강신호 예비 ' + (rv.count == null ? '—' : rv.count) + '/' + (rv.max_concurrent == null ? '—' : rv.max_concurrent) +
+          ' · 전략예비 ' + usd(rv.used_usd, 0) + ' / ' + usd(rv.budget_usd, 0) +
+          (rv.exhausted ? ' (소진)' : '') +
+          (rv.signal_min != null ? ' · 발동 신호 ≥ ' + rv.signal_min : '') +
+          (un ? ' · 귀속 미배정 ' + un + '종목' : '');
+      }
+    }
     if (!pos.length) {
       box.innerHTML = '<div class="empty">' + (isMirrorHost() ? '미러에 보유 데이터가 아직 없습니다' : '보유 종목이 없습니다') + '</div>';
       return;
@@ -1078,10 +1229,12 @@ details.more[open] > summary::before { content: '▾ '; }
         : '<span class="pill ' + tone(pnl) + '">' + esc(signUsd(pnl)) + (pct === null ? '' : ' · ' + esc(signPct(pct))) + '</span>';
       var nm = companyName(p);
       var tkSpan = (nm === String(p.symbol).toUpperCase()) ? '' : '<span class="tk">' + esc(p.symbol) + '</span>';
+      // A-3 — 예비 슬롯 진입 종목 배지
+      var resBadge = p.reserve ? '<span class="badge-res">예비</span>' : '';
       return '<div class="hold">' +
         '<div class="mono-tile" style="color:' + c + '">' + esc(monogram(p.symbol)) + '</div>' +
         '<div class="hold-body">' +
-          '<div class="hold-nm">' + esc(nm) + tkSpan + '</div>' +
+          '<div class="hold-nm">' + esc(nm) + tkSpan + resBadge + '</div>' +
           '<div class="hold-intro">' + esc(introLine(p)) + '</div>' +
           '<div class="hold-qty">' + esc(String(num(p.quantity))) + '주 · 평단 ' + esc(usd(p.avg_cost, 2)) + '</div>' +
         '</div>' +
@@ -1219,6 +1372,8 @@ details.more[open] > summary::before { content: '▾ '; }
   function renderPending() {
     var box = $('appr-list'); if (!box) return;
     var items = ((S.pending || {}).items) || [];
+    var bulk = $('appr-bulk');
+    if (bulk) bulk.hidden = items.length < 2;      // 2건 이상일 때만 의미가 있다
     if (!items.length) {
       box.innerHTML = '<div class="card"><div class="empty">결재를 기다리는 건이 없습니다</div></div>';
       return;
@@ -1255,6 +1410,26 @@ details.more[open] > summary::before { content: '▾ '; }
     post('/executor/' + encodeURIComponent(oid) + '/' + act)
       .then(function () { toast(act === 'approve' ? '승인 처리됨' : '반려 처리됨'); return refresh(); })
       .catch(function (err) { b.disabled = false; toast('실패 — ' + (err && err.message ? err.message : err)); });
+  });
+  // E-2 ② — 구판의 일괄 결재(/executor/decide-bulk) 복원.
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('#bulk-approve, #bulk-reject');
+    if (!b) return;
+    if (isMirrorHost()) { toast('미러(읽기 전용)에서는 결재할 수 없습니다'); return; }
+    var items = ((S.pending || {}).items) || [];
+    var ids = items.map(function (o) { return o.id; });
+    if (!ids.length) { toast('대상이 없습니다'); return; }
+    var approve = b.id === 'bulk-approve';
+    if (!window.confirm((approve ? '승인' : '반려') + ' — 대기 ' + ids.length + '건을 한 번에 처리합니다.')) return;
+    b.disabled = true;
+    post('/executor/decide-bulk', { ids: ids, decision: approve ? 'approved' : 'rejected' })
+      .then(function (d) {
+        var n = (d && d.results ? d.results.length : ids.length);
+        toast((approve ? '승인' : '반려') + ' ' + n + '건 처리됨');
+        return refresh();
+      })
+      .catch(function (err) { toast('일괄 결재 실패 — ' + (err.message || err)); })
+      .then(function () { b.disabled = false; });
   });
 
   function weekBounds() {
@@ -1435,12 +1610,33 @@ details.more[open] > summary::before { content: '▾ '; }
     $('set-runmode').textContent = sys.mode === 'balance' ? '밸런스' : (sys.mode || '—');
     $('set-phase').textContent = (sys.phase || '—') + (sys.day_in_phase ? (' · D' + sys.day_in_phase) : '');
     $('set-gates').textContent = (aeg.gate_count || 0) + ' 정의 · ' + (aeg.gate_count_enforced || 0) + ' 적용';
-    $('set-slots').textContent = (slots.max === null || slots.max === undefined) ? '—' : (slots.max + '칸 (' + (slots.source || '') + ')');
+    $('set-slots').textContent = (slots.max === null || slots.max === undefined)
+      ? '—'
+      : (slots.per_pm ? ('PM당 ' + slots.per_pm + '칸 · 총 ' + slots.max + '칸')
+                      : (slots.max + '칸')) + ' (' + (slots.source || '') + ')';
+    var rv = slots.reserve || {};
+    $('set-reserve').textContent = (rv.max_concurrent == null)
+      ? '—'
+      : ('동시 ' + (rv.count == null ? '—' : rv.count) + '/' + rv.max_concurrent +
+         ' · 재원 ' + usd(rv.used_usd, 0) + '/' + usd(rv.budget_usd, 0) +
+         (rv.signal_min != null ? ' · 신호 ≥ ' + rv.signal_min : ''));
+    var n = S.night || {};
+    $('set-night').textContent = (typeof n.enabled !== 'boolean')
+      ? '—'
+      : (n.enabled ? ('켜짐 · ' + (n.window_kst || '') + ' KST' + (n.in_window ? ' (창 안)' : '')) : '꺼짐');
+    $('set-night-lim').textContent = (typeof n.enabled !== 'boolean')
+      ? '—'
+      : ('건당 ≤' + n.night_order_max_pct + '% · 야간 누적 ≤' + n.night_budget_pct + '%' +
+         ' · 사용 ' + (num(n.budget_used_pct) === null ? '—' : num(n.budget_used_pct).toFixed(2)) + '%');
     $('set-started').textContent = sys.started_at || '—';
     $('ver-sys').textContent = sys.version || '—';
     $('ver-sw').textContent = window.__nexusSwVersion || '—';
     $('ver-mirror').textContent = isMirrorHost() ? ('미러 · ' + (window.__mirrorState || '—') + (window.__mirrorAt ? (' · ' + window.__mirrorAt) : '')) : '직결';
     $('set-acct').textContent = ((s.reconcile || {}).broker || {}).account_id || '—';
+    var kt = $('kill-token-state');
+    if (kt) kt.textContent = killToken() ? '저장됨' : '없음 — 입력 필요';
+    // 킬 스위치 실제 상태를 배너에 반영 (다른 경로로 발동돼도 화면이 안다)
+    killBanner(!!(s.kill_switch || {}).triggered);
 
     var ss = s.system_status || {};
     var rows = [
@@ -1518,33 +1714,92 @@ details.more[open] > summary::before { content: '▾ '; }
     toast('저장됨 · 새로고침');
     setTimeout(function () { try { location.reload(); } catch (er) {} }, 600);
   });
+  // ---------- 비상정지 (E-2 ①) ----------
+  // 백엔드 계약은 구판과 동일해야 한다:
+  //   POST /kill/trigger?confirm=yes-emergency-stop  + header x-principal-token
+  //   POST /kill/release?confirm=yes-release-kill    + 같은 헤더
+  // (v16 최초 시공에서 '/kill-switch/trigger' + JSON body 로 잘못 적어 404 였다.
+  //  라우터 prefix 는 '/kill' 이고 confirm 은 쿼리 파라미터다.)
+  var KILL_TOKEN_KEY = 'nexus_kill_token';
+  function killToken() { try { return localStorage.getItem(KILL_TOKEN_KEY) || ''; } catch (e) { return ''; } }
+  function killBanner(on, msg) {
+    var b = $('kill-banner');
+    if (!b) return;
+    b.hidden = !on;
+    if (on) b.textContent = msg || '비상정지 발동됨 — 매매 중단';
+  }
   document.addEventListener('click', function (e) {
     if (e.target.closest && e.target.closest('#kill-btn')) {
-      if (isMirrorHost()) { toast('미러에서는 발동할 수 없습니다'); return; }
-      var tk = null;
-      try { tk = localStorage.getItem('nexus.kill.token'); } catch (er) {}
+      if (isMirrorHost()) { toast('미러(읽기 전용)에서는 발동할 수 없습니다'); return; }
+      var tk = killToken();
       if (!tk) { toast('먼저 비상정지 토큰을 입력하세요'); return; }
-      if (!window.confirm('긴급 정지를 발동합니다. 전 매매가 즉시 중단됩니다. 계속할까요?')) return;
-      post('/kill-switch/trigger', { token: tk, source: 'dashboard_v16' })
-        .then(function () { toast('긴급 정지 발동됨'); refresh(); })
-        .catch(function (err) { toast('실패 — ' + (err.message || err)); });
+      if (!window.confirm('긴급 정지를 발동합니다.\n전 운용진이 즉시 비활성화되고 매매가 중단됩니다.')) return;
+      if (!window.confirm('한 번 더 확인합니다. 정말 발동할까요?')) return;
+      post('/kill/trigger?confirm=yes-emergency-stop', undefined, { 'x-principal-token': tk })
+        .then(function () { killBanner(true); toast('비상정지 발동됨'); return refresh(); })
+        .catch(function (err) { toast('발동 실패 — ' + (err.message || err)); });
+      return;
+    }
+    if (e.target.closest && e.target.closest('#kill-release')) {
+      if (isMirrorHost()) { toast('미러에서는 해제할 수 없습니다'); return; }
+      var tk2 = killToken();
+      if (!tk2) { toast('먼저 비상정지 토큰을 입력하세요'); return; }
+      if (!window.confirm('비상정지를 해제합니다. 계속할까요?')) return;
+      post('/kill/release?confirm=yes-release-kill', undefined, { 'x-principal-token': tk2 })
+        .then(function () { killBanner(false); toast('비상정지 해제됨'); return refresh(); })
+        .catch(function (err) { toast('해제 실패 — ' + (err.message || err)); });
       return;
     }
     if (e.target.closest && e.target.closest('#kill-token')) {
-      var cur = '';
-      try { cur = localStorage.getItem('nexus.kill.token') || ''; } catch (er) {}
-      var v = window.prompt('비상정지 토큰', cur);
+      var v = window.prompt(
+        '비상정지 토큰 (x-principal-token)\n환경변수 KILL_PRINCIPAL_TOKEN 와 일치해야 합니다.\n(빈칸 입력 시 제거)',
+        killToken());
       if (v === null) return;
-      try { localStorage.setItem('nexus.kill.token', v.trim()); } catch (er) {}
-      toast('토큰 저장됨');
+      try {
+        if (v.trim() === '') localStorage.removeItem(KILL_TOKEN_KEY);
+        else localStorage.setItem(KILL_TOKEN_KEY, v.trim());
+      } catch (er) {}
+      toast(v.trim() ? '토큰 저장됨' : '토큰 제거됨');
+      renderSettings();
       return;
     }
     if (e.target.closest && e.target.closest('#tg-test')) {
       if (isMirrorHost()) { toast('미러에서는 발송할 수 없습니다'); return; }
       post('/telegram/test').then(function () { toast('테스트 알림 발송'); })
         .catch(function (err) { toast('실패 — ' + (err.message || err)); });
+      return;
     }
+    // ---------- E-2 ③ 일일 리포트 · 운영 헌법 ----------
+    if (e.target.closest && e.target.closest('#open-briefing')) {
+      openModal('일일 리포트', '생성 중…');
+      post('/briefing/now')
+        .then(function (d) { setModal(d.text || d.message || JSON.stringify(d, null, 1)); })
+        .catch(function (err) { setModal('실패 — ' + (err.message || err)); });
+      return;
+    }
+    if (e.target.closest && e.target.closest('#open-mandate')) {
+      openModal('운영 헌법 (MANDATE)', '불러오는 중…');
+      apiText('/audit/public')
+        .then(function (t) { setModal(t); })
+        .catch(function () {
+          setModal('운영 헌법 원문은 PC 백엔드에서만 열람할 수 있습니다.\n' +
+                   '파일: MANDATE.md · 요약은 설정 탭 안전장치 12개를 참고하세요.');
+        });
+      return;
+    }
+    if (e.target.closest && e.target.closest('#modal-close')) { closeModal(); return; }
+    if (e.target.id === 'modal') { closeModal(); return; }
   });
+
+  function openModal(title, body) {
+    var m = $('modal'); if (!m) return;
+    $('modal-title').textContent = title;
+    $('modal-body').textContent = body || '';
+    m.hidden = false;
+  }
+  function setModal(text) { var b = $('modal-body'); if (b) b.textContent = String(text || ''); }
+  function closeModal() { var m = $('modal'); if (m) m.hidden = true; }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 
   // ==================================================================
   // 로드
@@ -1572,14 +1827,16 @@ details.more[open] > summary::before { content: '▾ '; }
       api('/executor/pending').then(function (d) { S.pending = d; }, function () { S.pending = null; }),
       // 달력이 과거 날짜까지 그리므로 넉넉히 받는다 (미러는 80건 상한 — 그만큼만 그려진다).
       api('/executor/history?limit=800').then(function (d) { S.history = d; }, function () { S.history = null; }),
-      api('/dashboard/nexus-journal.json').then(function (d) { S.journal = d; }, function () { S.journal = null; })
+      api('/dashboard/nexus-journal.json').then(function (d) { S.journal = d; }, function () { S.journal = null; }),
+      // D-3 (8주차) — T3 야간 자동 결재 상태. 미러엔 없으므로 실패해도 조용히 넘긴다.
+      api('/executor/night-auto').then(function (d) { S.night = d; }, function () { S.night = null; })
     ];
     return Promise.all(jobs).then(function () {
       var ok = !!S.snap;
       backend.connected = ok;
       setConn(ok, ok ? (isMirrorHost() ? '미러' : '연결됨') : '데이터 없음');
       if (ok) {
-        renderNav(); renderChart(); renderHoldings(); renderCal();
+        renderNav(); renderChart(); renderHoldings(); renderCal(); renderNight();
         renderPending(); renderWeek(); renderDefense(); renderSettings();
       } else {
         // 데이터를 못 받았으면 왜 비었는지 말한다 — '불러오는 중' 을 붙들고 있지 않는다.

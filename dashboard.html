@@ -253,6 +253,16 @@ section[data-tab].active { display: block; }
 .day-row:first-of-type { border-top: none; }
 .day-row .k { flex: 0 0 68px; color: var(--fg-dim); font-size: 12px; }
 .day-row .v { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+/* v16.2 — 이력 요약 한 줄 (탭하면 건별 펼침). 모바일·PC 동일 구조. */
+.day-more {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  margin-top: 10px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card-2);
+  font-size: 13px; font-weight: 600; color: var(--fg); text-align: left;
+}
+.day-more .cue { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--accent); }
+.day-more[aria-expanded="true"] { border-color: var(--accent); }
+.day-detail { margin-top: 4px; }
 
 /* ---------- 매매 ---------- */
 .appr { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
@@ -1035,7 +1045,8 @@ details.more[open] > summary::before { content: '▾ '; }
 
   // ---------- 상태 ----------
   var S = { snap: null, navHist: null, pending: null, history: null, journal: null,
-            night: null, calMonth: null, calSel: null, chartRange: 'all', weekOpen: {} };
+            night: null, calMonth: null, calSel: null, chartRange: 'all', weekOpen: {},
+            dayOpen: false };   // v16.2 — 날짜 상세 이력 펼침 (항상 접힘으로 시작)
 
   // ==================================================================
   // 탭
@@ -1390,6 +1401,17 @@ details.more[open] > summary::before { content: '▾ '; }
     grid.innerHTML = html;
     renderDayCard();
   }
+  // v16.2 — 날짜 상세는 2단이다.
+  //   기본: 이벤트·이슈만 (그날 '무슨 일이 있었나'). 헤더 포함 4줄.
+  //   접힘: 실체결·결재 이력은 요약 한 줄로 두고, 탭해야 건별로 펼친다.
+  //         8/3 처럼 체결 7건인 날은 펼치기 전까지 카드가 짧게 유지된다.
+  //   일지는 이력과 함께 펼침 안으로 넣었다 — 기본 화면은 '이벤트·이슈만' 이므로.
+  var STATUS_KO = {
+    filled: '체결', aegis_rejected: 'Aegis 반려', expired: '만료', rejected: '반려',
+    held: '보류', submitted: '발주', submitting: '발주 중', pending: '대기',
+    approved: '승인', broker_rejected: '브로커 반려', submit_failed: '발주 실패'
+  };
+
   function renderDayCard() {
     var box = $('day-card'); if (!box) return;
     if (!S.calSel) {
@@ -1397,45 +1419,85 @@ details.more[open] > summary::before { content: '▾ '; }
       return;
     }
     var e = calIndex()[S.calSel] || {};
-    var rows = '';
-    var fills = e.fills || [];
-    rows += '<div class="day-row"><div class="k">실체결</div><div class="v">' +
-      (fills.length
-        ? fills.map(function (o) {
-            return '<div class="num">' + esc(o.side === 'sell' ? '매도' : '매수') + ' ' + esc(o.ticker) + ' ' +
-                   esc(String(o.quantity)) + '주 · ' + esc(usd(o.notional_usd, 0)) + ' · ' + esc(pmName(o.pm)) + '</div>';
-          }).join('')
+    var fills = e.fills || [], appr = e.appr || [], evs = e.events || [], iss = e.issues || [];
+    var open = !!S.dayOpen;
+
+    var html = '<h4>' + esc(S.calSel) + '</h4>';
+
+    // ---- 기본: 이벤트 ----
+    html += '<div class="day-row"><div class="k">이벤트</div><div class="v">' +
+      (evs.length
+        ? evs.slice(0, 2).map(function (v) { return esc(v.name); }).join(' · ') +
+          (evs.length > 2 ? esc(' 외 ' + (evs.length - 2) + '건') : '')
         : '<span class="faint">없음</span>') + '</div>';
-    var appr = e.appr || [];
-    var byStatus = {};
-    appr.forEach(function (o) { byStatus[o.status] = (byStatus[o.status] || 0) + 1; });
-    var statusKo = { aegis_rejected: 'Aegis 반려', expired: '만료', rejected: '반려', held: '보류', submitted: '발주', pending: '대기' };
-    rows += '<div class="day-row"><div class="k">결재</div><div class="v">' +
-      (appr.length
-        ? Object.keys(byStatus).map(function (k) { return esc((statusKo[k] || k) + ' ' + byStatus[k] + '건'); }).join(' · ')
+
+    // ---- 기본: 이슈 ----
+    html += '<div class="day-row"><div class="k">이슈</div><div class="v">' +
+      (iss.length
+        ? iss.slice(0, 2).map(function (n) { return esc(n.summary); }).join('<br>') +
+          (iss.length > 2 ? '<br><span class="faint">' + esc('외 ' + (iss.length - 2) + '건') + '</span>' : '')
         : '<span class="faint">없음</span>') + '</div>';
-    var evs = e.events || [];
-    rows += '<div class="day-row"><div class="k">이벤트</div><div class="v">' +
-      (evs.length ? evs.map(function (v) { return esc(v.name); }).join(' · ') : '<span class="faint">없음</span>') + '</div>';
-    var iss = e.issues || [];
-    if (iss.length) {
-      rows += '<div class="day-row"><div class="k">이슈</div><div class="v">' +
-        iss.map(function (n) { return esc(n.summary); }).join('<br>') + '</div>';
+
+    // ---- 이력 요약 한 줄 (0건이면 줄 자체를 만들지 않는다) ----
+    var hasHistory = fills.length > 0 || appr.length > 0 || !!e.journal;
+    if (hasHistory) {
+      var bits = [];
+      if (fills.length) bits.push('매매 ' + fills.length + '건');
+      if (appr.length) bits.push('결재 ' + appr.length + '건');
+      if (!bits.length) bits.push('일지 1건');
+      html += '<button type="button" class="day-more" data-day-toggle="1" aria-expanded="' + open + '">' +
+        esc(bits.join(' · ')) + ' <span class="cue">' + (open ? '접기' : '탭해서 보기') + '</span></button>';
     }
-    var j = e.journal;
-    rows += '<div class="day-row"><div class="k">일지</div><div class="v">' +
-      (j ? ('<strong>' + esc(j.title || '') + '</strong>' +
-            ((j.lines || []).length ? '<br>' + (j.lines || []).map(esc).join('<br>') : ''))
-         : '<span class="faint">없음</span>') + '</div>';
-    box.innerHTML = '<h4>' + esc(S.calSel) + '</h4>' + rows;
+
+    // ---- 펼침: 건별 상세 ----
+    if (hasHistory && open) {
+      var detail = '';
+      if (fills.length) {
+        detail += '<div class="day-row"><div class="k">실체결</div><div class="v">' +
+          fills.map(function (o) {
+            return '<div class="num">' + esc(o.side === 'sell' ? '매도' : '매수') + ' ' +
+              esc(o.ticker) + ' ' + esc(String(o.quantity)) + '주 · ' +
+              esc(usd(o.notional_usd, 0)) + ' · ' + esc(pmName(o.pm)) + '</div>';
+          }).join('') + '</div>';
+      }
+      if (appr.length) {
+        var byStatus = {};
+        appr.forEach(function (o) { byStatus[o.status] = (byStatus[o.status] || 0) + 1; });
+        detail += '<div class="day-row"><div class="k">결재</div><div class="v">' +
+          Object.keys(byStatus).map(function (k) {
+            return esc((STATUS_KO[k] || k) + ' ' + byStatus[k] + '건');
+          }).join(' · ') + '</div>';
+      }
+      var j = e.journal;
+      if (j) {
+        detail += '<div class="day-row"><div class="k">일지</div><div class="v"><strong>' +
+          esc(j.title || '') + '</strong>' +
+          ((j.lines || []).length ? '<br>' + (j.lines || []).map(esc).join('<br>') : '') +
+          '</div>';
+      }
+      html += '<div class="day-detail">' + detail + '</div>';
+    }
+
+    box.innerHTML = html;
   }
   document.addEventListener('click', function (e) {
+    // v16.2 — 이력 펼침 토글. 날짜/달 이동 시에는 항상 접힘으로 초기화한다
+    //   (다른 날짜를 눌렀는데 이전 날의 펼침 상태가 남아 있으면 혼란스럽다).
+    if (e.target.closest && e.target.closest('[data-day-toggle]')) {
+      S.dayOpen = !S.dayOpen; renderDayCard(); return;
+    }
     var c = e.target.closest && e.target.closest('.cal-cell[data-day]');
-    if (c) { var d = c.getAttribute('data-day'); S.calSel = (S.calSel === d ? null : d); renderCal(); return; }
-    if (e.target.closest && e.target.closest('#cal-prev')) { S.calMonth.setMonth(S.calMonth.getMonth() - 1); renderCal(); return; }
-    if (e.target.closest && e.target.closest('#cal-next')) { S.calMonth.setMonth(S.calMonth.getMonth() + 1); renderCal(); return; }
+    if (c) {
+      var d = c.getAttribute('data-day');
+      S.calSel = (S.calSel === d ? null : d);
+      S.dayOpen = false;
+      renderCal(); return;
+    }
+    if (e.target.closest && e.target.closest('#cal-prev')) { S.calMonth.setMonth(S.calMonth.getMonth() - 1); S.dayOpen = false; renderCal(); return; }
+    if (e.target.closest && e.target.closest('#cal-next')) { S.calMonth.setMonth(S.calMonth.getMonth() + 1); S.dayOpen = false; renderCal(); return; }
     if (e.target.closest && e.target.closest('#cal-today')) {
-      var n = new Date(); S.calMonth = new Date(n.getFullYear(), n.getMonth(), 1); S.calSel = ymd(n); renderCal(); return;
+      var n = new Date(); S.calMonth = new Date(n.getFullYear(), n.getMonth(), 1);
+      S.calSel = ymd(n); S.dayOpen = false; renderCal(); return;
     }
   });
 

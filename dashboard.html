@@ -193,14 +193,23 @@ section[data-tab].active { display: block; }
 .chart-head .ch-start { font-family: var(--mono); color: var(--fg-dim); }
 .chart-head .ch-rec { font-size: 11px; color: var(--fg-faint); }
 .chart-head .ch-rec.bad { color: var(--down); font-weight: 700; }
-.chart-tip {
-  position: absolute; z-index: 5; pointer-events: none;
-  padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px;
-  background: var(--card); box-shadow: 0 4px 14px rgba(0,0,0,0.13);
-  font-size: 11px; line-height: 1.5; white-space: nowrap;
+/* v16.5 — 십자선 상단 캡슐. 끌 때만 뜬다(놓으면 사라짐). */
+.chart-cap {
+  position: absolute; top: -2px; z-index: 5; pointer-events: none;
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--card); box-shadow: 0 3px 12px rgba(0,0,0,0.16);
+  font-size: 11px; line-height: 1.4; white-space: nowrap;
 }
-.chart-tip .tk { color: var(--fg-dim); }
-.chart-tip .tv { font-family: var(--mono); font-weight: 600; }
+.chart-cap .cd { color: var(--fg-dim); font-family: var(--mono); }
+.chart-cap .cv { font-family: var(--mono); font-weight: 700; color: var(--fg); }
+.chart-cap .cp { font-family: var(--mono); font-weight: 700; }
+.chart-cap .cp.up { color: var(--up); }
+.chart-cap .cp.down { color: var(--down); }
+.chart-cap .cp.flat, .chart-cap .cp.faint { color: var(--fg-faint); }
+/* 끄는 동안 글자 선택·스크롤이 끼어들지 않게 */
+.chart-wrap { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+#chart .mk { pointer-events: auto; }
 .chart-empty { font-size: 12px; color: var(--fg-faint); text-align: center; padding: 46px 12px; line-height: 1.7; }
 
 /* ---------- 보유 리스트 ---------- */
@@ -564,8 +573,8 @@ details.more[open] > summary::before { content: '▾ '; }
             <div class="ch-r"><span class="pill flat" id="chart-delta">—</span><span class="ch-rec" id="chart-recon"></span></div>
           </div>
           <div class="chart-wrap" id="chart-wrap">
+            <div class="chart-cap" id="chart-cap" hidden></div>
             <svg id="chart" role="img" aria-label="자산 추이"></svg>
-            <div class="chart-tip" id="chart-tip" hidden></div>
           </div>
           <div class="chart-meta"><span class="faint num" id="chart-from">—</span><span class="faint num" id="chart-to">—</span></div>
         </div>
@@ -1324,11 +1333,96 @@ details.more[open] > summary::before { content: '▾ '; }
     $('chart-start').textContent = '';
     var dl = $('chart-delta'); dl.className = 'pill flat'; dl.textContent = '—';
     $('chart-recon').textContent = ''; $('chart-recon').className = 'ch-rec';
-    hideTip();
+    hideCap();
   }
-  function hideTip() { var t = $('chart-tip'); if (t) { t.hidden = true; } }
+  function hideCap() {
+    var c = $('chart-cap'); if (c) c.hidden = true;
+    var svg = $('chart'); if (!svg) return;
+    var g = svg.querySelector('#chart-cross'); if (g) g.setAttribute('visibility', 'hidden');
+  }
 
-  var _chartHit = [];      // 툴팁 히트 영역 (탭한 지점 → 날짜·자산·손익)
+  // ---- 우측 $ 눈금: 천 단위 축약 (1,011,417 → 1,011K) ----
+  //   NAV 는 눈금 간격이 수백 달러라 소수 없이 K 로만 줄이면 눈금 네 개가
+  //   전부 "1,011K" 로 같아진다. 소수 자릿수는 **라벨이 서로 달라질 때까지**
+  //   늘린다(최대 2자리).
+  function kAxis(v, dec) {
+    var a = Math.abs(v);
+    if (a >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (a >= 1e3) {
+      var s = (v / 1e3).toFixed(dec || 0);
+      var parts = s.split('.');
+      parts[0] = Number(parts[0]).toLocaleString('en-US');
+      return parts.join('.') + 'K';
+    }
+    return Math.round(v).toLocaleString('en-US');
+  }
+  function kAxisDecimals(ticks) {
+    for (var d = 0; d <= 2; d++) {
+      var seen = {}, dup = false;
+      for (var i = 0; i < ticks.length; i++) {
+        var s = kAxis(ticks[i], d);
+        if (seen[s]) { dup = true; break; }
+        seen[s] = 1;
+      }
+      if (!dup) return d;
+    }
+    return 2;
+  }
+  //: [mn,mx] 를 덮는 '보기 좋은' 눈금 3~4단.
+  //   NAV 는 범위가 좁아(수백 달러) 단순 계산으로는 눈금이 2단만 나온다.
+  //   후보 간격을 만들어 **개수가 4에 가장 가까운 것**을 고른다.
+  function niceTicks(mn, mx, want) {
+    var span = mx - mn;
+    if (!(span > 0)) return [mn];
+    var base = Math.pow(10, Math.floor(Math.log(span / Math.max(1, want)) / Math.LN10));
+    var cands = [];
+    [0.5, 1, 2, 2.5, 5, 10, 20].forEach(function (m) { cands.push(m * base); });
+    var best = null, bestScore = 1e9;
+    cands.forEach(function (step) {
+      if (!(step > 0)) return;
+      var n = 0;
+      for (var t = Math.ceil(mn / step) * step; t <= mx + step * 1e-6; t += step) {
+        n++; if (n > 12) break;
+      }
+      if (n < 2) return;
+      // 3~5단을 우선하고, 그 안에서 4단에 가까울수록 좋다.
+      var score = Math.abs(n - want) + (n < 3 || n > 5 ? 10 : 0);
+      if (score < bestScore) { bestScore = score; best = step; }
+    });
+    if (!best) return [mn, mx];
+    var out = [];
+    for (var t = Math.ceil(mn / best) * best; t <= mx + best * 1e-6 && out.length < 12; t += best) out.push(t);
+    return out.length >= 2 ? out : [mn, mx];
+  }
+
+  // ---- 매매 마커: 원장 실체결만 (계획·반려는 마커가 아니다) ----
+  //   일별은 그 날짜 점에, 주/월/연은 그 단위 점에 하나로 합친다.
+  function tradeMarks(points, unit) {
+    var idxByKey = {};
+    points.forEach(function (p, i) { if (p.key !== undefined) idxByKey[p.key] = i; });
+    if (!points.length) return [];
+    // 기준점(open)만 있고 key 가 없는 첫 점은 마커 대상이 아니다.
+    var acc = {};
+    (((S.history || {}).calendar ? S.history.calendar.rows : ((S.history || {}).items || [])) || [])
+      .forEach(function (o) {
+        if (String(o.status) !== 'filled') return;
+        var day = o.day || isoDay(o.decided_at || o.created_at);
+        if (!day) return;
+        var k = unitKey(day, unit);
+        var i = idxByKey[k];
+        if (i === undefined) return;              // 그 단위에 자산 기록점이 없다
+        if (!acc[k]) acc[k] = { i: i, buy: 0, sell: 0, days: {} };
+        if (String(o.side) === 'sell') acc[k].sell++; else acc[k].buy++;
+        acc[k].days[day] = true;
+      });
+    return Object.keys(acc).map(function (k) {
+      var a = acc[k];
+      var days = Object.keys(a.days).sort();
+      return { i: a.i, buy: a.buy, sell: a.sell, day: days[days.length - 1], days: days };
+    }).sort(function (x, y) { return x.i - y.i; });
+  }
+
+  var _chartGeom = null;   // 십자선이 쓰는 좌표계 (렌더 때 갱신)
 
   function renderChart() {
     var svg = $('chart'), wrap = $('chart-wrap'); if (!svg || !wrap) return;
@@ -1339,7 +1433,7 @@ details.more[open] > summary::before { content: '▾ '; }
     $('chart-label').textContent = meta.label;
     var startedAt = (S.navHist || {}).started_at || null;
     var ex = wrap.querySelector('.chart-empty'); if (ex) ex.remove();
-    _chartHit = [];
+    _chartGeom = null;
 
     var got = chartPoints(), points = got.points || [];
     if (points.length < 2) {
@@ -1351,115 +1445,115 @@ details.more[open] > summary::before { content: '▾ '; }
       return;
     }
 
-    var bars = got.mode === 'combo' ? barsOf(points) : [];
+    var bars = barsOf(points);
     var rec = reconcileChart(points, bars);
 
-    // ---- 좌표계: viewBox 를 실제 픽셀 폭에 맞춘다 (글자 안 찌그러지게) ----
+    // ---- 좌표계 ----
+    //   viewBox 를 실제 CSS 픽셀 폭에 맞춘다 (1 unit = 1px · 글자 안 찌그러지게).
+    //   세로는 [차트 본체] + [손익 스트립] 두 구역으로 나눈다.
     var W = Math.max(240, Math.round(wrap.clientWidth || 320));
     var H = Math.round(parseFloat(getComputedStyle(svg).height) || 168);
-    var PT = 16, PB = 20, PL = 6, PR = 6;
-    var plotW = W - PL - PR, plotH = H - PT - PB;
-    // 막대 구역은 아래 42%, 그 한가운데가 손익 0 선.
-    var barZoneH = plotH * 0.42, barZeroY = PT + plotH - barZoneH / 2;
+    var RG = 52;                       // 우측 $ 눈금 자리
+    var PT = 14, PL = 6, PB = 18;      // 위·왼쪽·아래(날짜축) 여백
+    var SH = Math.max(18, Math.round(H * 0.14));   // 손익 스트립 높이
+    var SGAP = 6;
+    var plotW = W - PL - RG;
+    var plotH = H - PT - PB - SH - SGAP;
+    var stripTop = PT + plotH + SGAP;
+    var stripZeroY = stripTop + SH / 2;
 
     var vals = points.map(function (p) { return p.v; });
     var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
     if (mx - mn < 1e-9) { mx = mn + Math.max(1, Math.abs(mn) * 1e-6); }
-    var padv = (mx - mn) * 0.18; mn -= padv; mx += padv;
+    var padv = (mx - mn) * 0.16; mn -= padv; mx += padv;
     var maxAbs = 0;
     bars.forEach(function (b) { maxAbs = Math.max(maxAbs, Math.abs(b.dv)); });
     if (maxAbs <= 0) maxAbs = 1;
 
     function X(i) { return PL + (points.length === 1 ? plotW / 2 : plotW * i / (points.length - 1)); }
     function Y(v) { return PT + plotH * (1 - (v - mn) / (mx - mn)); }
-    function BH(dv) { return (Math.abs(dv) / maxAbs) * (barZoneH / 2 - 12); }
 
-    var svgns = [];
+    var g = [];
 
-    // ---- 손익 막대 (이익 초록 · 손실 빨강, 55% 반투명) ----
-    var slotW = points.length > 1 ? plotW / (points.length - 1) : plotW;
-    var bw = Math.max(3, Math.min(26, slotW * 0.55));
-    bars.forEach(function (b) {
-      var cx = X(b.i), h = BH(b.dv), pos = b.dv >= 0;
-      var y = pos ? barZeroY - h : barZeroY;
-      svgns.push('<rect x="' + (cx - bw / 2).toFixed(2) + '" y="' + y.toFixed(2) +
-        '" width="' + bw.toFixed(2) + '" height="' + Math.max(1, h).toFixed(2) +
-        '" rx="2" fill="' + (pos ? 'var(--up)' : 'var(--down)') + '" opacity="0.55"/>');
+    // ---- 가로 그리드 + 우측 $ 눈금 ----
+    var ticks = niceTicks(mn, mx, 4).filter(function (t) {
+      var y = Y(t); return y >= PT - 1 && y <= PT + plotH + 1;
     });
-    // 손익 0 기준선
-    if (bars.length) {
-      svgns.push('<line x1="' + PL + '" y1="' + barZeroY.toFixed(2) + '" x2="' + (W - PR) +
-        '" y2="' + barZeroY.toFixed(2) + '" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 3"/>');
-    }
+    var tdec = kAxisDecimals(ticks);
+    ticks.forEach(function (t) {
+      var y = Y(t);
+      g.push('<line x1="' + PL + '" y1="' + y.toFixed(2) + '" x2="' + (W - RG + 2) +
+        '" y2="' + y.toFixed(2) + '" stroke="var(--line-soft)" stroke-width="1"/>');
+      g.push('<text x="' + (W - RG + 7) + '" y="' + (y + 3.5).toFixed(2) +
+        '" text-anchor="start" font-size="10" font-family="var(--mono)" ' +
+        'fill="var(--fg-faint)">' + esc(kAxis(t, tdec)) + '</text>');
+    });
 
-    // ---- 막대 ±금액 라벨 (이익 위 · 손실 아래, 겹치면 생략) ----
-    //   생략 규칙: 앞서 그린 라벨의 오른쪽 끝 + 4px 을 침범하면 안 그린다.
-    var lastRight = -1e9;
+    // ---- 하단 손익 스트립 (라벨 없음 — 값은 십자선 패널로) ----
+    var slotW = points.length > 1 ? plotW / (points.length - 1) : plotW;
+    var bw = Math.max(2, Math.min(18, slotW * 0.5));
+    g.push('<line x1="' + PL + '" y1="' + stripZeroY.toFixed(2) + '" x2="' + (W - RG + 2) +
+      '" y2="' + stripZeroY.toFixed(2) + '" stroke="var(--line)" stroke-width="1"/>');
     bars.forEach(function (b) {
-      if (Math.abs(b.dv) < 0.005) return;               // 0 은 라벨 없음
-      var txt = signUsd(b.dv, 0);
-      var wpx = txt.length * 5.4 + 4;                   // 10px 모노 기준 근사폭
-      var cx = X(b.i), h = BH(b.dv), pos = b.dv >= 0;
-      if (cx - wpx / 2 < lastRight + 4) return;         // 겹침 → 생략
-      if (cx - wpx / 2 < PL - 2 || cx + wpx / 2 > W - PR + 2) return;  // 화면 밖 → 생략
-      lastRight = cx + wpx / 2;
-      var ly = pos ? (barZeroY - h - 4) : (barZeroY + h + 10);
-      svgns.push('<text x="' + cx.toFixed(2) + '" y="' + ly.toFixed(2) +
-        '" text-anchor="middle" font-size="10" font-family="var(--mono)" fill="' +
-        (pos ? 'var(--up)' : 'var(--down)') + '">' + esc(txt) + '</text>');
+      var cx = X(b.i), pos = b.dv >= 0;
+      var h = Math.max(1, (Math.abs(b.dv) / maxAbs) * (SH / 2 - 1));
+      g.push('<rect x="' + (cx - bw / 2).toFixed(2) + '" y="' + (pos ? stripZeroY - h : stripZeroY).toFixed(2) +
+        '" width="' + bw.toFixed(2) + '" height="' + h.toFixed(2) +
+        '" fill="' + (pos ? 'var(--up)' : 'var(--down)') + '" opacity="0.8"/>');
     });
 
     // ---- NAV 선 ----
     var pts = points.map(function (p, i) { return X(i).toFixed(2) + ',' + Y(p.v).toFixed(2); });
     var up = points[points.length - 1].v >= points[0].v;
     var lcol = up ? 'var(--up)' : 'var(--down)';
-    svgns.push('<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + lcol +
+    g.push('<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + lcol +
       '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>');
-    // 시작·현재 점 + 값 상시 표시
-    var x0 = X(0), y0 = Y(points[0].v);
     var xn = X(points.length - 1), yn = Y(points[points.length - 1].v);
-    svgns.push('<circle cx="' + x0.toFixed(2) + '" cy="' + y0.toFixed(2) + '" r="3" fill="var(--fg-dim)"/>');
-    svgns.push('<circle cx="' + xn.toFixed(2) + '" cy="' + yn.toFixed(2) + '" r="4" fill="' + lcol + '"/>');
-    function endLabel(x, y, txt, anchor, col) {
-      var wpx = txt.length * 5.6;
-      var tx = anchor === 'start' ? Math.min(x + 6, W - PR - wpx) : Math.max(x - 6, PL + wpx);
-      var ty = Math.max(PT + 9, Math.min(y - 8, PT + plotH - 2));
-      return '<text x="' + tx.toFixed(2) + '" y="' + ty.toFixed(2) + '" text-anchor="' +
-        (anchor === 'start' ? 'start' : 'end') + '" font-size="10.5" font-family="var(--mono)" fill="' +
-        col + '">' + esc(txt) + '</text>';
-    }
-    svgns.push(endLabel(x0, y0, usd(points[0].v, 0), 'start', 'var(--fg-dim)'));
-    svgns.push(endLabel(xn, yn, usd(points[points.length - 1].v, 0), 'end', lcol));
+    g.push('<circle cx="' + xn.toFixed(2) + '" cy="' + yn.toFixed(2) + '" r="3.5" fill="' + lcol + '"/>');
 
-    // ---- 축 라벨 (주요 지점만: 처음·끝·가운데) ----
-    //   기준점은 첫 단위의 open 이라 첫 단위 라벨을 그대로 쓴다. 그래서 단위가
-    //   하나뿐일 땐 같은 라벨이 양 끝에 두 번 나온다 — 같은 라벨이 연달아
-    //   나오면 뒤엣것만 남긴다.
+    // ---- 매매 마커 (매수 ▲ 초록 · 매도 ▼ 빨강) ----
+    var marks = tradeMarks(points, got.unit);
+    marks.forEach(function (m) {
+      var cx = X(m.i), cy = Y(points[m.i].v);
+      if (m.buy) {
+        g.push('<path class="mk" data-day="' + esc(m.day) + '" d="M' + cx.toFixed(2) + ',' + (cy - 15).toFixed(2) +
+          ' l4.5,7.5 l-9,0 Z" fill="var(--up)" style="cursor:pointer"><title>' +
+          esc(m.day + ' 매수 ' + m.buy + '건 — 탭하면 달력 카드') + '</title></path>');
+      }
+      if (m.sell) {
+        g.push('<path class="mk" data-day="' + esc(m.day) + '" d="M' + cx.toFixed(2) + ',' + (cy + 15).toFixed(2) +
+          ' l4.5,-7.5 l-9,0 Z" fill="var(--down)" style="cursor:pointer"><title>' +
+          esc(m.day + ' 매도 ' + m.sell + '건 — 탭하면 달력 카드') + '</title></path>');
+      }
+    });
+
+    // ---- 날짜 축 (주요 지점만 · 같은 라벨 연속이면 뒤엣것만) ----
     var axIdx = points.length <= 3 ? points.map(function (_, i) { return i; })
                                    : [0, Math.floor((points.length - 1) / 2), points.length - 1];
     var axLabels = axIdx.map(function (i) { return points[i].label || ''; });
     axIdx.forEach(function (i, k) {
       var lab = axLabels[k];
       if (!lab) return;
-      if (k + 1 < axLabels.length && axLabels[k + 1] === lab) return;   // 중복 생략
+      if (k + 1 < axLabels.length && axLabels[k + 1] === lab) return;
       var anchor = k === 0 ? 'start' : (k === axIdx.length - 1 ? 'end' : 'middle');
-      var x = k === 0 ? PL : (k === axIdx.length - 1 ? W - PR : X(i));
-      svgns.push('<text x="' + x.toFixed(2) + '" y="' + (H - 5) +
+      var x = k === 0 ? PL : (k === axIdx.length - 1 ? W - RG : X(i));
+      g.push('<text x="' + x.toFixed(2) + '" y="' + (H - 4) +
         '" text-anchor="' + anchor + '" font-size="10" font-family="var(--mono)" fill="var(--fg-faint)">' +
         esc(lab) + '</text>');
     });
 
-    // ---- 탭 히트 영역 (중간 지점 툴팁) ----
-    points.forEach(function (p, i) {
-      var cx = X(i), hw = Math.max(8, slotW / 2);
-      svgns.push('<rect class="hit" data-i="' + i + '" x="' + Math.max(0, cx - hw).toFixed(2) +
-        '" y="0" width="' + (hw * 2).toFixed(2) + '" height="' + H + '" fill="transparent" style="cursor:pointer"/>');
-      _chartHit.push({ x: cx, y: Y(p.v), p: p, dv: i > 0 ? p.v - points[i - 1].v : null });
-    });
+    // ---- 십자선 (드래그 중에만 보인다) ----
+    g.push('<g id="chart-cross" visibility="hidden">' +
+      '<line id="cross-v" x1="0" y1="' + PT + '" x2="0" y2="' + (stripTop + SH).toFixed(2) +
+      '" stroke="var(--fg-dim)" stroke-width="1" stroke-dasharray="3 3"/>' +
+      '<circle id="cross-d" cx="0" cy="0" r="4" fill="var(--card)" stroke="' + lcol + '" stroke-width="2"/></g>');
 
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    svg.innerHTML = svgns.join('');
+    svg.innerHTML = g.join('');
+
+    _chartGeom = { W: W, H: H, PL: PL, plotW: plotW, points: points, X: X, Y: Y,
+                   unit: got.unit, bars: bars };
 
     // ---- 헤더 요약 · 하단 메타 ----
     var first = points[0], last = points[points.length - 1];
@@ -1472,31 +1566,75 @@ details.more[open] > summary::before { content: '▾ '; }
     if (!bars.length) { rc.textContent = ''; rc.className = 'ch-rec'; }
     else if (rec.ok) { rc.textContent = '대사 ✓ 막대 합 = 증분'; rc.className = 'ch-rec'; }
     else { rc.textContent = '대사 불일치 ' + usd(rec.diff, 2); rc.className = 'ch-rec bad'; }
-    // 하단 메타는 실제 기록일을 쓴다 — 단위 라벨(8월)만 있으면 어느 날짜
-    // 기록인지 알 수 없다.
     $('chart-from').textContent = first.d + ' · ' + usd(first.v, 0);
     $('chart-to').textContent = last.d + ' · ' + usd(last.v, 0);
-    hideTip();
+    hideCap();
   }
 
-  // 중간 지점 툴팁 — 날짜 · 자산값 · 그날 손익
-  function showTip(i) {
-    var h = _chartHit[i], tip = $('chart-tip'), wrap = $('chart-wrap');
-    if (!h || !tip || !wrap) return;
-    var svg = $('chart');
-    var scale = (wrap.clientWidth || 1) / (parseFloat(svg.getAttribute('viewBox').split(' ')[2]) || 1);
-    tip.innerHTML =
-      '<div class="tk">' + esc(h.p.d + (h.p.label && h.p.label !== h.p.d ? ' ' + h.p.label : '')) + '</div>' +
-      '<div class="tv">' + esc(usd(h.p.v, 0)) + '</div>' +
-      (h.dv === null ? '<div class="tk">기준점</div>'
-                     : '<div class="tv" style="color:' + (h.dv >= 0 ? 'var(--up)' : 'var(--down)') + '">' +
-                       esc(signUsd(h.dv, 0)) + '</div>');
-    tip.hidden = false;
-    var tw = tip.offsetWidth || 90;
-    var left = Math.max(2, Math.min(h.x * scale - tw / 2, (wrap.clientWidth || 0) - tw - 2));
-    tip.style.left = left + 'px';
-    tip.style.top = Math.max(0, h.y * scale - (tip.offsetHeight || 44) - 8) + 'px';
+  // ==================================================================
+  // 십자선 — 끌면 따라오고, 놓으면 사라진다
+  //   TODO(v16.6): nav_intraday 표본이 쌓이면 '일별' 탭을 캔들로 전환한다.
+  //     (시가=그날 첫 표본 · 고가/저가=최대/최소 · 종가=마지막 표본)
+  //     지금은 표본이 없어 선으로만 그린다 — 가짜 봉을 만들지 않는다.
+  // ==================================================================
+  function crossAt(clientX) {
+    var geom = _chartGeom, svg = $('chart'), wrap = $('chart-wrap');
+    if (!geom || !svg || !wrap) return;
+    var box = svg.getBoundingClientRect();
+    if (!box.width) return;
+    var ux = (clientX - box.left) * (geom.W / box.width);      // CSS px → viewBox 단위
+    var n = geom.points.length;
+    var t = (ux - geom.PL) / (geom.plotW || 1);
+    var i = Math.max(0, Math.min(n - 1, Math.round(t * (n - 1))));
+    var p = geom.points[i];
+    var cx = geom.X(i), cy = geom.Y(p.v);
+
+    var gg = svg.querySelector('#chart-cross');
+    if (gg) {
+      gg.setAttribute('visibility', 'visible');
+      var lv = svg.querySelector('#cross-v'), dot = svg.querySelector('#cross-d');
+      if (lv) { lv.setAttribute('x1', cx.toFixed(2)); lv.setAttribute('x2', cx.toFixed(2)); }
+      if (dot) { dot.setAttribute('cx', cx.toFixed(2)); dot.setAttribute('cy', cy.toFixed(2)); }
+    }
+    var dv = i > 0 ? p.v - geom.points[i - 1].v : null;
+    var cap = $('chart-cap');
+    if (cap) {
+      cap.innerHTML = '<span class="cd">' + esc(p.d) + '</span>' +
+        '<span class="cv">' + esc(usd(p.v, 0)) + '</span>' +
+        (dv === null ? '<span class="cp faint">기준</span>'
+                     : '<span class="cp ' + tone(dv) + '">' + esc(signUsd(dv, 0)) + '</span>');
+      cap.hidden = false;
+      var scale = box.width / geom.W;
+      var cw = cap.offsetWidth || 150;
+      cap.style.left = Math.max(2, Math.min(cx * scale - cw / 2, (wrap.clientWidth || 0) - cw - 2)) + 'px';
+    }
   }
+  (function bindCross() {
+    var wrap = null;
+    function on(e) {
+      wrap = wrap || $('chart-wrap');
+      if (!wrap || !_chartGeom) return;
+      if (e.target.closest && e.target.closest('.mk')) return;   // 마커 탭은 십자선이 아니다
+      var x = e.touches && e.touches.length ? e.touches[0].clientX : e.clientX;
+      if (x === undefined) return;
+      crossAt(x);
+      if (e.cancelable && e.type === 'touchmove') e.preventDefault();
+    }
+    function start(e) {
+      var w = $('chart-wrap');
+      if (!w || !(e.target.closest && e.target.closest('#chart-wrap'))) return;
+      _dragging = true; on(e);
+    }
+    var _dragging = false;
+    document.addEventListener('mousedown', function (e) { start(e); });
+    document.addEventListener('mousemove', function (e) { if (_dragging) on(e); });
+    document.addEventListener('mouseup', function () { if (_dragging) { _dragging = false; hideCap(); } });
+    document.addEventListener('touchstart', function (e) { start(e); }, { passive: true });
+    document.addEventListener('touchmove', function (e) { if (_dragging) on(e); }, { passive: false });
+    document.addEventListener('touchend', function () { if (_dragging) { _dragging = false; hideCap(); } });
+    document.addEventListener('touchcancel', function () { _dragging = false; hideCap(); });
+  })();
+
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('#chart-range button[data-range]');
     if (b) {
@@ -1504,9 +1642,20 @@ details.more[open] > summary::before { content: '▾ '; }
       try { localStorage.setItem(CHART_KEY, S.chartRange); } catch (_) { }
       renderChart(); return;
     }
-    var hit = e.target.closest && e.target.closest('#chart .hit');
-    if (hit) { showTip(Number(hit.getAttribute('data-i'))); return; }
-    if (!(e.target.closest && e.target.closest('#chart-wrap'))) hideTip();
+    // 매매 마커 → 그날 달력 카드를 연다 (renderDayCard 재사용)
+    var mk = e.target.closest && e.target.closest('#chart .mk');
+    if (mk) {
+      var day = mk.getAttribute('data-day');
+      if (day) {
+        S.calSel = day;
+        S.calMonth = new Date(Number(day.slice(0, 4)), Number(day.slice(5, 7)) - 1, 1);
+        S.dayOpenT = true; S.dayOpenA = false;    // 매매 마커이므로 매매를 펼친 채로
+        renderCal();
+        var card = document.querySelector('.home-cal');
+        if (card && card.scrollIntoView) card.scrollIntoView({ block: 'start' });
+      }
+      return;
+    }
   });
   // 폭이 바뀌면 viewBox 를 다시 잡아야 한다 (1 unit = 1px 유지).
   var _chartRT = null;

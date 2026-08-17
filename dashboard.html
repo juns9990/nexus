@@ -247,22 +247,31 @@ section[data-tab].active { display: block; }
 .dot.issue { background: var(--down); }
 .cal-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; font-size: 11px; color: var(--fg-dim); }
 .cal-legend span { display: inline-flex; align-items: center; gap: 5px; }
-.day-card { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+/* v16.3 — 날짜 펼침 카드는 '단일 열 세로 스택' 하나뿐이다.
+ *   v16.2 까지는 라벨/값을 flex 한 줄(.day-row)로 그렸는데, 마크업의 닫는 div
+ *   누락으로 뒤 섹션이 앞 섹션의 flex 아이템으로 끼어들어 다열로 붕괴했다
+ *   (열 폭 0 → 글자가 세로로 1자씩). 구조 자체를 블록으로 바꿔 원인을 없앤다.
+ *   PC·폰 동일 구조 — 폭 분기 없음. */
+.day-card { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; min-width: 0; }
 .day-card h4 { margin: 0 0 8px; font-size: 13px; font-family: var(--mono); }
-.day-row { display: flex; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line-soft); font-size: 13px; }
-.day-row:first-of-type { border-top: none; }
-.day-row .k { flex: 0 0 68px; color: var(--fg-dim); font-size: 12px; }
-.day-row .v { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
-/* v16.2 — 이력 요약 한 줄 (탭하면 건별 펼침). 모바일·PC 동일 구조. */
+.day-card, .day-card * { min-width: 0; overflow-wrap: break-word; word-break: break-word; }
+.day-sec { display: block; padding: 8px 0; border-top: 1px solid var(--line-soft); }
+.day-sec:first-of-type { border-top: none; }
+.day-sec > .k { display: block; font-size: 11px; font-weight: 600; color: var(--fg-dim); margin-bottom: 3px; }
+.day-sec > .v { display: block; font-size: 13px; line-height: 1.55; }
+.day-sec > .v > div + div { margin-top: 3px; }
+.day-jt { font-weight: 600; }
+.day-jl { color: var(--fg-dim); font-size: 12px; }
+/* 이력 요약 한 줄 (탭하면 건별 펼침). 매매·결재 각각 독립 토글. */
 .day-more {
   display: flex; align-items: center; gap: 8px; width: 100%;
-  margin-top: 10px; padding: 10px 12px;
+  margin-top: 2px; padding: 9px 11px;
   border: 1px solid var(--line); border-radius: 8px; background: var(--card-2);
   font-size: 13px; font-weight: 600; color: var(--fg); text-align: left;
 }
-.day-more .cue { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--accent); }
+.day-more .cue { margin-left: auto; flex: 0 0 auto; font-size: 12px; font-weight: 500; color: var(--accent); }
 .day-more[aria-expanded="true"] { border-color: var(--accent); }
-.day-detail { margin-top: 4px; }
+.day-detail { margin-top: 6px; }
 
 /* ---------- 매매 ---------- */
 .appr { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
@@ -1046,7 +1055,7 @@ details.more[open] > summary::before { content: '▾ '; }
   // ---------- 상태 ----------
   var S = { snap: null, navHist: null, pending: null, history: null, journal: null,
             night: null, calMonth: null, calSel: null, chartRange: 'all', weekOpen: {},
-            dayOpen: false };   // v16.2 — 날짜 상세 이력 펼침 (항상 접힘으로 시작)
+            dayOpenT: false, dayOpenA: false };   // v16.3 — 매매·결재 각각 독립 펼침 (항상 접힘으로 시작)
 
   // ==================================================================
   // 탭
@@ -1347,10 +1356,15 @@ details.more[open] > summary::before { content: '▾ '; }
       return idx[d];
     }
     var s = S.snap || {};
-    // 실체결 · 결재 — 원장(주문 이력)이 단일 소스
-    var items = ((S.history || {}).items) || [];
+    // 실체결 · 결재 — 원장(주문 이력)이 단일 소스.
+    //   v16.3 — 폰(미러)은 history 가 최근 80건으로 잘려 있어 달력이 닿는 범위
+    //   (한 달)를 못 덮는다. 실측: 80건 = 8/12~8/16 뿐이라 체결일(8/3·8/5)이
+    //   통째로 빠져 초록 점이 하나도 안 떴다. 미러가 함께 싣는 압축 달력 원장
+    //   (history.calendar)이 있으면 그쪽을 쓴다 — 같은 원장에서 파생된 값이다.
+    var cal = (S.history || {}).calendar;
+    var items = (cal && cal.rows) ? cal.rows : (((S.history || {}).items) || []);
     items.forEach(function (o) {
-      var day = isoDay(o.decided_at || o.created_at);
+      var day = o.day || isoDay(o.decided_at || o.created_at);
       var sl = slot(day); if (!sl) return;
       if (String(o.status) === 'filled') sl.fills.push(o);
       else sl.appr.push(o);
@@ -1359,12 +1373,10 @@ details.more[open] > summary::before { content: '▾ '; }
     ((s.events || {}).events || []).forEach(function (ev) {
       var sl = slot(isoDay(ev.date)); if (sl) sl.events.push(ev);
     });
-    // 이슈 — 연결 끊김·시스템 경보 알림
+    // 이슈 — 운영 이슈만 (기동 로그·일지 브로드캐스트는 이슈가 아니다)
     ((s.notif || {}).recent || []).forEach(function (n) {
-      var t = String(n.type || '');
-      if (t === 'connection_lost' || t === 'system_alert' || t === 'defense_trigger') {
-        var sl = slot(isoDay(n.ts)); if (sl) sl.issues.push(n);
-      }
+      if (!isOpsIssue(n)) return;
+      var sl = slot(isoDay(n.ts)); if (sl) sl.issues.push(n);
     });
     // 일지
     var jr = (S.journal || {}).days || {};
@@ -1401,11 +1413,34 @@ details.more[open] > summary::before { content: '▾ '; }
     grid.innerHTML = html;
     renderDayCard();
   }
-  // v16.2 — 날짜 상세는 2단이다.
-  //   기본: 이벤트·이슈만 (그날 '무슨 일이 있었나'). 헤더 포함 4줄.
-  //   접힘: 실체결·결재 이력은 요약 한 줄로 두고, 탭해야 건별로 펼친다.
-  //         8/3 처럼 체결 7건인 날은 펼치기 전까지 카드가 짧게 유지된다.
-  //   일지는 이력과 함께 펼침 안으로 넣었다 — 기본 화면은 '이벤트·이슈만' 이므로.
+  // v16.3 — 날짜 상세는 '단일 열 세로 스택' 이다.
+  //   [이벤트] → [이슈] → [매매 요약·펼침] → [결재 요약·펼침] → [일지] 순서로
+  //   위에서 아래로만 쌓는다. 섹션 = 제목 한 줄 + 내용. PC·폰 동일 구조.
+  //   (v16.2 의 flex 한 줄 구조는 닫는 태그 누락에 취약해 다열로 붕괴했다.)
+
+  // 이슈란은 '운영 이슈'만 담는다 — 단절·방어 발동·경보.
+  //   기동 로그("백엔드 시작됨 … UTC")와 일지 브로드캐스트("📒 … 매매 일지")는
+  //   알림 타입이 system_alert 로 같아 8/16 화면에서 이슈로 잡혔다. 여기서 건다.
+  var ISSUE_SKIP = /백엔드 시작됨|매매 일지|📒|브리핑|기동 완료|정상 종료/;
+  function isOpsIssue(n) {
+    var t = String((n && n.type) || '');
+    if (t === 'connection_lost' || t === 'defense_trigger') return true;
+    if (t !== 'system_alert') return false;
+    return !ISSUE_SKIP.test(String((n && n.summary) || '') + ' ' + String((n && n.message) || ''));
+  }
+  // 화면에 UTC 원문(2026-08-16T13:08 UTC)을 그대로 흘리지 않는다 — 한국 시각으로.
+  function kstScrub(s) {
+    return String(s == null ? '' : s).replace(
+      /(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(:\d{2})?\s*(UTC|Z)?/g,
+      function (m, Y, M, D, h, mi, sec, z) {
+        // UTC 표기가 붙은 것만 +9h. 접미사 없는 값은 이미 서버(KST) 시각이다.
+        var t = Date.parse(Y + '-' + M + '-' + D + 'T' + h + ':' + mi + (sec || ':00') + 'Z');
+        if (isNaN(t)) return m;
+        var k = new Date(t + (z ? 9 * 3600000 : 0));   // 뷰어 TZ 와 무관하게 KST 로 읽는다
+        return (k.getUTCMonth() + 1) + '/' + k.getUTCDate() + ' ' +
+          String(k.getUTCHours()).padStart(2, '0') + ':' + String(k.getUTCMinutes()).padStart(2, '0');
+      });
+  }
   var STATUS_KO = {
     filled: '체결', aegis_rejected: 'Aegis 반려', expired: '만료', rejected: '반려',
     held: '보류', submitted: '발주', submitting: '발주 중', pending: '대기',
@@ -1420,84 +1455,93 @@ details.more[open] > summary::before { content: '▾ '; }
     }
     var e = calIndex()[S.calSel] || {};
     var fills = e.fills || [], appr = e.appr || [], evs = e.events || [], iss = e.issues || [];
-    var open = !!S.dayOpen;
 
+    // 섹션 하나 = 제목 한 줄 + 내용. 닫는 태그를 여기 한 곳에서만 만든다.
+    function sec(k, v) {
+      return '<div class="day-sec"><div class="k">' + esc(k) + '</div>' +
+             '<div class="v">' + v + '</div></div>';
+    }
+    var none = '<span class="faint">없음</span>';
     var html = '<h4>' + esc(S.calSel) + '</h4>';
 
-    // ---- 기본: 이벤트 ----
-    html += '<div class="day-row"><div class="k">이벤트</div><div class="v">' +
-      (evs.length
-        ? evs.slice(0, 2).map(function (v) { return esc(v.name); }).join(' · ') +
-          (evs.length > 2 ? esc(' 외 ' + (evs.length - 2) + '건') : '')
-        : '<span class="faint">없음</span>') + '</div>';
+    // ---- 1. 이벤트 ----
+    html += sec('이벤트', evs.length
+      ? evs.slice(0, 2).map(function (v) { return '<div>' + esc(v.name) + '</div>'; }).join('') +
+        (evs.length > 2 ? '<div class="faint">' + esc('외 ' + (evs.length - 2) + '건') + '</div>' : '')
+      : none);
 
-    // ---- 기본: 이슈 ----
-    html += '<div class="day-row"><div class="k">이슈</div><div class="v">' +
-      (iss.length
-        ? iss.slice(0, 2).map(function (n) { return esc(n.summary); }).join('<br>') +
-          (iss.length > 2 ? '<br><span class="faint">' + esc('외 ' + (iss.length - 2) + '건') + '</span>' : '')
-        : '<span class="faint">없음</span>') + '</div>';
+    // ---- 2. 이슈 (운영 이슈만 · UTC 원문은 한국 시각으로) ----
+    html += sec('이슈', iss.length
+      ? iss.slice(0, 2).map(function (n) { return '<div>' + esc(kstScrub(n.summary)) + '</div>'; }).join('') +
+        (iss.length > 2 ? '<div class="faint">' + esc('외 ' + (iss.length - 2) + '건') + '</div>' : '')
+      : none);
 
-    // ---- 이력 요약 한 줄 (0건이면 줄 자체를 만들지 않는다) ----
-    var hasHistory = fills.length > 0 || appr.length > 0 || !!e.journal;
-    if (hasHistory) {
-      var bits = [];
-      if (fills.length) bits.push('매매 ' + fills.length + '건');
-      if (appr.length) bits.push('결재 ' + appr.length + '건');
-      if (!bits.length) bits.push('일지 1건');
-      html += '<button type="button" class="day-more" data-day-toggle="1" aria-expanded="' + open + '">' +
-        esc(bits.join(' · ')) + ' <span class="cue">' + (open ? '접기' : '탭해서 보기') + '</span></button>';
+    // ---- 3. 매매 (요약 한 줄 · 탭하면 건별) ----
+    if (fills.length) {
+      var openT = !!S.dayOpenT;
+      var v = '<button type="button" class="day-more" data-day-toggle="t" aria-expanded="' + openT + '">' +
+        esc('실체결 ' + fills.length + '건') +
+        '<span class="cue">' + (openT ? '접기' : '탭해서 보기') + '</span></button>';
+      if (openT) {
+        v += '<div class="day-detail">' + fills.map(function (o) {
+          return '<div class="num">' + esc(o.side === 'sell' ? '매도' : '매수') + ' ' +
+            esc(o.ticker) + ' ' + esc(String(o.quantity)) + '주 · ' +
+            esc(usd(o.notional_usd, 0)) + ' · ' + esc(pmName(o.pm)) + '</div>';
+        }).join('') + '</div>';
+      }
+      html += sec('매매', v);
     }
 
-    // ---- 펼침: 건별 상세 ----
-    if (hasHistory && open) {
-      var detail = '';
-      if (fills.length) {
-        detail += '<div class="day-row"><div class="k">실체결</div><div class="v">' +
-          fills.map(function (o) {
-            return '<div class="num">' + esc(o.side === 'sell' ? '매도' : '매수') + ' ' +
-              esc(o.ticker) + ' ' + esc(String(o.quantity)) + '주 · ' +
-              esc(usd(o.notional_usd, 0)) + ' · ' + esc(pmName(o.pm)) + '</div>';
-          }).join('') + '</div>';
+    // ---- 4. 결재 (요약 한 줄 · 탭하면 상태별) ----
+    if (appr.length) {
+      var openA = !!S.dayOpenA;
+      var byStatus = {};
+      appr.forEach(function (o) { byStatus[o.status] = (byStatus[o.status] || 0) + 1; });
+      var va = '<button type="button" class="day-more" data-day-toggle="a" aria-expanded="' + openA + '">' +
+        esc('결재 ' + appr.length + '건') +
+        '<span class="cue">' + (openA ? '접기' : '탭해서 보기') + '</span></button>';
+      if (openA) {
+        va += '<div class="day-detail">' + Object.keys(byStatus).map(function (k) {
+          return '<div>' + esc((STATUS_KO[k] || k) + ' ' + byStatus[k] + '건') + '</div>';
+        }).join('') + '</div>';
       }
-      if (appr.length) {
-        var byStatus = {};
-        appr.forEach(function (o) { byStatus[o.status] = (byStatus[o.status] || 0) + 1; });
-        detail += '<div class="day-row"><div class="k">결재</div><div class="v">' +
-          Object.keys(byStatus).map(function (k) {
-            return esc((STATUS_KO[k] || k) + ' ' + byStatus[k] + '건');
-          }).join(' · ') + '</div>';
-      }
-      var j = e.journal;
-      if (j) {
-        detail += '<div class="day-row"><div class="k">일지</div><div class="v"><strong>' +
-          esc(j.title || '') + '</strong>' +
-          ((j.lines || []).length ? '<br>' + (j.lines || []).map(esc).join('<br>') : '') +
-          '</div>';
-      }
-      html += '<div class="day-detail">' + detail + '</div>';
+      html += sec('결재', va);
+    }
+
+    // ---- 5. 일지 (trade_journal 본문만 · 제목 + 3줄) ----
+    var j = e.journal;
+    if (j) {
+      html += sec('일지',
+        '<div class="day-jt">' + esc(kstScrub(j.title || '')) + '</div>' +
+        (j.lines || []).slice(0, 3).map(function (t) {
+          return '<div class="day-jl">' + esc(kstScrub(t)) + '</div>';
+        }).join(''));
     }
 
     box.innerHTML = html;
   }
+  function dayCollapse() { S.dayOpenT = false; S.dayOpenA = false; }
   document.addEventListener('click', function (e) {
-    // v16.2 — 이력 펼침 토글. 날짜/달 이동 시에는 항상 접힘으로 초기화한다
-    //   (다른 날짜를 눌렀는데 이전 날의 펼침 상태가 남아 있으면 혼란스럽다).
-    if (e.target.closest && e.target.closest('[data-day-toggle]')) {
-      S.dayOpen = !S.dayOpen; renderDayCard(); return;
+    // v16.3 — 매매·결재 펼침은 서로 독립. 날짜/달 이동 시에는 둘 다 접힘으로
+    //   초기화한다 (이전 날의 펼침 상태가 남아 있으면 혼란스럽다).
+    var tg = e.target.closest && e.target.closest('[data-day-toggle]');
+    if (tg) {
+      if (tg.getAttribute('data-day-toggle') === 'a') S.dayOpenA = !S.dayOpenA;
+      else S.dayOpenT = !S.dayOpenT;
+      renderDayCard(); return;
     }
     var c = e.target.closest && e.target.closest('.cal-cell[data-day]');
     if (c) {
       var d = c.getAttribute('data-day');
       S.calSel = (S.calSel === d ? null : d);
-      S.dayOpen = false;
+      dayCollapse();
       renderCal(); return;
     }
-    if (e.target.closest && e.target.closest('#cal-prev')) { S.calMonth.setMonth(S.calMonth.getMonth() - 1); S.dayOpen = false; renderCal(); return; }
-    if (e.target.closest && e.target.closest('#cal-next')) { S.calMonth.setMonth(S.calMonth.getMonth() + 1); S.dayOpen = false; renderCal(); return; }
+    if (e.target.closest && e.target.closest('#cal-prev')) { S.calMonth.setMonth(S.calMonth.getMonth() - 1); dayCollapse(); renderCal(); return; }
+    if (e.target.closest && e.target.closest('#cal-next')) { S.calMonth.setMonth(S.calMonth.getMonth() + 1); dayCollapse(); renderCal(); return; }
     if (e.target.closest && e.target.closest('#cal-today')) {
       var n = new Date(); S.calMonth = new Date(n.getFullYear(), n.getMonth(), 1);
-      S.calSel = ymd(n); S.dayOpen = false; renderCal(); return;
+      S.calSel = ymd(n); dayCollapse(); renderCal(); return;
     }
   });
 

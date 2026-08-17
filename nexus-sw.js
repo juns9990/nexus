@@ -272,7 +272,14 @@
 //   달력 그리드(7열·색 점·날짜 카드)와 보유 타일 행이 무너졌다. 그래프는
 //   v16.6 그대로 두고 두 블록만 v16.5 원문으로 되돌렸다. 백엔드 무접촉.
 //   PC 원본과 동시 diff 이식 · /nexus/ 경로 체계 무손.
-const CACHE_VERSION = 'v16.6.1';
+// v16.6.2 (2026-08-17) — 미니 2건. 표시 계층만.
+//   ① 상단 내비 '매매' 에 결재 대기 뱃지 (기존 /executor/pending 폴링 재사용,
+//      폰은 nexus_mirror/orders.pending 경로, 0건이면 미표시).
+//   ② F-1 — 설정 '화면' 버전 하드코딩 제거. 이 파일의 CACHE_VERSION 이
+//      **화면 버전의 단일 출처**가 된다 (GET_VERSION 응답을 '화면'·'SW 캐시'
+//      두 행이 함께 읽는다). 여기만 올리면 화면 표기도 따라 온다.
+//   PC 원본과 동시 diff 이식 · /nexus/ 경로 체계 무손.
+const CACHE_VERSION = 'v16.6.2';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

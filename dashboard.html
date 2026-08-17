@@ -37,7 +37,7 @@
 
 <style>
 /* ==================================================================
-   Vela Quantum Nexus — v16.0.0  화면 전면 단순화
+   Vela Quantum Nexus — 화면 (버전은 nexus-sw.js 의 CACHE_VERSION 단일 출처)
    원칙: 장식 금지(그라데이션·그림자 X). 절제된 디테일만 —
         모노그램 타일 · 필 배지 · tabular-nums · 얇은 선 · 넉넉한 여백.
         폰 우선, 단일 DOM(모바일/PC 중복 없음), 대비 4.5:1 이상.
@@ -371,6 +371,18 @@ details.more[open] > summary::before { content: '▾ '; }
 }
 .nx-tabs button[aria-selected="true"] { color: var(--accent); }
 .nx-tabs svg { width: 21px; height: 21px; }
+/* v16.6.2 — 탭 대기 뱃지. 버튼 기준 절대배치라 폰(세로)·PC(가로) 한 벌로 붙는다.
+   [hidden] 은 display 지정을 못 이기므로 숨김 규칙을 따로 둔다
+   (t-appr-bulk 에서 한 번 당한 자리다). */
+.nx-tabs button { position: relative; }
+.nx-tabs .tb {
+  position: absolute; top: 5px; right: 8px;
+  min-width: 17px; height: 17px; padding: 0 5px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: var(--card);
+  font-family: var(--mono); font-size: 10px; font-weight: 700; line-height: 1;
+}
+.nx-tabs .tb[hidden] { display: none; }
 
 /* ---------- 토스트 ---------- */
 #toast {
@@ -429,6 +441,9 @@ details.more[open] > summary::before { content: '▾ '; }
     border-top: none; border-bottom: 1px solid var(--line); background: var(--bg);
   }
   .nx-tabs button { height: 48px; flex-direction: row; gap: 7px; font-size: 13px; padding: 0 18px; }
+  /* v16.6.2 — PC 는 버튼이 가로줄이라 절대배치 뱃지가 글자를 덮는다.
+     여기서는 라벨 뒤에 그냥 붙는 항목으로 둔다 ("매매 [24]"). */
+  .nx-tabs .tb { position: static; top: auto; right: auto; }
   .nx-head { position: static; }
 
   /* 1. 콘텐츠 최대폭 — 초와이드에서 무한 확장 금지 */
@@ -715,7 +730,7 @@ details.more[open] > summary::before { content: '▾ '; }
     <div class="sec-t">버전</div>
     <div class="card">
       <div class="srow"><div class="k">시스템</div><div class="v mono" id="ver-sys">—</div></div>
-      <div class="srow"><div class="k">화면</div><div class="v mono">v16.0.0</div></div>
+      <div class="srow"><div class="k">화면</div><div class="v mono" id="ver-ui">—</div></div>
       <div class="srow"><div class="k">SW 캐시</div><div class="v mono" id="ver-sw">—</div></div>
       <div class="srow"><div class="k">미러</div><div class="v mono" id="ver-mirror">—</div></div>
     </div>
@@ -1063,7 +1078,7 @@ details.more[open] > summary::before { content: '▾ '; }
   // ==================================================================
   var TAB_DEF = [
     { id: 'home',     label: '홈',   icon: 'M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1V11z' },
-    { id: 'trade',    label: '매매', icon: 'M3 17l6-6 4 4 8-8M21 7v5h-5' },
+    { id: 'trade',    label: '매매', icon: 'M3 17l6-6 4 4 8-8M21 7v5h-5', badge: true },
     { id: 'defense',  label: '방어', icon: 'M12 2.5l7.5 3v6c0 4.6-3.1 8.6-7.5 10-4.4-1.4-7.5-5.4-7.5-10v-6l7.5-3z' },
     { id: 'settings', label: '설정', icon: 'M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-2.9 1.2 2 2 0 11-4 0 1.7 1.7 0 00-2.9-1.2l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.7 1.7 0 003 15a2 2 0 110-4 1.7 1.7 0 001.2-2.9l-.1-.1a2 2 0 112.8-2.8l.1.1A1.7 1.7 0 0010 4.1a2 2 0 114 0 1.7 1.7 0 002.9 1.2l.1-.1a2 2 0 112.8 2.8l-.1.1A1.7 1.7 0 0021 11a2 2 0 110 4z' }
   ];
@@ -1087,8 +1102,31 @@ details.more[open] > summary::before { content: '▾ '; }
       var t = tabDef(id); if (!t) return '';
       return '<button type="button" data-go="' + t.id + '" role="tab" aria-selected="' + (id === active) + '">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + t.icon + '"/></svg>' +
-        '<span>' + esc(t.label) + '</span></button>';
+        '<span>' + esc(t.label) + '</span>' +
+        (t.badge ? '<span class="tb" data-badge="' + t.id + '" hidden></span>' : '') +
+        '</button>';
     }).join('');
+    renderTabBadges();          // 메뉴 순서를 바꿔 다시 그려도 뱃지가 살아있게
+  }
+
+  // v16.6.2 — 탭 대기 뱃지.
+  //   새 폴링을 만들지 않는다. refresh() 가 이미 받아오는 /executor/pending
+  //   (PC 는 REST · 폰은 nexus_mirror/orders.pending — api() 가 같은 모양으로
+  //   돌려준다) 하나만 본다. 0건이면 뱃지를 아예 띄우지 않는다.
+  function pendingCount() {
+    var p = S.pending || {};
+    if (Array.isArray(p.items)) return p.items.length;
+    var n = num(p.count);                 // items 없이 count 만 오는 미러 형태 대비
+    return n === null ? 0 : n;
+  }
+  function renderTabBadges() {
+    var n = S.pending ? pendingCount() : 0;   // 못 받았으면 0 이 아니라 '모름' → 미표시
+    Array.prototype.forEach.call(document.querySelectorAll('#tabs .tb[data-badge="trade"]'), function (b) {
+      b.textContent = n > 99 ? '99+' : String(n);
+      b.hidden = !(n > 0);
+      var btn = b.parentNode;
+      if (btn) btn.setAttribute('aria-label', '매매' + (n > 0 ? (' · 결재 대기 ' + n + '건') : ''));
+    });
   }
   function go(id) {
     Array.prototype.forEach.call(document.querySelectorAll('section[data-tab]'), function (s) {
@@ -1819,7 +1857,29 @@ details.more[open] > summary::before { content: '▾ '; }
   // ==================================================================
   // 설정
   // ==================================================================
+  // v16.6.2 (F-1) — '화면' 버전을 HTML 에 박아두지 않는다.
+  //   v16.0 이후 v16.1~16.6 어느 차수도 그 상수를 올리지 않아, 화면이 여섯 번
+  //   바뀌는 동안 설정은 'v16.0.0' 을 말하고 있었다. 버전 상수를 두 벌
+  //   (HTML · nexus-sw.js) 두면 반드시 어긋난다.
+  //   **단일 출처 = nexus-sw.js 의 CACHE_VERSION** — SW 가 postMessage 로
+  //   돌려주는 값 하나를 '화면'·'SW 캐시' 두 행이 함께 읽는다.
+  //   아직 대답이 없으면 숫자를 지어내지 않고 대기로 표시한다.
+  function renderVersions() {
+    var v = window.__nexusSwVersion || null;
+    var ui = $('ver-ui'); if (ui) ui.textContent = v || '— (SW 대기)';
+    var sw = $('ver-sw'); if (sw) sw.textContent = v || '—';
+  }
+  window.nexusRenderVersions = renderVersions;
+
   var VERSIONS = [
+    ['v16.6.2', '매매 탭 결재 대기 뱃지 + 화면 버전 단일 출처화(SW 캐시 버전) · 이력 보충'],
+    ['v16.6.1', 'v16.6 이식 부수 피해 복구 — 달력 7열·보유 타일 CSS 90줄 원복'],
+    ['v16.6',   '홈 자산 그래프 v16.0 방식 복원 — 면 채움 라인 + 현재점, 1주/1달/전체'],
+    ['v16.5',   '홈 자산 그래프 증권사 스타일 — $눈금·십자선·매매 마커·손익 스트립'],
+    ['v16.4',   '홈 자산 그래프 기간 4탭(일/주/월/연) — 탭은 기간 창이 아니라 집계 단위'],
+    ['v16.3',   '달력 날짜 펼침 카드 붕괴 수정 — 단일 열 세로 스택으로 구조 교체'],
+    ['v16.2',   '달력 날짜 상세 2단 구조'],
+    ['v16.1',   'PC 와이드 레이아웃 재배치 + 8주차 시공(야간 결재 줄·PM 슬롯·비상정지 복원)'],
     ['v16.0.0', '화면 전면 단순화 — 메뉴 6→4(홈·매매·방어·설정), 단일 DOM, 종목 소개 한 줄 고정'],
     ['v15.6',   '숫자 정합 — 원장 뿌리 교정 + 정합 배지 노출'],
     ['v15.5',   '폰 화면 간결화'],
@@ -1855,7 +1915,7 @@ details.more[open] > summary::before { content: '▾ '; }
          ' · 사용 ' + (num(n.budget_used_pct) === null ? '—' : num(n.budget_used_pct).toFixed(2)) + '%');
     $('set-started').textContent = sys.started_at || '—';
     $('ver-sys').textContent = sys.version || '—';
-    $('ver-sw').textContent = window.__nexusSwVersion || '—';
+    renderVersions();
     $('ver-mirror').textContent = isMirrorHost() ? ('미러 · ' + (window.__mirrorState || '—') + (window.__mirrorAt ? (' · ' + window.__mirrorAt) : '')) : '직결';
     $('set-acct').textContent = ((s.reconcile || {}).broker || {}).account_id || '—';
     var kt = $('kill-token-state');
@@ -2077,6 +2137,7 @@ details.more[open] > summary::before { content: '▾ '; }
         var ap = $('appr-list');
         if (ap) ap.innerHTML = '<div class="card"><div class="empty">' + esc(why) + '</div></div>';
       }
+      renderTabBadges();     // 실패 회차에도 부른다 — 옛 숫자를 붙들고 있지 않게
       stamp();
     });
   }
@@ -2121,8 +2182,8 @@ details.more[open] > summary::before { content: '▾ '; }
       ch.port1.onmessage = function (ev) {
         if (ev.data && ev.data.type === 'VERSION' && ev.data.version) {
           window.__nexusSwVersion = String(ev.data.version);
-          var el = document.getElementById('ver-sw');
-          if (el) el.textContent = window.__nexusSwVersion;
+          // v16.6.2 — '화면'·'SW 캐시' 두 행이 이 한 값을 함께 쓴다.
+          if (typeof window.nexusRenderVersions === 'function') window.nexusRenderVersions();
         }
       };
       sw.postMessage({ type: 'GET_VERSION' }, [ch.port2]);

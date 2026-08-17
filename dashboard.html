@@ -179,128 +179,10 @@ section[data-tab].active { display: block; }
 }
 .seg button:last-child { border-right: none; }
 .seg button[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent); }
-.chart-wrap { position: relative; margin-top: 8px; min-width: 0; }
-/* v16.4 — viewBox 를 실제 CSS 픽셀 폭으로 맞춰 그린다(1 unit = 1px).
-   preserveAspectRatio="none" 로 늘리면 막대 라벨 글자가 찌그러진다. */
+.chart-wrap { position: relative; margin-top: 12px; }
 .chart-wrap svg { display: block; width: 100%; height: 168px; overflow: visible; }
-.chart-meta { display: flex; justify-content: space-between; margin-top: 6px; gap: 10px; }
-.chart-head {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  margin-top: 12px; font-size: 12px; color: var(--fg-dim);
-}
-.chart-head .ch-l { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
-.chart-head .ch-r { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.chart-head .ch-start { font-family: var(--mono); color: var(--fg-dim); }
-.chart-head .ch-rec { font-size: 11px; color: var(--fg-faint); }
-.chart-head .ch-rec.bad { color: var(--down); font-weight: 700; }
-/* v16.5 — 십자선 상단 캡슐. 끌 때만 뜬다(놓으면 사라짐). */
-.chart-cap {
-  position: absolute; top: -2px; z-index: 5; pointer-events: none;
-  display: flex; align-items: center; gap: 8px;
-  padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px;
-  background: var(--card); box-shadow: 0 3px 12px rgba(0,0,0,0.16);
-  font-size: 11px; line-height: 1.4; white-space: nowrap;
-}
-.chart-cap .cd { color: var(--fg-dim); font-family: var(--mono); }
-.chart-cap .cv { font-family: var(--mono); font-weight: 700; color: var(--fg); }
-.chart-cap .cp { font-family: var(--mono); font-weight: 700; }
-.chart-cap .cp.up { color: var(--up); }
-.chart-cap .cp.down { color: var(--down); }
-.chart-cap .cp.flat, .chart-cap .cp.faint { color: var(--fg-faint); }
-/* 끄는 동안 글자 선택·스크롤이 끼어들지 않게 */
-.chart-wrap { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
-#chart .mk { pointer-events: auto; }
+.chart-meta { display: flex; justify-content: space-between; margin-top: 6px; }
 .chart-empty { font-size: 12px; color: var(--fg-faint); text-align: center; padding: 46px 12px; line-height: 1.7; }
-
-/* ---------- 보유 리스트 ---------- */
-.hold { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line-soft); }
-.hold:first-child { border-top: none; padding-top: 4px; }
-.mono-tile {
-  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: -0.02em;
-  border: 1px solid currentColor; background: var(--card-2);
-}
-.hold-body { flex: 1 1 auto; min-width: 0; }
-.hold-nm { font-size: 14px; font-weight: 600; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
-.hold-nm .tk { font-family: var(--mono); font-size: 12px; color: var(--fg-dim); }
-/* ★ 고정 요소 — "뭐 하는 곳 · 시장 · 담당 PM" 한 줄 소개. 어떤 개편에서도 유지한다. */
-.hold-intro { font-size: 12px; color: var(--fg-dim); margin-top: 3px; line-height: 1.45; overflow-wrap: anywhere; }
-.hold-qty { font-family: var(--mono); font-size: 11px; color: var(--fg-faint); margin-top: 4px; }
-/* A-3 — 강신호 예비 슬롯으로 들어온 종목 */
-.badge-res {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.02em;
-  padding: 2px 6px; border-radius: 999px;
-  color: var(--warn); background: var(--warn-fill); white-space: nowrap;
-}
-/* D-3 — 야간 자동 결재 작동 중 한 줄 */
-.night-line {
-  display: flex; align-items: center; gap: 8px;
-  border: 1px solid var(--line); border-radius: var(--r);
-  padding: 10px 14px; font-size: 13px; background: var(--card);
-}
-.night-line .dot-on { width: 7px; height: 7px; border-radius: 50%; background: var(--up); flex: 0 0 auto; }
-.night-line .dot-off { width: 7px; height: 7px; border-radius: 50%; background: var(--fg-faint); flex: 0 0 auto; }
-.night-line .lim { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--fg-dim); }
-/* A-2 — PM 슬롯 막대 */
-.pmslot { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line-soft); }
-.pmslot:first-child { border-top: none; }
-.pmslot .nm { flex: 0 0 74px; font-size: 12px; }
-.pmslot .cells { display: flex; gap: 4px; flex: 1 1 auto; }
-.pmslot .cell { width: 15px; height: 15px; border-radius: 4px; border: 1px solid currentColor; }
-.pmslot .cell.on { background: currentColor; }
-.pmslot .n { flex: 0 0 auto; font-family: var(--mono); font-size: 11px; color: var(--fg-dim); }
-.hold-right { flex: 0 0 auto; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.hold-right .amt { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 600; }
-.slot-note { font-size: 12px; color: var(--fg-dim); font-family: var(--mono); }
-
-/* ---------- 달력 ---------- */
-.cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.cal-head .m { font-weight: 700; font-size: 14px; font-family: var(--mono); }
-.cal-nav { border: 1px solid var(--line); border-radius: 7px; width: 30px; height: 30px; color: var(--fg-dim); font-size: 14px; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-.cal-dow { font-size: 11px; color: var(--fg-faint); text-align: center; padding: 4px 0; font-weight: 600; }
-.cal-cell {
-  aspect-ratio: 1 / 1; border: 1px solid transparent; border-radius: 8px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  font-family: var(--mono); font-size: 12px; color: var(--fg-dim); min-width: 0;
-}
-.cal-cell.pad { visibility: hidden; }
-.cal-cell.has { color: var(--fg); }
-.cal-cell[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-fill); color: var(--accent); }
-.cal-cell.today { border-color: var(--line); }
-.cal-dots { display: flex; gap: 3px; height: 6px; align-items: center; }
-.dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
-.dot.fill  { background: var(--up); }
-.dot.event { background: var(--warn); }
-.dot.issue { background: var(--down); }
-.cal-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; font-size: 11px; color: var(--fg-dim); }
-.cal-legend span { display: inline-flex; align-items: center; gap: 5px; }
-/* v16.3 — 날짜 펼침 카드는 '단일 열 세로 스택' 하나뿐이다.
- *   v16.2 까지는 라벨/값을 flex 한 줄(.day-row)로 그렸는데, 마크업의 닫는 div
- *   누락으로 뒤 섹션이 앞 섹션의 flex 아이템으로 끼어들어 다열로 붕괴했다
- *   (열 폭 0 → 글자가 세로로 1자씩). 구조 자체를 블록으로 바꿔 원인을 없앤다.
- *   PC·폰 동일 구조 — 폭 분기 없음. */
-.day-card { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; min-width: 0; }
-.day-card h4 { margin: 0 0 8px; font-size: 13px; font-family: var(--mono); }
-.day-card, .day-card * { min-width: 0; overflow-wrap: break-word; word-break: break-word; }
-.day-sec { display: block; padding: 8px 0; border-top: 1px solid var(--line-soft); }
-.day-sec:first-of-type { border-top: none; }
-.day-sec > .k { display: block; font-size: 11px; font-weight: 600; color: var(--fg-dim); margin-bottom: 3px; }
-.day-sec > .v { display: block; font-size: 13px; line-height: 1.55; }
-.day-sec > .v > div + div { margin-top: 3px; }
-.day-jt { font-weight: 600; }
-.day-jl { color: var(--fg-dim); font-size: 12px; }
-/* 이력 요약 한 줄 (탭하면 건별 펼침). 매매·결재 각각 독립 토글. */
-.day-more {
-  display: flex; align-items: center; gap: 8px; width: 100%;
-  margin-top: 2px; padding: 9px 11px;
-  border: 1px solid var(--line); border-radius: 8px; background: var(--card-2);
-  font-size: 13px; font-weight: 600; color: var(--fg); text-align: left;
-}
-.day-more .cue { margin-left: auto; flex: 0 0 auto; font-size: 12px; font-weight: 500; color: var(--accent); }
-.day-more[aria-expanded="true"] { border-color: var(--accent); }
-.day-detail { margin-top: 6px; }
 
 /* ---------- 매매 ---------- */
 .appr { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
@@ -561,21 +443,12 @@ details.more[open] > summary::before { content: '▾ '; }
         <div class="card">
           <div class="card-h"><div class="t">자산 그래프</div><div class="spacer"></div>
             <div class="seg" id="chart-range">
-              <button type="button" data-range="day" aria-pressed="true">일별</button>
-              <button type="button" data-range="week" aria-pressed="false">주별</button>
-              <button type="button" data-range="month" aria-pressed="false">월별</button>
-              <button type="button" data-range="year" aria-pressed="false">연간</button>
+              <button type="button" data-range="1w" aria-pressed="false">1주</button>
+              <button type="button" data-range="1m" aria-pressed="false">1달</button>
+              <button type="button" data-range="all" aria-pressed="true">전체</button>
             </div>
           </div>
-          <!-- v16.4 — 기간 요약 한 줄: "이번 주 · 시작 $X" / "±$증분 (±%)" -->
-          <div class="chart-head">
-            <div class="ch-l"><span id="chart-label">—</span><span class="ch-start num" id="chart-start"></span></div>
-            <div class="ch-r"><span class="pill flat" id="chart-delta">—</span><span class="ch-rec" id="chart-recon"></span></div>
-          </div>
-          <div class="chart-wrap" id="chart-wrap">
-            <div class="chart-cap" id="chart-cap" hidden></div>
-            <svg id="chart" role="img" aria-label="자산 추이"></svg>
-          </div>
+          <div class="chart-wrap" id="chart-wrap"><svg id="chart" viewBox="0 0 600 168" preserveAspectRatio="none" role="img" aria-label="자산 추이"></svg></div>
           <div class="chart-meta"><span class="faint num" id="chart-from">—</span><span class="faint num" id="chart-to">—</span></div>
         </div>
       </div>
@@ -1092,7 +965,7 @@ details.more[open] > summary::before { content: '▾ '; }
 
   // ---------- 상태 ----------
   var S = { snap: null, navHist: null, pending: null, history: null, journal: null,
-            night: null, calMonth: null, calSel: null, chartRange: 'day', weekOpen: {},
+            night: null, calMonth: null, calSel: null, chartRange: 'all', weekOpen: {},
             dayOpenT: false, dayOpenA: false };   // v16.3 — 매매·결재 각각 독립 펼침 (항상 접힘으로 시작)
 
   // ==================================================================
@@ -1207,31 +1080,21 @@ details.more[open] > summary::before { content: '▾ '; }
   }
 
   // ==================================================================
-  // 홈 ② 자산 그래프 — v16.4 기간 4탭 콤보 (손익 막대 + NAV 선)
+  // 홈 ② 자산 그래프 (인라인 SVG · 면 채움 + 현재점)
   //
-  //   데이터는 real_nav_history 실기록만 쓴다. 기록 시작 이전은 그리지 않고
-  //   "기록 시작 YYYY-MM-DD" 로 정직하게 알린다 (소급 생성 금지).
-  //   v16.3 까지 쓰던 snapshot.performance.nav_series 폴백은 뺐다 — 그쪽은
-  //   일별 증분이 매일 같은 값으로 떨어지는 파생 계열이라 '손익 막대'의
-  //   원천이 될 수 없다.
+  //   v16.6 (2026-08-17) — v16.5 증권사 스타일에서 **v16.0 방식으로 복원**.
+  //     제거: 일/주/월/연 4탭 · 우측 $눈금 · 십자선 · 매매 마커 · 손익 스트립.
+  //     복원: 면 채움 라인 + 현재값 점, 기간 1주 / 1달 / 전체.
+  //   데이터 수집 백엔드(real_nav_history · nav_intraday · 보충 잡)는 무접촉이다.
+  //   화면만 되돌린 것이라 기록은 그대로 쌓인다.
   //
-  //   막대와 선의 관계(자체 대사의 근거):
-  //     선의 점 N개 → 막대 N-1개. 막대[i] = 점[i+1] - 점[i].
-  //     따라서 **막대 합 = 끝값 - 시작값** 이 항상 성립해야 한다.
-  //     시작점은 기간 직전의 마지막 기록(기준점)이라 헤더의 "시작 $X" 와 같다.
+  //   유지되는 규칙 (v16.4~16.5 에서 확인된 것):
+  //     · real_nav_history **실기록만** 쓴다. snapshot 파생 계열로 폴백하지 않는다
+  //       (그 계열은 일 증분이 매일 같은 값이라 자산 추이로 볼 수 없다).
+  //     · 소급 생성 금지 — 기록 시작 이전 구간은 그리지 않고 시작일을 밝힌다.
   // ==================================================================
-  // v16.4.1 — 탭은 '기간 창'이 아니라 **집계 단위**다.
-  //   v16.4 는 주=최근 7일 창 / 월=최근 30일 창으로 잡았다. 기록이 3일(8/12~14)
-  //   뿐인 지금 두 창이 같은 3줄을 담아 **두 탭이 완전히 같은 일자별 화면**이
-  //   됐다. (PC·폰 동일 — 실측에서 두 경로 렌더가 바이트 단위로 같았다.)
-  //   이제 네 탭이 같은 집계 함수 하나에 단위만 바꿔 넣는다.
-  var RANGE_META = {
-    day:   { label: '일별', unit: 'day',   keep: 30 },
-    week:  { label: '주별', unit: 'week',  keep: 26 },
-    month: { label: '월별', unit: 'month', keep: 24 },
-    year:  { label: '연간', unit: 'year',  keep: 10 }
-  };
   var CHART_KEY = 'nexus.v16.chartRange';
+  var CHART_RANGES = { '1w': 7, '1m': 30, 'all': null };
 
   function navEntries() {
     var es = (S.navHist && Array.isArray(S.navHist.entries)) ? S.navHist.entries : [];
@@ -1239,88 +1102,15 @@ details.more[open] > summary::before { content: '▾ '; }
              .filter(function (e) { return e.d && e.v !== null; })
              .sort(function (a, b) { return a.d < b.d ? -1 : 1; });
   }
-  // ---- 집계 단위 ----
-  //   단위 키: 일=날짜 · 주=그 주 월요일 · 월=YYYY-MM · 연=YYYY
-  function unitKey(d, unit) {
-    if (unit === 'month') return d.slice(0, 7);
-    if (unit === 'year') return d.slice(0, 4);
-    if (unit === 'week') {
-      var dt = new Date(d + 'T00:00:00');
-      dt.setDate(dt.getDate() - ((dt.getDay() + 6) % 7));   // 월요일 시작
-      return ymd(dt);
-    }
-    return d;
+  function seriesForRange() {
+    var src = navEntries();
+    var days = CHART_RANGES[S.chartRange];
+    if (!days || src.length < 3) return src;
+    var cut = new Date(); cut.setDate(cut.getDate() - days);
+    var cutS = ymd(cut);
+    var f = src.filter(function (e) { return e.d >= cutS; });
+    return f.length >= 2 ? f : src.slice(-Math.max(2, Math.min(src.length, days)));
   }
-  function unitLabel(key, unit) {
-    if (unit === 'month') return Number(key.slice(5, 7)) + '월';
-    if (unit === 'year') return key;
-    if (unit === 'week') return Number(key.slice(5, 7)) + '/' + Number(key.slice(8, 10)) + '주';
-    return key.slice(5).replace('-', '/');
-  }
-
-  // 단위로 접어 점·막대를 만든다. **네 탭이 이 함수 하나를 쓴다**
-  //   (PC·폰 구분 없음 — 데이터 출처만 다르고 집계는 한 벌이다).
-  //
-  //   각 단위의 open(첫 기록) · close(마지막 기록) 을 잡고
-  //     점 = [첫 단위의 open] + [단위별 close]
-  //     막대 = 이웃 점의 차
-  //   로 두면 **막대 합 = 끝값 − 시작값** 이 그대로 성립한다.
-  //   첫 단위의 막대만은 '그 단위 안에서의 변화'다 — 이전 단위 종가가
-  //   없으니 그 수밖에 없다. 나머지는 단위 종가 대비 변화.
-  //   (첫 단위에 기록이 하나뿐이면 open==close 라 그 점은 넣지 않는다.)
-  function aggregate(src, unit, keep) {
-    if (!src.length) return [];
-    var order = [], byKey = {};
-    src.forEach(function (e) {
-      var k = unitKey(e.d, unit);
-      if (!byKey[k]) { byKey[k] = { key: k, open: e, close: e }; order.push(k); }
-      else { byKey[k].close = e; }
-    });
-    if (keep && order.length > keep) order = order.slice(order.length - keep);
-    var units = order.map(function (k) { return byKey[k]; });
-    var pts = [];
-    var f = units[0];
-    if (f.open.d !== f.close.d) {
-      pts.push({ d: f.open.d, v: f.open.v, label: unitLabel(f.key, unit), edge: 'open' });
-    }
-    units.forEach(function (u) {
-      pts.push({ d: u.close.d, v: u.close.v, label: unitLabel(u.key, unit), key: u.key });
-    });
-    return pts;
-  }
-
-  //: 탭별 점 배열. 점이 2개 미만이면 막대를 만들 수 없다.
-  function chartPoints() {
-    var meta = RANGE_META[S.chartRange] || RANGE_META.day;
-    return { points: aggregate(navEntries(), meta.unit, meta.keep), mode: 'combo', unit: meta.unit };
-  }
-
-  // 막대 = 이웃 점의 차. 반올림은 하지 않는다(대사는 원값으로).
-  function barsOf(points) {
-    var out = [];
-    for (var i = 1; i < points.length; i++) {
-      out.push({ i: i, dv: points[i].v - points[i - 1].v, p: points[i] });
-    }
-    return out;
-  }
-  // 자체 대사 — 막대 합 == 선 증분. 원값으로 합산하고 표시할 때만 반올림한다.
-  function reconcileChart(points, bars) {
-    // '일' 탭은 곡선만 그린다(막대 없음) — 대사할 대상이 없다.
-    // 막대가 없는데 증분과 비교하면 항상 불일치로 잡힌다.
-    if (points.length < 2 || !bars.length) return { ok: true, n: 0 };
-    var sum = 0;
-    for (var i = 0; i < bars.length; i++) sum += bars[i].dv;
-    var inc = points[points.length - 1].v - points[0].v;
-    var diff = Math.abs(sum - inc);
-    var ok = diff <= 0.005;                       // 0.5센트 — 부동소수 오차 허용치
-    if (!ok) {
-      console.warn('[nexus chart] 대사 불일치 — 막대 합 ' + sum.toFixed(2) +
-                   ' ≠ 선 증분 ' + inc.toFixed(2) + ' (차 ' + diff.toFixed(2) + ')',
-                   { range: S.chartRange, points: points.length, bars: bars.length });
-    }
-    return { ok: ok, sum: sum, inc: inc, diff: diff, n: bars.length };
-  }
-
   function chartEmpty(msg, sub) {
     var svg = $('chart'); if (svg) svg.innerHTML = '';
     var wrap = $('chart-wrap');
@@ -1330,338 +1120,52 @@ details.more[open] > summary::before { content: '▾ '; }
     el.innerHTML = esc(msg) + (sub ? '<br><span class="faint">' + esc(sub) + '</span>' : '');
     wrap.appendChild(el);
     $('chart-from').textContent = '—'; $('chart-to').textContent = '—';
-    $('chart-start').textContent = '';
-    var dl = $('chart-delta'); dl.className = 'pill flat'; dl.textContent = '—';
-    $('chart-recon').textContent = ''; $('chart-recon').className = 'ch-rec';
-    hideCap();
   }
-  function hideCap() {
-    var c = $('chart-cap'); if (c) c.hidden = true;
-    var svg = $('chart'); if (!svg) return;
-    var g = svg.querySelector('#chart-cross'); if (g) g.setAttribute('visibility', 'hidden');
-  }
-
-  // ---- 우측 $ 눈금: 천 단위 축약 (1,011,417 → 1,011K) ----
-  //   NAV 는 눈금 간격이 수백 달러라 소수 없이 K 로만 줄이면 눈금 네 개가
-  //   전부 "1,011K" 로 같아진다. 소수 자릿수는 **라벨이 서로 달라질 때까지**
-  //   늘린다(최대 2자리).
-  function kAxis(v, dec) {
-    var a = Math.abs(v);
-    if (a >= 1e9) return (v / 1e9).toFixed(2) + 'B';
-    if (a >= 1e3) {
-      var s = (v / 1e3).toFixed(dec || 0);
-      var parts = s.split('.');
-      parts[0] = Number(parts[0]).toLocaleString('en-US');
-      return parts.join('.') + 'K';
-    }
-    return Math.round(v).toLocaleString('en-US');
-  }
-  function kAxisDecimals(ticks) {
-    for (var d = 0; d <= 2; d++) {
-      var seen = {}, dup = false;
-      for (var i = 0; i < ticks.length; i++) {
-        var s = kAxis(ticks[i], d);
-        if (seen[s]) { dup = true; break; }
-        seen[s] = 1;
-      }
-      if (!dup) return d;
-    }
-    return 2;
-  }
-  //: [mn,mx] 를 덮는 '보기 좋은' 눈금 3~4단.
-  //   NAV 는 범위가 좁아(수백 달러) 단순 계산으로는 눈금이 2단만 나온다.
-  //   후보 간격을 만들어 **개수가 4에 가장 가까운 것**을 고른다.
-  function niceTicks(mn, mx, want) {
-    var span = mx - mn;
-    if (!(span > 0)) return [mn];
-    var base = Math.pow(10, Math.floor(Math.log(span / Math.max(1, want)) / Math.LN10));
-    var cands = [];
-    [0.5, 1, 2, 2.5, 5, 10, 20].forEach(function (m) { cands.push(m * base); });
-    var best = null, bestScore = 1e9;
-    cands.forEach(function (step) {
-      if (!(step > 0)) return;
-      var n = 0;
-      for (var t = Math.ceil(mn / step) * step; t <= mx + step * 1e-6; t += step) {
-        n++; if (n > 12) break;
-      }
-      if (n < 2) return;
-      // 3~5단을 우선하고, 그 안에서 4단에 가까울수록 좋다.
-      var score = Math.abs(n - want) + (n < 3 || n > 5 ? 10 : 0);
-      if (score < bestScore) { bestScore = score; best = step; }
-    });
-    if (!best) return [mn, mx];
-    var out = [];
-    for (var t = Math.ceil(mn / best) * best; t <= mx + best * 1e-6 && out.length < 12; t += best) out.push(t);
-    return out.length >= 2 ? out : [mn, mx];
-  }
-
-  // ---- 매매 마커: 원장 실체결만 (계획·반려는 마커가 아니다) ----
-  //   일별은 그 날짜 점에, 주/월/연은 그 단위 점에 하나로 합친다.
-  function tradeMarks(points, unit) {
-    var idxByKey = {};
-    points.forEach(function (p, i) { if (p.key !== undefined) idxByKey[p.key] = i; });
-    if (!points.length) return [];
-    // 기준점(open)만 있고 key 가 없는 첫 점은 마커 대상이 아니다.
-    var acc = {};
-    (((S.history || {}).calendar ? S.history.calendar.rows : ((S.history || {}).items || [])) || [])
-      .forEach(function (o) {
-        if (String(o.status) !== 'filled') return;
-        var day = o.day || isoDay(o.decided_at || o.created_at);
-        if (!day) return;
-        var k = unitKey(day, unit);
-        var i = idxByKey[k];
-        if (i === undefined) return;              // 그 단위에 자산 기록점이 없다
-        if (!acc[k]) acc[k] = { i: i, buy: 0, sell: 0, days: {} };
-        if (String(o.side) === 'sell') acc[k].sell++; else acc[k].buy++;
-        acc[k].days[day] = true;
-      });
-    return Object.keys(acc).map(function (k) {
-      var a = acc[k];
-      var days = Object.keys(a.days).sort();
-      return { i: a.i, buy: a.buy, sell: a.sell, day: days[days.length - 1], days: days };
-    }).sort(function (x, y) { return x.i - y.i; });
-  }
-
-  var _chartGeom = null;   // 십자선이 쓰는 좌표계 (렌더 때 갱신)
-
   function renderChart() {
     var svg = $('chart'), wrap = $('chart-wrap'); if (!svg || !wrap) return;
     Array.prototype.forEach.call(document.querySelectorAll('#chart-range button'), function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-range') === S.chartRange));
     });
-    var meta = RANGE_META[S.chartRange] || RANGE_META.day;
-    $('chart-label').textContent = meta.label;
-    var startedAt = (S.navHist || {}).started_at || null;
     var ex = wrap.querySelector('.chart-empty'); if (ex) ex.remove();
-    _chartGeom = null;
 
-    var got = chartPoints(), points = got.points || [];
-    if (points.length < 2) {
-      // 가짜 과거를 만들지 않는다 — 있는 만큼만 그리고 시작일을 밝힌다.
+    var data = seriesForRange();
+    var startedAt = (S.navHist || {}).started_at || null;
+    if (data.length < 2) {
       chartEmpty(startedAt ? ('기록 시작 ' + startedAt) : '자산 기록이 아직 없습니다',
-        startedAt ? (meta.label + ' 막대를 만들려면 기록이 2개 이상 필요합니다 — 현재 ' +
-                     points.length + '개')
+        startedAt ? ('이 기간에 그릴 기록이 ' + data.length + '개입니다 — 2개부터 그립니다')
                   : '기록이 쌓이면 그려집니다 (소급 생성하지 않음)');
       return;
     }
 
-    var bars = barsOf(points);
-    var rec = reconcileChart(points, bars);
-
-    // ---- 좌표계 ----
-    //   viewBox 를 실제 CSS 픽셀 폭에 맞춘다 (1 unit = 1px · 글자 안 찌그러지게).
-    //   세로는 [차트 본체] + [손익 스트립] 두 구역으로 나눈다.
-    var W = Math.max(240, Math.round(wrap.clientWidth || 320));
-    var H = Math.round(parseFloat(getComputedStyle(svg).height) || 168);
-    var RG = 52;                       // 우측 $ 눈금 자리
-    var PT = 14, PL = 6, PB = 18;      // 위·왼쪽·아래(날짜축) 여백
-    var SH = Math.max(18, Math.round(H * 0.14));   // 손익 스트립 높이
-    var SGAP = 6;
-    var plotW = W - PL - RG;
-    var plotH = H - PT - PB - SH - SGAP;
-    var stripTop = PT + plotH + SGAP;
-    var stripZeroY = stripTop + SH / 2;
-
-    var vals = points.map(function (p) { return p.v; });
+    var W = 600, H = 168, PT = 12, PB = 18, PL = 2, PR = 8;
+    var vals = data.map(function (e) { return e.v; });
     var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
-    if (mx - mn < 1e-9) { mx = mn + Math.max(1, Math.abs(mn) * 1e-6); }
-    var padv = (mx - mn) * 0.16; mn -= padv; mx += padv;
-    var maxAbs = 0;
-    bars.forEach(function (b) { maxAbs = Math.max(maxAbs, Math.abs(b.dv)); });
-    if (maxAbs <= 0) maxAbs = 1;
-
-    function X(i) { return PL + (points.length === 1 ? plotW / 2 : plotW * i / (points.length - 1)); }
-    function Y(v) { return PT + plotH * (1 - (v - mn) / (mx - mn)); }
-
-    var g = [];
-
-    // ---- 가로 그리드 + 우측 $ 눈금 ----
-    var ticks = niceTicks(mn, mx, 4).filter(function (t) {
-      var y = Y(t); return y >= PT - 1 && y <= PT + plotH + 1;
-    });
-    var tdec = kAxisDecimals(ticks);
-    ticks.forEach(function (t) {
-      var y = Y(t);
-      g.push('<line x1="' + PL + '" y1="' + y.toFixed(2) + '" x2="' + (W - RG + 2) +
-        '" y2="' + y.toFixed(2) + '" stroke="var(--line-soft)" stroke-width="1"/>');
-      g.push('<text x="' + (W - RG + 7) + '" y="' + (y + 3.5).toFixed(2) +
-        '" text-anchor="start" font-size="10" font-family="var(--mono)" ' +
-        'fill="var(--fg-faint)">' + esc(kAxis(t, tdec)) + '</text>');
-    });
-
-    // ---- 하단 손익 스트립 (라벨 없음 — 값은 십자선 패널로) ----
-    var slotW = points.length > 1 ? plotW / (points.length - 1) : plotW;
-    var bw = Math.max(2, Math.min(18, slotW * 0.5));
-    g.push('<line x1="' + PL + '" y1="' + stripZeroY.toFixed(2) + '" x2="' + (W - RG + 2) +
-      '" y2="' + stripZeroY.toFixed(2) + '" stroke="var(--line)" stroke-width="1"/>');
-    bars.forEach(function (b) {
-      var cx = X(b.i), pos = b.dv >= 0;
-      var h = Math.max(1, (Math.abs(b.dv) / maxAbs) * (SH / 2 - 1));
-      g.push('<rect x="' + (cx - bw / 2).toFixed(2) + '" y="' + (pos ? stripZeroY - h : stripZeroY).toFixed(2) +
-        '" width="' + bw.toFixed(2) + '" height="' + h.toFixed(2) +
-        '" fill="' + (pos ? 'var(--up)' : 'var(--down)') + '" opacity="0.8"/>');
-    });
-
-    // ---- NAV 선 ----
-    var pts = points.map(function (p, i) { return X(i).toFixed(2) + ',' + Y(p.v).toFixed(2); });
-    var up = points[points.length - 1].v >= points[0].v;
-    var lcol = up ? 'var(--up)' : 'var(--down)';
-    g.push('<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + lcol +
-      '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>');
-    var xn = X(points.length - 1), yn = Y(points[points.length - 1].v);
-    g.push('<circle cx="' + xn.toFixed(2) + '" cy="' + yn.toFixed(2) + '" r="3.5" fill="' + lcol + '"/>');
-
-    // ---- 매매 마커 (매수 ▲ 초록 · 매도 ▼ 빨강) ----
-    var marks = tradeMarks(points, got.unit);
-    marks.forEach(function (m) {
-      var cx = X(m.i), cy = Y(points[m.i].v);
-      if (m.buy) {
-        g.push('<path class="mk" data-day="' + esc(m.day) + '" d="M' + cx.toFixed(2) + ',' + (cy - 15).toFixed(2) +
-          ' l4.5,7.5 l-9,0 Z" fill="var(--up)" style="cursor:pointer"><title>' +
-          esc(m.day + ' 매수 ' + m.buy + '건 — 탭하면 달력 카드') + '</title></path>');
-      }
-      if (m.sell) {
-        g.push('<path class="mk" data-day="' + esc(m.day) + '" d="M' + cx.toFixed(2) + ',' + (cy + 15).toFixed(2) +
-          ' l4.5,-7.5 l-9,0 Z" fill="var(--down)" style="cursor:pointer"><title>' +
-          esc(m.day + ' 매도 ' + m.sell + '건 — 탭하면 달력 카드') + '</title></path>');
-      }
-    });
-
-    // ---- 날짜 축 (주요 지점만 · 같은 라벨 연속이면 뒤엣것만) ----
-    var axIdx = points.length <= 3 ? points.map(function (_, i) { return i; })
-                                   : [0, Math.floor((points.length - 1) / 2), points.length - 1];
-    var axLabels = axIdx.map(function (i) { return points[i].label || ''; });
-    axIdx.forEach(function (i, k) {
-      var lab = axLabels[k];
-      if (!lab) return;
-      if (k + 1 < axLabels.length && axLabels[k + 1] === lab) return;
-      var anchor = k === 0 ? 'start' : (k === axIdx.length - 1 ? 'end' : 'middle');
-      var x = k === 0 ? PL : (k === axIdx.length - 1 ? W - RG : X(i));
-      g.push('<text x="' + x.toFixed(2) + '" y="' + (H - 4) +
-        '" text-anchor="' + anchor + '" font-size="10" font-family="var(--mono)" fill="var(--fg-faint)">' +
-        esc(lab) + '</text>');
-    });
-
-    // ---- 십자선 (드래그 중에만 보인다) ----
-    g.push('<g id="chart-cross" visibility="hidden">' +
-      '<line id="cross-v" x1="0" y1="' + PT + '" x2="0" y2="' + (stripTop + SH).toFixed(2) +
-      '" stroke="var(--fg-dim)" stroke-width="1" stroke-dasharray="3 3"/>' +
-      '<circle id="cross-d" cx="0" cy="0" r="4" fill="var(--card)" stroke="' + lcol + '" stroke-width="2"/></g>');
-
-    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    svg.innerHTML = g.join('');
-
-    _chartGeom = { W: W, H: H, PL: PL, plotW: plotW, points: points, X: X, Y: Y,
-                   unit: got.unit, bars: bars };
-
-    // ---- 헤더 요약 · 하단 메타 ----
-    var first = points[0], last = points[points.length - 1];
-    var inc = last.v - first.v, pct = first.v ? (inc / first.v * 100) : null;
-    $('chart-start').textContent = '시작 ' + usd(first.v, 0);
-    var dl = $('chart-delta');
-    dl.className = 'pill ' + tone(inc);
-    dl.textContent = signUsd(inc, 0) + (pct === null ? '' : ('  ' + signPct(pct)));
-    var rc = $('chart-recon');
-    if (!bars.length) { rc.textContent = ''; rc.className = 'ch-rec'; }
-    else if (rec.ok) { rc.textContent = '대사 ✓ 막대 합 = 증분'; rc.className = 'ch-rec'; }
-    else { rc.textContent = '대사 불일치 ' + usd(rec.diff, 2); rc.className = 'ch-rec bad'; }
-    $('chart-from').textContent = first.d + ' · ' + usd(first.v, 0);
-    $('chart-to').textContent = last.d + ' · ' + usd(last.v, 0);
-    hideCap();
+    if (mx - mn < 1e-9) { mx = mn + 1; }
+    var pad = (mx - mn) * 0.12;
+    mn -= pad; mx += pad;
+    function X(i) { return PL + (W - PL - PR) * (data.length === 1 ? 0.5 : i / (data.length - 1)); }
+    function Y(v) { return PT + (H - PT - PB) * (1 - (v - mn) / (mx - mn)); }
+    var pts = data.map(function (e, i) { return X(i).toFixed(2) + ',' + Y(e.v).toFixed(2); });
+    var up = data[data.length - 1].v >= data[0].v;
+    var col = up ? 'var(--up)' : 'var(--down)';
+    var fill = up ? 'var(--up-fill)' : 'var(--down-fill)';
+    var area = 'M' + X(0).toFixed(2) + ',' + (H - PB) + ' L' + pts.join(' L') +
+               ' L' + X(data.length - 1).toFixed(2) + ',' + (H - PB) + ' Z';
+    var lastX = X(data.length - 1), lastY = Y(data[data.length - 1].v);
+    svg.innerHTML =
+      '<path d="' + area + '" fill="' + fill + '" stroke="none"/>' +
+      '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + col +
+      '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+      '<circle cx="' + lastX.toFixed(2) + '" cy="' + lastY.toFixed(2) + '" r="3.5" fill="' + col + '"/>';
+    $('chart-from').textContent = data[0].d + ' · ' + usd(data[0].v, 0);
+    $('chart-to').textContent = data[data.length - 1].d + ' · ' + usd(data[data.length - 1].v, 0);
   }
-
-  // ==================================================================
-  // 십자선 — 끌면 따라오고, 놓으면 사라진다
-  //   TODO(v16.6): nav_intraday 표본이 쌓이면 '일별' 탭을 캔들로 전환한다.
-  //     (시가=그날 첫 표본 · 고가/저가=최대/최소 · 종가=마지막 표본)
-  //     지금은 표본이 없어 선으로만 그린다 — 가짜 봉을 만들지 않는다.
-  // ==================================================================
-  function crossAt(clientX) {
-    var geom = _chartGeom, svg = $('chart'), wrap = $('chart-wrap');
-    if (!geom || !svg || !wrap) return;
-    var box = svg.getBoundingClientRect();
-    if (!box.width) return;
-    var ux = (clientX - box.left) * (geom.W / box.width);      // CSS px → viewBox 단위
-    var n = geom.points.length;
-    var t = (ux - geom.PL) / (geom.plotW || 1);
-    var i = Math.max(0, Math.min(n - 1, Math.round(t * (n - 1))));
-    var p = geom.points[i];
-    var cx = geom.X(i), cy = geom.Y(p.v);
-
-    var gg = svg.querySelector('#chart-cross');
-    if (gg) {
-      gg.setAttribute('visibility', 'visible');
-      var lv = svg.querySelector('#cross-v'), dot = svg.querySelector('#cross-d');
-      if (lv) { lv.setAttribute('x1', cx.toFixed(2)); lv.setAttribute('x2', cx.toFixed(2)); }
-      if (dot) { dot.setAttribute('cx', cx.toFixed(2)); dot.setAttribute('cy', cy.toFixed(2)); }
-    }
-    var dv = i > 0 ? p.v - geom.points[i - 1].v : null;
-    var cap = $('chart-cap');
-    if (cap) {
-      cap.innerHTML = '<span class="cd">' + esc(p.d) + '</span>' +
-        '<span class="cv">' + esc(usd(p.v, 0)) + '</span>' +
-        (dv === null ? '<span class="cp faint">기준</span>'
-                     : '<span class="cp ' + tone(dv) + '">' + esc(signUsd(dv, 0)) + '</span>');
-      cap.hidden = false;
-      var scale = box.width / geom.W;
-      var cw = cap.offsetWidth || 150;
-      cap.style.left = Math.max(2, Math.min(cx * scale - cw / 2, (wrap.clientWidth || 0) - cw - 2)) + 'px';
-    }
-  }
-  (function bindCross() {
-    var wrap = null;
-    function on(e) {
-      wrap = wrap || $('chart-wrap');
-      if (!wrap || !_chartGeom) return;
-      if (e.target.closest && e.target.closest('.mk')) return;   // 마커 탭은 십자선이 아니다
-      var x = e.touches && e.touches.length ? e.touches[0].clientX : e.clientX;
-      if (x === undefined) return;
-      crossAt(x);
-      if (e.cancelable && e.type === 'touchmove') e.preventDefault();
-    }
-    function start(e) {
-      var w = $('chart-wrap');
-      if (!w || !(e.target.closest && e.target.closest('#chart-wrap'))) return;
-      _dragging = true; on(e);
-    }
-    var _dragging = false;
-    document.addEventListener('mousedown', function (e) { start(e); });
-    document.addEventListener('mousemove', function (e) { if (_dragging) on(e); });
-    document.addEventListener('mouseup', function () { if (_dragging) { _dragging = false; hideCap(); } });
-    document.addEventListener('touchstart', function (e) { start(e); }, { passive: true });
-    document.addEventListener('touchmove', function (e) { if (_dragging) on(e); }, { passive: false });
-    document.addEventListener('touchend', function () { if (_dragging) { _dragging = false; hideCap(); } });
-    document.addEventListener('touchcancel', function () { _dragging = false; hideCap(); });
-  })();
-
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('#chart-range button[data-range]');
-    if (b) {
-      S.chartRange = b.getAttribute('data-range');
-      try { localStorage.setItem(CHART_KEY, S.chartRange); } catch (_) { }
-      renderChart(); return;
-    }
-    // 매매 마커 → 그날 달력 카드를 연다 (renderDayCard 재사용)
-    var mk = e.target.closest && e.target.closest('#chart .mk');
-    if (mk) {
-      var day = mk.getAttribute('data-day');
-      if (day) {
-        S.calSel = day;
-        S.calMonth = new Date(Number(day.slice(0, 4)), Number(day.slice(5, 7)) - 1, 1);
-        S.dayOpenT = true; S.dayOpenA = false;    // 매매 마커이므로 매매를 펼친 채로
-        renderCal();
-        var card = document.querySelector('.home-cal');
-        if (card && card.scrollIntoView) card.scrollIntoView({ block: 'start' });
-      }
-      return;
-    }
-  });
-  // 폭이 바뀌면 viewBox 를 다시 잡아야 한다 (1 unit = 1px 유지).
-  var _chartRT = null;
-  window.addEventListener('resize', function () {
-    clearTimeout(_chartRT);
-    _chartRT = setTimeout(function () { if (S.navHist || S.snap) renderChart(); }, 160);
+    if (!b) return;
+    S.chartRange = b.getAttribute('data-range');
+    try { localStorage.setItem(CHART_KEY, S.chartRange); } catch (_) { }
+    renderChart();
   });
 
   // ==================================================================
@@ -2489,7 +1993,7 @@ details.more[open] > summary::before { content: '▾ '; }
     // v16.4 — 기간 선택은 localStorage 로 유지한다.
     try {
       var cr = localStorage.getItem(CHART_KEY);
-      if (cr && RANGE_META[cr]) S.chartRange = cr;
+      if (cr && CHART_RANGES.hasOwnProperty(cr)) S.chartRange = cr;
     } catch (_) { }
     renderTabs(); renderMenuEdit(); applyTheme();
     go('home');

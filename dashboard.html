@@ -552,10 +552,10 @@ details.more[open] > summary::before { content: '▾ '; }
         <div class="card">
           <div class="card-h"><div class="t">자산 그래프</div><div class="spacer"></div>
             <div class="seg" id="chart-range">
-              <button type="button" data-range="day" aria-pressed="false">일</button>
-              <button type="button" data-range="week" aria-pressed="true">주</button>
-              <button type="button" data-range="month" aria-pressed="false">월</button>
-              <button type="button" data-range="year" aria-pressed="false">연</button>
+              <button type="button" data-range="day" aria-pressed="true">일별</button>
+              <button type="button" data-range="week" aria-pressed="false">주별</button>
+              <button type="button" data-range="month" aria-pressed="false">월별</button>
+              <button type="button" data-range="year" aria-pressed="false">연간</button>
             </div>
           </div>
           <!-- v16.4 — 기간 요약 한 줄: "이번 주 · 시작 $X" / "±$증분 (±%)" -->
@@ -1083,7 +1083,7 @@ details.more[open] > summary::before { content: '▾ '; }
 
   // ---------- 상태 ----------
   var S = { snap: null, navHist: null, pending: null, history: null, journal: null,
-            night: null, calMonth: null, calSel: null, chartRange: 'week', weekOpen: {},
+            night: null, calMonth: null, calSel: null, chartRange: 'day', weekOpen: {},
             dayOpenT: false, dayOpenA: false };   // v16.3 — 매매·결재 각각 독립 펼침 (항상 접힘으로 시작)
 
   // ==================================================================
@@ -1211,11 +1211,16 @@ details.more[open] > summary::before { content: '▾ '; }
   //     따라서 **막대 합 = 끝값 - 시작값** 이 항상 성립해야 한다.
   //     시작점은 기간 직전의 마지막 기록(기준점)이라 헤더의 "시작 $X" 와 같다.
   // ==================================================================
+  // v16.4.1 — 탭은 '기간 창'이 아니라 **집계 단위**다.
+  //   v16.4 는 주=최근 7일 창 / 월=최근 30일 창으로 잡았다. 기록이 3일(8/12~14)
+  //   뿐인 지금 두 창이 같은 3줄을 담아 **두 탭이 완전히 같은 일자별 화면**이
+  //   됐다. (PC·폰 동일 — 실측에서 두 경로 렌더가 바이트 단위로 같았다.)
+  //   이제 네 탭이 같은 집계 함수 하나에 단위만 바꿔 넣는다.
   var RANGE_META = {
-    day:   { ko: '오늘',    label: '오늘' },
-    week:  { ko: '이번 주', label: '이번 주' },
-    month: { ko: '이번 달', label: '최근 30일' },
-    year:  { ko: '올해',    label: '최근 12개월' }
+    day:   { label: '일별', unit: 'day',   keep: 30 },
+    week:  { label: '주별', unit: 'week',  keep: 26 },
+    month: { label: '월별', unit: 'month', keep: 24 },
+    year:  { label: '연간', unit: 'year',  keep: 10 }
   };
   var CHART_KEY = 'nexus.v16.chartRange';
 
@@ -1225,46 +1230,60 @@ details.more[open] > summary::before { content: '▾ '; }
              .filter(function (e) { return e.d && e.v !== null; })
              .sort(function (a, b) { return a.d < b.d ? -1 : 1; });
   }
-  // 기간 창 + **기준점 1개**(창 직전 마지막 기록). 기준점이 있어야 창 안
-  // 첫날의 손익을 알 수 있고, 막대 합 = 끝값 - 시작값 이 닫힌다.
-  function windowWithBaseline(src, fromDay) {
-    var inWin = [], base = null;
-    src.forEach(function (e) { if (e.d >= fromDay) inWin.push(e); else base = e; });
-    return base ? [base].concat(inWin) : inWin;
+  // ---- 집계 단위 ----
+  //   단위 키: 일=날짜 · 주=그 주 월요일 · 월=YYYY-MM · 연=YYYY
+  function unitKey(d, unit) {
+    if (unit === 'month') return d.slice(0, 7);
+    if (unit === 'year') return d.slice(0, 4);
+    if (unit === 'week') {
+      var dt = new Date(d + 'T00:00:00');
+      dt.setDate(dt.getDate() - ((dt.getDay() + 6) % 7));   // 월요일 시작
+      return ymd(dt);
+    }
+    return d;
   }
-  function daysAgo(n) { var d = new Date(); d.setDate(d.getDate() - n); return ymd(d); }
+  function unitLabel(key, unit) {
+    if (unit === 'month') return Number(key.slice(5, 7)) + '월';
+    if (unit === 'year') return key;
+    if (unit === 'week') return Number(key.slice(5, 7)) + '/' + Number(key.slice(8, 10)) + '주';
+    return key.slice(5).replace('-', '/');
+  }
 
-  // 연 탭 — 월별 마지막 기록으로 접는다 (월 손익 = 그 달 마지막 - 전달 마지막).
-  function monthlyPoints(src) {
-    var byMonth = {};
-    src.forEach(function (e) { byMonth[e.d.slice(0, 7)] = e; });
-    return Object.keys(byMonth).sort().map(function (m) {
-      return { d: byMonth[m].d, v: byMonth[m].v, key: m, label: m.slice(5) + '월' };
+  // 단위로 접어 점·막대를 만든다. **네 탭이 이 함수 하나를 쓴다**
+  //   (PC·폰 구분 없음 — 데이터 출처만 다르고 집계는 한 벌이다).
+  //
+  //   각 단위의 open(첫 기록) · close(마지막 기록) 을 잡고
+  //     점 = [첫 단위의 open] + [단위별 close]
+  //     막대 = 이웃 점의 차
+  //   로 두면 **막대 합 = 끝값 − 시작값** 이 그대로 성립한다.
+  //   첫 단위의 막대만은 '그 단위 안에서의 변화'다 — 이전 단위 종가가
+  //   없으니 그 수밖에 없다. 나머지는 단위 종가 대비 변화.
+  //   (첫 단위에 기록이 하나뿐이면 open==close 라 그 점은 넣지 않는다.)
+  function aggregate(src, unit, keep) {
+    if (!src.length) return [];
+    var order = [], byKey = {};
+    src.forEach(function (e) {
+      var k = unitKey(e.d, unit);
+      if (!byKey[k]) { byKey[k] = { key: k, open: e, close: e }; order.push(k); }
+      else { byKey[k].close = e; }
     });
+    if (keep && order.length > keep) order = order.slice(order.length - keep);
+    var units = order.map(function (k) { return byKey[k]; });
+    var pts = [];
+    var f = units[0];
+    if (f.open.d !== f.close.d) {
+      pts.push({ d: f.open.d, v: f.open.v, label: unitLabel(f.key, unit), edge: 'open' });
+    }
+    units.forEach(function (u) {
+      pts.push({ d: u.close.d, v: u.close.v, label: unitLabel(u.key, unit), key: u.key });
+    });
+    return pts;
   }
 
-  //: 기간별 점 배열 + 축 라벨. 점이 2개 미만이면 막대를 만들 수 없다.
+  //: 탭별 점 배열. 점이 2개 미만이면 막대를 만들 수 없다.
   function chartPoints() {
-    var r = S.chartRange;
-    if (r === 'day') {
-      var it = (S.navHist || {}).intraday || {};
-      var ss = (it.samples || []).filter(function (s) { return num(s.nav_usd) !== null; });
-      return { points: ss.map(function (s) { return { d: it.date, v: num(s.nav_usd), label: s.t }; }),
-               mode: 'line', axis: 'time', date: it.date };
-    }
-    var src = navEntries();
-    if (r === 'year') {
-      var mp = monthlyPoints(src);
-      var cut = new Date(); cut.setMonth(cut.getMonth() - 11);
-      var cutKey = ymd(cut).slice(0, 7);
-      var inWin = [], base = null;
-      mp.forEach(function (p) { if (p.key >= cutKey) inWin.push(p); else base = p; });
-      return { points: base ? [base].concat(inWin) : inWin, mode: 'combo', axis: 'month' };
-    }
-    var pts = windowWithBaseline(src, daysAgo(r === 'week' ? 6 : 29));
-    return { points: pts.map(function (e) {
-      return { d: e.d, v: e.v, label: e.d.slice(5).replace('-', '/') };
-    }), mode: 'combo', axis: 'date' };
+    var meta = RANGE_META[S.chartRange] || RANGE_META.day;
+    return { points: aggregate(navEntries(), meta.unit, meta.keep), mode: 'combo', unit: meta.unit };
   }
 
   // 막대 = 이웃 점의 차. 반올림은 하지 않는다(대사는 원값으로).
@@ -1316,7 +1335,7 @@ details.more[open] > summary::before { content: '▾ '; }
     Array.prototype.forEach.call(document.querySelectorAll('#chart-range button'), function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-range') === S.chartRange));
     });
-    var meta = RANGE_META[S.chartRange] || RANGE_META.week;
+    var meta = RANGE_META[S.chartRange] || RANGE_META.day;
     $('chart-label').textContent = meta.label;
     var startedAt = (S.navHist || {}).started_at || null;
     var ex = wrap.querySelector('.chart-empty'); if (ex) ex.remove();
@@ -1324,15 +1343,11 @@ details.more[open] > summary::before { content: '▾ '; }
 
     var got = chartPoints(), points = got.points || [];
     if (points.length < 2) {
-      if (S.chartRange === 'day') {
-        chartEmpty('오늘 장중 기록이 아직 없습니다',
-          '장중 표본은 5분 미러 푸시에 편승해 쌓입니다' +
-          (points.length === 1 ? ' · 현재 1개' : ''));
-      } else {
-        chartEmpty(startedAt ? ('기록 시작 ' + startedAt) : '자산 기록이 아직 없습니다',
-          startedAt ? ('이 기간에 그릴 기록이 ' + points.length + '개입니다 — 2개부터 그립니다')
-                    : '기록이 쌓이면 그려집니다 (소급 생성하지 않음)');
-      }
+      // 가짜 과거를 만들지 않는다 — 있는 만큼만 그리고 시작일을 밝힌다.
+      chartEmpty(startedAt ? ('기록 시작 ' + startedAt) : '자산 기록이 아직 없습니다',
+        startedAt ? (meta.label + ' 막대를 만들려면 기록이 2개 이상 필요합니다 — 현재 ' +
+                     points.length + '개')
+                  : '기록이 쌓이면 그려집니다 (소급 생성하지 않음)');
       return;
     }
 
@@ -1417,11 +1432,16 @@ details.more[open] > summary::before { content: '▾ '; }
     svgns.push(endLabel(xn, yn, usd(points[points.length - 1].v, 0), 'end', lcol));
 
     // ---- 축 라벨 (주요 지점만: 처음·끝·가운데) ----
+    //   기준점은 첫 단위의 open 이라 첫 단위 라벨을 그대로 쓴다. 그래서 단위가
+    //   하나뿐일 땐 같은 라벨이 양 끝에 두 번 나온다 — 같은 라벨이 연달아
+    //   나오면 뒤엣것만 남긴다.
     var axIdx = points.length <= 3 ? points.map(function (_, i) { return i; })
                                    : [0, Math.floor((points.length - 1) / 2), points.length - 1];
+    var axLabels = axIdx.map(function (i) { return points[i].label || ''; });
     axIdx.forEach(function (i, k) {
-      var lab = points[i].label || '';
+      var lab = axLabels[k];
       if (!lab) return;
+      if (k + 1 < axLabels.length && axLabels[k + 1] === lab) return;   // 중복 생략
       var anchor = k === 0 ? 'start' : (k === axIdx.length - 1 ? 'end' : 'middle');
       var x = k === 0 ? PL : (k === axIdx.length - 1 ? W - PR : X(i));
       svgns.push('<text x="' + x.toFixed(2) + '" y="' + (H - 5) +
@@ -1452,9 +1472,10 @@ details.more[open] > summary::before { content: '▾ '; }
     if (!bars.length) { rc.textContent = ''; rc.className = 'ch-rec'; }
     else if (rec.ok) { rc.textContent = '대사 ✓ 막대 합 = 증분'; rc.className = 'ch-rec'; }
     else { rc.textContent = '대사 불일치 ' + usd(rec.diff, 2); rc.className = 'ch-rec bad'; }
-    $('chart-from').textContent = (got.axis === 'time' ? (got.date || '') + ' ' : '') +
-      (first.label || first.d) + ' · ' + usd(first.v, 0);
-    $('chart-to').textContent = (last.label || last.d) + ' · ' + usd(last.v, 0);
+    // 하단 메타는 실제 기록일을 쓴다 — 단위 라벨(8월)만 있으면 어느 날짜
+    // 기록인지 알 수 없다.
+    $('chart-from').textContent = first.d + ' · ' + usd(first.v, 0);
+    $('chart-to').textContent = last.d + ' · ' + usd(last.v, 0);
     hideTip();
   }
 

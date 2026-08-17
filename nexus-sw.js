@@ -263,10 +263,10 @@
 //   ③ 이력 탭 실체결 항목 pm 코드(sur/nova) → 정본 한국명 + 색점.
 //   ④ 승인 달력 실체결 카드 동일 매핑.
 //   백엔드 무접촉 · 재시작 불필요. PC 원본(app/static) 과 동시 diff 이식.
-// v16.4 (2026-08-17) — 홈 자산 그래프를 기간 4탭(일/주/월/연) 콤보로 교체.
-//   손익 막대 + NAV 선 + 자체 대사(막대 합 = 선 증분). real_nav_history 실기록만.
-//   PC 원본(app/static) 과 동시 diff 이식.
-const CACHE_VERSION = 'v16.4.0';
+// v16.4.1 (2026-08-17) — 그래프 탭을 '기간 창'에서 **집계 단위**로 재정의.
+//   일별(날짜)·주별(주 시작일)·월별(N월)·연간(연도). 네 탭이 집계 함수 한 벌을
+//   공유(PC·폰 동일). 자체 대사는 4탭 전부 유지. PC 원본과 동시 diff 이식.
+const CACHE_VERSION = 'v16.4.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

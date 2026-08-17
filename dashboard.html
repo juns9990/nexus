@@ -184,6 +184,96 @@ section[data-tab].active { display: block; }
 .chart-meta { display: flex; justify-content: space-between; margin-top: 6px; }
 .chart-empty { font-size: 12px; color: var(--fg-faint); text-align: center; padding: 46px 12px; line-height: 1.7; }
 
+/* ---------- 보유 리스트 ---------- */
+.hold { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line-soft); }
+.hold:first-child { border-top: none; padding-top: 4px; }
+.mono-tile {
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: -0.02em;
+  border: 1px solid currentColor; background: var(--card-2);
+}
+.hold-body { flex: 1 1 auto; min-width: 0; }
+.hold-nm { font-size: 14px; font-weight: 600; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.hold-nm .tk { font-family: var(--mono); font-size: 12px; color: var(--fg-dim); }
+/* ★ 고정 요소 — "뭐 하는 곳 · 시장 · 담당 PM" 한 줄 소개. 어떤 개편에서도 유지한다. */
+.hold-intro { font-size: 12px; color: var(--fg-dim); margin-top: 3px; line-height: 1.45; overflow-wrap: anywhere; }
+.hold-qty { font-family: var(--mono); font-size: 11px; color: var(--fg-faint); margin-top: 4px; }
+/* A-3 — 강신호 예비 슬롯으로 들어온 종목 */
+.badge-res {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.02em;
+  padding: 2px 6px; border-radius: 999px;
+  color: var(--warn); background: var(--warn-fill); white-space: nowrap;
+}
+/* D-3 — 야간 자동 결재 작동 중 한 줄 */
+.night-line {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); border-radius: var(--r);
+  padding: 10px 14px; font-size: 13px; background: var(--card);
+}
+.night-line .dot-on { width: 7px; height: 7px; border-radius: 50%; background: var(--up); flex: 0 0 auto; }
+.night-line .dot-off { width: 7px; height: 7px; border-radius: 50%; background: var(--fg-faint); flex: 0 0 auto; }
+.night-line .lim { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--fg-dim); }
+/* A-2 — PM 슬롯 막대 */
+.pmslot { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line-soft); }
+.pmslot:first-child { border-top: none; }
+.pmslot .nm { flex: 0 0 74px; font-size: 12px; }
+.pmslot .cells { display: flex; gap: 4px; flex: 1 1 auto; }
+.pmslot .cell { width: 15px; height: 15px; border-radius: 4px; border: 1px solid currentColor; }
+.pmslot .cell.on { background: currentColor; }
+.pmslot .n { flex: 0 0 auto; font-family: var(--mono); font-size: 11px; color: var(--fg-dim); }
+.hold-right { flex: 0 0 auto; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.hold-right .amt { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 600; }
+.slot-note { font-size: 12px; color: var(--fg-dim); font-family: var(--mono); }
+
+/* ---------- 달력 ---------- */
+.cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.cal-head .m { font-weight: 700; font-size: 14px; font-family: var(--mono); }
+.cal-nav { border: 1px solid var(--line); border-radius: 7px; width: 30px; height: 30px; color: var(--fg-dim); font-size: 14px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-dow { font-size: 11px; color: var(--fg-faint); text-align: center; padding: 4px 0; font-weight: 600; }
+.cal-cell {
+  aspect-ratio: 1 / 1; border: 1px solid transparent; border-radius: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font-family: var(--mono); font-size: 12px; color: var(--fg-dim); min-width: 0;
+}
+.cal-cell.pad { visibility: hidden; }
+.cal-cell.has { color: var(--fg); }
+.cal-cell[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-fill); color: var(--accent); }
+.cal-cell.today { border-color: var(--line); }
+.cal-dots { display: flex; gap: 3px; height: 6px; align-items: center; }
+.dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+.dot.fill  { background: var(--up); }
+.dot.event { background: var(--warn); }
+.dot.issue { background: var(--down); }
+.cal-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; font-size: 11px; color: var(--fg-dim); }
+.cal-legend span { display: inline-flex; align-items: center; gap: 5px; }
+/* v16.3 — 날짜 펼침 카드는 '단일 열 세로 스택' 하나뿐이다.
+ *   v16.2 까지는 라벨/값을 flex 한 줄(.day-row)로 그렸는데, 마크업의 닫는 div
+ *   누락으로 뒤 섹션이 앞 섹션의 flex 아이템으로 끼어들어 다열로 붕괴했다
+ *   (열 폭 0 → 글자가 세로로 1자씩). 구조 자체를 블록으로 바꿔 원인을 없앤다.
+ *   PC·폰 동일 구조 — 폭 분기 없음. */
+.day-card { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; min-width: 0; }
+.day-card h4 { margin: 0 0 8px; font-size: 13px; font-family: var(--mono); }
+.day-card, .day-card * { min-width: 0; overflow-wrap: break-word; word-break: break-word; }
+.day-sec { display: block; padding: 8px 0; border-top: 1px solid var(--line-soft); }
+.day-sec:first-of-type { border-top: none; }
+.day-sec > .k { display: block; font-size: 11px; font-weight: 600; color: var(--fg-dim); margin-bottom: 3px; }
+.day-sec > .v { display: block; font-size: 13px; line-height: 1.55; }
+.day-sec > .v > div + div { margin-top: 3px; }
+.day-jt { font-weight: 600; }
+.day-jl { color: var(--fg-dim); font-size: 12px; }
+/* 이력 요약 한 줄 (탭하면 건별 펼침). 매매·결재 각각 독립 토글. */
+.day-more {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  margin-top: 2px; padding: 9px 11px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card-2);
+  font-size: 13px; font-weight: 600; color: var(--fg); text-align: left;
+}
+.day-more .cue { margin-left: auto; flex: 0 0 auto; font-size: 12px; font-weight: 500; color: var(--accent); }
+.day-more[aria-expanded="true"] { border-color: var(--accent); }
+.day-detail { margin-top: 6px; }
+
 /* ---------- 매매 ---------- */
 .appr { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
 .appr + .appr { margin-top: 10px; }
@@ -1092,6 +1182,12 @@ details.more[open] > summary::before { content: '▾ '; }
   //     · real_nav_history **실기록만** 쓴다. snapshot 파생 계열로 폴백하지 않는다
   //       (그 계열은 일 증분이 매일 같은 값이라 자산 추이로 볼 수 없다).
   //     · 소급 생성 금지 — 기록 시작 이전 구간은 그리지 않고 시작일을 밝힌다.
+  //
+  //   v16.6.1 (2026-08-17) — v16.6 이식이 그래프 블록을 넘어 CSS 를 덮었다.
+  //     그래프 CSS 바로 아래 붙어 있던 '보유 리스트'·'달력' 규칙 90줄이
+  //     같이 지워져 달력 그리드와 보유 타일이 무스타일로 무너졌다.
+  //     그래프는 이 파일 그대로 두고 CSS 두 블록만 v16.5 원문으로 되돌렸다.
+  //     이식은 **그래프 블록 한정** — 인접 블록을 함께 잘라내지 않는다.
   // ==================================================================
   var CHART_KEY = 'nexus.v16.chartRange';
   var CHART_RANGES = { '1w': 7, '1m': 30, 'all': null };

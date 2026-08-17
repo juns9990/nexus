@@ -263,10 +263,10 @@
 //   ③ 이력 탭 실체결 항목 pm 코드(sur/nova) → 정본 한국명 + 색점.
 //   ④ 승인 달력 실체결 카드 동일 매핑.
 //   백엔드 무접촉 · 재시작 불필요. PC 원본(app/static) 과 동시 diff 이식.
-// v16.3 (2026-08-17) — 달력 펼침 카드를 단일 열 세로 스택으로 재작성
-//   (v16.2 마크업의 닫는 div 누락 → 다열 붕괴 수정) + 이슈란 기동 로그 제외
-//   + 폰 미러 색 점 데이터 보강. PC 원본(app/static) 과 동시 diff 이식.
-const CACHE_VERSION = 'v16.3.0';
+// v16.4 (2026-08-17) — 홈 자산 그래프를 기간 4탭(일/주/월/연) 콤보로 교체.
+//   손익 막대 + NAV 선 + 자체 대사(막대 합 = 선 증분). real_nav_history 실기록만.
+//   PC 원본(app/static) 과 동시 diff 이식.
+const CACHE_VERSION = 'v16.4.0';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

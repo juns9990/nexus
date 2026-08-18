@@ -183,6 +183,25 @@ section[data-tab].active { display: block; }
 .chart-wrap svg { display: block; width: 100%; height: 168px; overflow: visible; }
 .chart-meta { display: flex; justify-content: space-between; margin-top: 6px; }
 .chart-empty { font-size: 12px; color: var(--fg-faint); text-align: center; padding: 46px 12px; line-height: 1.7; }
+/* v16.7 — 점 강조형 그래프.
+   점은 기록이 있는 날에만 찍고, 점 사이를 얇은 선(45% 투명)으로 잇는다.
+   달력일이 비어 있는 구간(주말·수집 중단)은 선을 파선으로 끊어 '기록 없음' 을
+   눈에 보이게 한다 — 이어 그리면 없는 날에도 값이 있었던 것처럼 읽힌다.
+   SVG 는 컨테이너 실측 픽셀로 viewBox 를 잡는다 (preserveAspectRatio 를 쓰면
+   점이 타원으로 눌린다 — v16.5 에서 한 번 나온 자리다). */
+.chart-dot { cursor: pointer; }
+.chart-hit { fill: transparent; cursor: pointer; }
+.chart-tip {
+  position: absolute; z-index: 5; pointer-events: none;
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 9px; font-size: 11px; line-height: 1.5; white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.14);
+  transform: translate(-50%, -100%);
+}
+.chart-tip[hidden] { display: none; }
+.chart-tip .d { color: var(--fg-dim); font-family: var(--mono); }
+.chart-tip .v { color: var(--fg); font-family: var(--mono); font-weight: 700; display: block; }
+.chart-note { font-size: 11px; color: var(--fg-faint); margin-top: 6px; }
 
 /* ---------- 보유 리스트 ---------- */
 .hold { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line-soft); }
@@ -546,15 +565,18 @@ details.more[open] > summary::before { content: '▾ '; }
 
         <!-- ② 자산 그래프 -->
         <div class="card">
-          <div class="card-h"><div class="t">자산 그래프</div><div class="spacer"></div>
+          <div class="card-h"><div class="t">자산 그래프</div>
+            <span class="pill flat" id="chart-delta">—</span>
+            <div class="spacer"></div>
             <div class="seg" id="chart-range">
               <button type="button" data-range="1w" aria-pressed="false">1주</button>
-              <button type="button" data-range="1m" aria-pressed="false">1달</button>
+              <button type="button" data-range="month" aria-pressed="false">월별</button>
               <button type="button" data-range="all" aria-pressed="true">전체</button>
             </div>
           </div>
-          <div class="chart-wrap" id="chart-wrap"><svg id="chart" viewBox="0 0 600 168" preserveAspectRatio="none" role="img" aria-label="자산 추이"></svg></div>
+          <div class="chart-wrap" id="chart-wrap"><svg id="chart" viewBox="0 0 600 168" role="img" aria-label="자산 추이"></svg><div class="chart-tip" id="chart-tip" hidden></div></div>
           <div class="chart-meta"><span class="faint num" id="chart-from">—</span><span class="faint num" id="chart-to">—</span></div>
+          <div class="chart-note"></div>
         </div>
       </div>
 
@@ -1228,7 +1250,12 @@ details.more[open] > summary::before { content: '▾ '; }
   //     이식은 **그래프 블록 한정** — 인접 블록을 함께 잘라내지 않는다.
   // ==================================================================
   var CHART_KEY = 'nexus.v16.chartRange';
-  var CHART_RANGES = { '1w': 7, '1m': 30, 'all': null };
+  //   탭은 '기간 창'이 아니라 **무엇을 한 점으로 볼 것인가**를 고른다 (v16.7 확정).
+  //     1w    오늘 기준 최근 7일 — 하루 한 점 (달력일 축)
+  //     month 월 단위 — 각 달의 마지막 기록값 한 점. 기록 있는 달만.
+  //     all   기록 시작(started_at 실값) ~ 오늘 전부 — 하루 한 점
+  var CHART_RANGES = { '1w': true, 'month': true, 'all': true };
+  var CHART_LABEL = { '1w': '최근 7일', 'month': '월별', 'all': '전체' };
 
   function navEntries() {
     var es = (S.navHist && Array.isArray(S.navHist.entries)) ? S.navHist.entries : [];
@@ -1236,15 +1263,57 @@ details.more[open] > summary::before { content: '▾ '; }
              .filter(function (e) { return e.d && e.v !== null; })
              .sort(function (a, b) { return a.d < b.d ? -1 : 1; });
   }
-  function seriesForRange() {
-    var src = navEntries();
-    var days = CHART_RANGES[S.chartRange];
-    if (!days || src.length < 3) return src;
-    var cut = new Date(); cut.setDate(cut.getDate() - days);
-    var cutS = ymd(cut);
-    var f = src.filter(function (e) { return e.d >= cutS; });
-    return f.length >= 2 ? f : src.slice(-Math.max(2, Math.min(src.length, days)));
+
+  // ---- 날짜 산술 (UTC 고정 — 로컬 DST 로 하루가 밀리지 않게) ----
+  function dnum(str) {                      // 'YYYY-MM-DD' -> 일 단위 정수
+    var q = String(str).split('-');
+    return Math.floor(Date.UTC(+q[0], +q[1] - 1, +q[2]) / 86400000);
   }
+
+  // 탭별 모델. pts[].x 는 0~1 정규화 위치.
+  //   축이 '기록 순번'이 아니라 **달력 시간**이라야 결측일이 빈칸으로 보인다.
+  //   순번 축이면 8/14 와 8/17 이 옆칸이 되어 빠진 이틀이 사라진다.
+  function chartModel() {
+    var src = navEntries();
+    if (!src.length) return null;
+    var mode = S.chartRange;
+    var today = ymd(new Date());
+
+    if (mode === 'month') {
+      // 각 달의 마지막 기록값. 기록 없는 달은 만들지 않는다 (가짜 과거 금지).
+      var byM = {};
+      src.forEach(function (e) { byM[e.d.slice(0, 7)] = e; });   // 정렬돼 있으니 마지막이 남는다
+      var keys = Object.keys(byM).sort();
+      var mpts = keys.map(function (k, i) {
+        return { key: k, label: (+k.slice(5, 7)) + '월', v: byM[k].v, at: byM[k].d,
+                 x: keys.length === 1 ? 0.5 : i / (keys.length - 1), gapBefore: false };
+      });
+      return { pts: mpts, mode: mode, months: keys.length, missing: 0 };
+    }
+
+    var lastN = dnum(today);
+    var firstN;
+    if (mode === '1w') {
+      firstN = lastN - 6;                                    // 오늘 포함 7일
+    } else {
+      var started = (S.navHist || {}).started_at || src[0].d;
+      firstN = Math.min(dnum(started), dnum(src[0].d));
+    }
+    var span = Math.max(1, lastN - firstN);
+    var inR = src.filter(function (e) {
+      var n = dnum(e.d); return n >= firstN && n <= lastN;
+    });
+    var pts = inR.map(function (e, i) {
+      var n = dnum(e.d);
+      return { key: e.d, label: (+e.d.slice(5, 7)) + '/' + (+e.d.slice(8, 10)),
+               v: e.v, at: e.d, n: n, x: (n - firstN) / span,
+               // 직전 기록과 하루 넘게 벌어졌으면 그 사이가 결측 구간이다.
+               gapBefore: i > 0 ? (n - dnum(inR[i - 1].d)) > 1 : false };
+    });
+    return { pts: pts, mode: mode, firstN: firstN, lastN: lastN, span: span,
+             missing: (span + 1) - pts.length };
+  }
+
   function chartEmpty(msg, sub) {
     var svg = $('chart'); if (svg) svg.innerHTML = '';
     var wrap = $('chart-wrap');
@@ -1254,52 +1323,172 @@ details.more[open] > summary::before { content: '▾ '; }
     el.innerHTML = esc(msg) + (sub ? '<br><span class="faint">' + esc(sub) + '</span>' : '');
     wrap.appendChild(el);
     $('chart-from').textContent = '—'; $('chart-to').textContent = '—';
+    var dl = $('chart-delta');
+    if (dl) { dl.textContent = '—'; dl.className = 'pill flat'; }
+    var nt = document.querySelector('.chart-note'); if (nt) nt.textContent = '';
+    hideChartTip();
   }
+
+  function hideChartTip() { var t = $('chart-tip'); if (t) t.hidden = true; }
+  function showChartTip(px, py, dateStr, v) {
+    var t = $('chart-tip'), wrap = $('chart-wrap'); if (!t || !wrap) return;
+    t.innerHTML = '<span class="d">' + esc(dateStr) + '</span>' +
+                  '<span class="v">' + esc(usd(v, 0)) + '</span>';
+    t.hidden = false;
+    // 좌우 끝에서 잘리지 않게 가둔다 (transform -50% 라 절반폭 여유가 필요).
+    var wrapW = wrap.getBoundingClientRect().width;
+    var half = t.getBoundingClientRect().width / 2 + 4;
+    t.style.left = Math.max(half, Math.min(wrapW - half, px)) + 'px';
+    t.style.top = Math.max(26, py - 12) + 'px';
+  }
+
   function renderChart() {
     var svg = $('chart'), wrap = $('chart-wrap'); if (!svg || !wrap) return;
     Array.prototype.forEach.call(document.querySelectorAll('#chart-range button'), function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-range') === S.chartRange));
     });
     var ex = wrap.querySelector('.chart-empty'); if (ex) ex.remove();
+    hideChartTip();
 
-    var data = seriesForRange();
+    var m = chartModel();
     var startedAt = (S.navHist || {}).started_at || null;
-    if (data.length < 2) {
+    if (!m || !m.pts.length) {
       chartEmpty(startedAt ? ('기록 시작 ' + startedAt) : '자산 기록이 아직 없습니다',
-        startedAt ? ('이 기간에 그릴 기록이 ' + data.length + '개입니다 — 2개부터 그립니다')
+        startedAt ? '이 기간에 그릴 기록이 없습니다 (소급 생성하지 않음)'
                   : '기록이 쌓이면 그려집니다 (소급 생성하지 않음)');
       return;
     }
+    var pts = m.pts;
 
-    var W = 600, H = 168, PT = 12, PB = 18, PL = 2, PR = 8;
-    var vals = data.map(function (e) { return e.v; });
+    // ---- 실측 픽셀로 그린다. 숨은 탭에서는 폭이 0 이라 그리지 않는다.
+    //   preserveAspectRatio 로 늘리면 점이 타원으로 눌린다 — 그래서 뺐다.
+    var W = Math.round(wrap.getBoundingClientRect().width);
+    if (!W) return;
+    var H = Math.round(parseFloat(getComputedStyle(svg).height) || 168);
+    var PT = 18, PB = 24, PL = 16, PR = 16;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    // ---- y 실범위 자동 줌 + 상하 여백 10% ----
+    var vals = pts.map(function (q) { return q.v; });
     var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
-    if (mx - mn < 1e-9) { mx = mn + 1; }
-    var pad = (mx - mn) * 0.12;
-    mn -= pad; mx += pad;
-    function X(i) { return PL + (W - PL - PR) * (data.length === 1 ? 0.5 : i / (data.length - 1)); }
-    function Y(v) { return PT + (H - PT - PB) * (1 - (v - mn) / (mx - mn)); }
-    var pts = data.map(function (e, i) { return X(i).toFixed(2) + ',' + Y(e.v).toFixed(2); });
-    var up = data[data.length - 1].v >= data[0].v;
+    if (mx - mn < 1e-9) {
+      var c0 = mn, eps = Math.max(1, Math.abs(c0) * 0.0005);
+      mn = c0 - eps; mx = c0 + eps;
+    }
+    var padY = (mx - mn) * 0.10;
+    mn -= padY; mx += padY;
+
+    var plotW = W - PL - PR, plotH = H - PT - PB;
+    function X(q) { return PL + plotW * (pts.length === 1 ? 0.5 : q.x); }
+    function Y(v) { return PT + plotH * (1 - (v - mn) / (mx - mn)); }
+
+    var up = pts[pts.length - 1].v >= pts[0].v;
     var col = up ? 'var(--up)' : 'var(--down)';
-    var fill = up ? 'var(--up-fill)' : 'var(--down-fill)';
-    var area = 'M' + X(0).toFixed(2) + ',' + (H - PB) + ' L' + pts.join(' L') +
-               ' L' + X(data.length - 1).toFixed(2) + ',' + (H - PB) + ' Z';
-    var lastX = X(data.length - 1), lastY = Y(data[data.length - 1].v);
-    svg.innerHTML =
-      '<path d="' + area + '" fill="' + fill + '" stroke="none"/>' +
-      '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + col +
-      '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
-      '<circle cx="' + lastX.toFixed(2) + '" cy="' + lastY.toFixed(2) + '" r="3.5" fill="' + col + '"/>';
-    $('chart-from').textContent = data[0].d + ' · ' + usd(data[0].v, 0);
-    $('chart-to').textContent = data[data.length - 1].d + ' · ' + usd(data[data.length - 1].v, 0);
+    var parts = [];
+
+    // ---- 점 사이 연결선: 얇게 45% 투명. 결측 구간은 파선으로 끊는다. ----
+    for (var i = 1; i < pts.length; i++) {
+      var a = pts[i - 1], b2 = pts[i];
+      parts.push('<line x1="' + X(a).toFixed(1) + '" y1="' + Y(a.v).toFixed(1) +
+                 '" x2="' + X(b2).toFixed(1) + '" y2="' + Y(b2.v).toFixed(1) +
+                 '" stroke="' + col + '" stroke-width="1.5" stroke-opacity="0.45"' +
+                 (b2.gapBefore ? ' stroke-dasharray="3 4"' : '') +
+                 ' stroke-linecap="round"/>');
+    }
+
+    // ---- 기록일 점. 마지막(현재) 점만 강조. ----
+    pts.forEach(function (q, idx) {
+      var cx = X(q), cy = Y(q.v), cur = (idx === pts.length - 1);
+      if (cur) {
+        parts.push('<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) +
+                   '" r="7.5" fill="' + col + '" fill-opacity="0.18"/>');
+      }
+      parts.push('<circle class="chart-dot" data-i="' + idx + '" cx="' + cx.toFixed(1) +
+                 '" cy="' + cy.toFixed(1) + '" r="' + (cur ? 4.5 : 3) + '" fill="' + col +
+                 '" stroke="var(--card)" stroke-width="' + (cur ? 2 : 1.2) + '"/>');
+      // 손가락 표적 — 점만으로는 폰에서 너무 작다.
+      parts.push('<circle class="chart-hit" data-i="' + idx + '" cx="' + cx.toFixed(1) +
+                 '" cy="' + cy.toFixed(1) + '" r="15"/>');
+    });
+
+    // ---- x 라벨 ----
+    function lab(q, anchor) {
+      return '<text x="' + X(q).toFixed(1) + '" y="' + (H - 7) + '" text-anchor="' + anchor +
+             '" font-size="10" fill="var(--fg-faint)" font-family="var(--mono)">' +
+             esc(q.label) + '</text>';
+    }
+    if (pts.length === 1) {
+      parts.push(lab(pts[0], 'middle'));
+    } else if (m.mode === 'month') {
+      pts.forEach(function (q, idx) {
+        parts.push(lab(q, idx === 0 ? 'start' : (idx === pts.length - 1 ? 'end' : 'middle')));
+      });
+    } else {
+      parts.push(lab(pts[0], 'start'));
+      parts.push(lab(pts[pts.length - 1], 'end'));
+    }
+
+    svg.innerHTML = parts.join('');
+    svg._pts = pts;
+    svg._mode = m.mode;
+
+    // ---- 헤더 기간 증분 ±$ · % ----
+    var d0 = pts[0].v, d1 = pts[pts.length - 1].v, dv = d1 - d0;
+    var dl = $('chart-delta');
+    if (dl) {
+      if (pts.length < 2) {
+        dl.textContent = CHART_LABEL[m.mode] + ' · 1점';
+        dl.className = 'pill flat';
+      } else {
+        var pc = d0 ? (dv / Math.abs(d0) * 100) : 0;
+        var sgn = dv > 0 ? '+' : (dv < 0 ? '−' : '');
+        dl.textContent = sgn + usd(Math.abs(dv), 0) + ' · ' + sgn + Math.abs(pc).toFixed(2) + '%';
+        dl.className = 'pill ' + (dv > 0 ? 'up' : (dv < 0 ? 'down' : 'flat'));
+      }
+    }
+
+    $('chart-from').textContent = pts[0].at + ' · ' + usd(pts[0].v, 0);
+    $('chart-to').textContent = pts[pts.length - 1].at + ' · ' + usd(pts[pts.length - 1].v, 0);
+
+    // ---- 결측 안내 — 왜 점이 비었는지 화면에서 말한다 ----
+    var note = document.querySelector('.chart-note');
+    if (note) {
+      if (m.mode === 'month') {
+        note.textContent = '기록 있는 달만 표시 — ' + m.months + '개월 (소급 생성 없음)';
+      } else if (m.missing > 0) {
+        note.textContent = '점 ' + pts.length + '개 · 기록 없는 날 ' + m.missing +
+                           '일은 점 없음 (그 구간 선은 파선)';
+      } else {
+        note.textContent = '점 ' + pts.length + '개 · 결측 없음';
+      }
+    }
   }
+
+  // ---- 기간 탭 / 점 탭 ----
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('#chart-range button[data-range]');
-    if (!b) return;
-    S.chartRange = b.getAttribute('data-range');
-    try { localStorage.setItem(CHART_KEY, S.chartRange); } catch (_) { }
-    renderChart();
+    if (b) {
+      S.chartRange = b.getAttribute('data-range');
+      try { localStorage.setItem(CHART_KEY, S.chartRange); } catch (_) { }
+      renderChart();
+      return;
+    }
+    var svg = $('chart');
+    var hit = e.target.closest && e.target.closest('.chart-hit, .chart-dot');
+    if (hit && svg && svg._pts) {
+      var q = svg._pts[+hit.getAttribute('data-i')];
+      if (!q) { hideChartTip(); return; }
+      // viewBox 는 실측 픽셀과 1:1 이지만, 폭이 바뀐 직후 재렌더 전이면 어긋날 수
+      // 있으므로 실제 비율로 환산한다.
+      var r = svg.getBoundingClientRect(), wr = $('chart-wrap').getBoundingClientRect();
+      var vb = (svg.getAttribute('viewBox') || '0 0 600 168').split(/\s+/);
+      var sx = r.width / (+vb[2] || 1), sy = r.height / (+vb[3] || 1);
+      showChartTip(+hit.getAttribute('cx') * sx + (r.left - wr.left),
+                   +hit.getAttribute('cy') * sy + (r.top - wr.top),
+                   q.at + (svg._mode === 'month' ? ' (' + q.label + ')' : ''), q.v);
+      return;
+    }
+    if (!(e.target.closest && e.target.closest('.chart-tip'))) hideChartTip();
   });
 
   // ==================================================================
@@ -1872,6 +2061,7 @@ details.more[open] > summary::before { content: '▾ '; }
   window.nexusRenderVersions = renderVersions;
 
   var VERSIONS = [
+    ['v16.7.0', '자산 그래프 최종 — 기록일 점 + 파선 결측 표시, 탭 재정의(1주·월별·전체), 점 탭 툴팁'],
     ['v16.6.2', '매매 탭 결재 대기 뱃지 + 화면 버전 단일 출처화(SW 캐시 버전) · 이력 보충'],
     ['v16.6.1', 'v16.6 이식 부수 피해 복구 — 달력 7열·보유 타일 CSS 90줄 원복'],
     ['v16.6',   '홈 자산 그래프 v16.0 방식 복원 — 면 채움 라인 + 현재점, 1주/1달/전체'],
@@ -2150,12 +2340,22 @@ details.more[open] > summary::before { content: '▾ '; }
     // v16.4 — 기간 선택은 localStorage 로 유지한다.
     try {
       var cr = localStorage.getItem(CHART_KEY);
+      // v16.7 — 탭 이름이 '1달'(1m) 에서 '월별'(month) 로 바뀌었다. 예전 값을
+      //   그냥 버리면 '1달' 을 보고 있던 사람이 말없이 '전체' 로 튕긴다.
+      if (cr === '1m') { cr = 'month'; try { localStorage.setItem(CHART_KEY, cr); } catch (_) { } }
       if (cr && CHART_RANGES.hasOwnProperty(cr)) S.chartRange = cr;
     } catch (_) { }
     renderTabs(); renderMenuEdit(); applyTheme();
     go('home');
     refresh();
     setInterval(refresh, 30000);
+    // v16.7 — viewBox 를 컨테이너 실측 픽셀로 잡으므로 폭이 바뀌면 다시 그려야
+    //   점 간격과 글자 크기가 맞는다. 회전·창 크기 변경 모두 여기로 온다.
+    var _rsT = null;
+    window.addEventListener('resize', function () {
+      if (_rsT) clearTimeout(_rsT);
+      _rsT = setTimeout(function () { try { renderChart(); } catch (_) { } }, 150);
+    });
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'visible') refresh();
     });

@@ -282,7 +282,10 @@
 //      **화면 버전의 단일 출처**가 된다 (GET_VERSION 응답을 '화면'·'SW 캐시'
 //      두 행이 함께 읽는다). 여기만 올리면 화면 표기도 따라 온다.
 //   PC 원본과 동시 diff 이식 · /nexus/ 경로 체계 무손.
-const CACHE_VERSION = 'v16.6.2';
+// v16.7.0 (2026-08-18) — 자산 그래프 최종(점 강조형). 표시 계층만.
+//   기간 탭 재정의: 1주=최근 7일 · 월별=각 달 마지막 기록값 · 전체=기록 시작~오늘.
+//   기록일에만 점을 찍고 결측 구간 선은 파선으로 끊는다. 이후 동결.
+const CACHE_VERSION = 'v16.7.0';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

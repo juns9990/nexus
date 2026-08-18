@@ -275,6 +275,9 @@
 // v16.6.2 (2026-08-17) — 미니 2건. 표시 계층만.
 //   ① 상단 내비 '매매' 에 결재 대기 뱃지 (기존 /executor/pending 폴링 재사용,
 //      폰은 nexus_mirror/orders.pending 경로, 0건이면 미표시).
+//   ③ HTML network-first 를 cache:'no-cache' 조건부 재검증으로 바꿔, 새 판이
+//      한 번의 로드로 뜨게 했다 (종래엔 브라우저 HTTP 캐시가 먼저 답할 수 있어
+//      '새로고침 두 번' 구간이 있었다). networkFirstHtml 주석 참조.
 //   ② F-1 — 설정 '화면' 버전 하드코딩 제거. 이 파일의 CACHE_VERSION 이
 //      **화면 버전의 단일 출처**가 된다 (GET_VERSION 응답을 '화면'·'SW 캐시'
 //      두 행이 함께 읽는다). 여기만 올리면 화면 표기도 따라 온다.
@@ -477,9 +480,32 @@ self.addEventListener('fetch', function(event) {
   );
 });
 
+// v16.6.2 — network-first 의 '網' 은 브라우저 HTTP 캐시가 아니라 서버여야 한다.
+//   종래 fetch(request) 는 기본 cache 모드라 HTTP 캐시가 먼저 응답할 수 있었다.
+//   대시보드 HTML 응답에는 Cache-Control 이 없고(PC: FastAPI HTMLResponse),
+//   정적 호스팅(github.io)은 max-age 를 붙인다 — 어느 쪽이든 새 판을 올려도
+//   한 번 더 새로고침해야 뜨는 구간이 생긴다.
+//   cache:'no-cache' 는 **캐시를 버리는 게 아니라 매번 서버에 물어보게** 한다
+//   (ETag/Last-Modified 있으면 304 — 본문 전송 없음). 1회 로드로 새 판 확정.
+//   navigate 모드 Request 는 init 을 주면 mode 가 same-origin 으로 내려가므로
+//   URL 로 새로 만든다. 구형 엔진에서 생성이 막히면 원래 request 로 되돌린다
+//   (HTML 경로를 통째로 잃는 것보다 묵은 판이 낫다).
+function revalidatingRequest(request) {
+  try {
+    return new Request(request.url, {
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      redirect: 'follow',
+      headers: request.headers
+    });
+  } catch (e) {
+    return request;
+  }
+}
+
 // network-first (HTML 전용). 성공한 응답을 캐시에 저장(폴백용).
 function networkFirstHtml(request, url) {
-  return fetch(request).then(function(res) {
+  return fetch(revalidatingRequest(request)).then(function(res) {
     // 502/503/504 = 백엔드 다운 신호 (Tailscale serve 가 uvicorn 못 잡을 때).
     // fetch 는 resolve 되지만 페이지에 그대로 노출되면 폰이 502 화면을 본다.
     // 명시적으로 throw 해서 아래 .catch 의 캐시 셸 폴백으로 빠뜨린다.

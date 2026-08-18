@@ -569,8 +569,8 @@ details.more[open] > summary::before { content: '▾ '; }
             <span class="pill flat" id="chart-delta">—</span>
             <div class="spacer"></div>
             <div class="seg" id="chart-range">
-              <button type="button" data-range="1w" aria-pressed="false">1주</button>
-              <button type="button" data-range="month" aria-pressed="false">월별</button>
+              <button type="button" data-range="week" aria-pressed="false">주간</button>
+              <button type="button" data-range="month" aria-pressed="false">월</button>
               <button type="button" data-range="all" aria-pressed="true">전체</button>
             </div>
           </div>
@@ -1250,12 +1250,15 @@ details.more[open] > summary::before { content: '▾ '; }
   //     이식은 **그래프 블록 한정** — 인접 블록을 함께 잘라내지 않는다.
   // ==================================================================
   var CHART_KEY = 'nexus.v16.chartRange';
-  //   탭은 '기간 창'이 아니라 **무엇을 한 점으로 볼 것인가**를 고른다 (v16.7 확정).
-  //     1w    오늘 기준 최근 7일 — 하루 한 점 (달력일 축)
-  //     month 월 단위 — 각 달의 마지막 기록값 한 점. 기록 있는 달만.
-  //     all   기록 시작(started_at 실값) ~ 오늘 전부 — 하루 한 점
-  var CHART_RANGES = { '1w': true, 'month': true, 'all': true };
-  var CHART_LABEL = { '1w': '최근 7일', 'month': '월별', 'all': '전체' };
+  //   v16.7.1 정정 — 세 탭 모두 **기간 창**이다. 점은 언제나 하루 하나이고,
+  //   집계는 하지 않는다. (v16.7 의 '월별 = 각 달 마지막 기록값' 은 의도 오해였다.)
+  //     week   오늘 기준 5일 전 ~ 오늘
+  //     month  이번 달 1일 ~ 오늘 (달이 바뀌면 새 달 1일부터 다시)
+  //     all    기록 시작(started_at 실값) ~ 오늘
+  //   달라지는 건 x 축 창의 시작점뿐이고, 그 안에서 기록 있는 날에만 점을 찍는
+  //   규칙·결측 파선·y 자동 줌·툴팁은 세 탭이 똑같다.
+  var CHART_RANGES = { 'week': true, 'month': true, 'all': true };
+  var CHART_LABEL = { 'week': '주간', 'month': '월', 'all': '전체' };
 
   function navEntries() {
     var es = (S.navHist && Array.isArray(S.navHist.entries)) ? S.navHist.entries : [];
@@ -1269,6 +1272,11 @@ details.more[open] > summary::before { content: '▾ '; }
     var q = String(str).split('-');
     return Math.floor(Date.UTC(+q[0], +q[1] - 1, +q[2]) / 86400000);
   }
+  function dstr(n) {                        // 일 단위 정수 -> 'YYYY-MM-DD'
+    var t = new Date(n * 86400000);
+    return t.getUTCFullYear() + '-' + String(t.getUTCMonth() + 1).padStart(2, '0') +
+           '-' + String(t.getUTCDate()).padStart(2, '0');
+  }
 
   // 탭별 모델. pts[].x 는 0~1 정규화 위치.
   //   축이 '기록 순번'이 아니라 **달력 시간**이라야 결측일이 빈칸으로 보인다.
@@ -1279,22 +1287,12 @@ details.more[open] > summary::before { content: '▾ '; }
     var mode = S.chartRange;
     var today = ymd(new Date());
 
-    if (mode === 'month') {
-      // 각 달의 마지막 기록값. 기록 없는 달은 만들지 않는다 (가짜 과거 금지).
-      var byM = {};
-      src.forEach(function (e) { byM[e.d.slice(0, 7)] = e; });   // 정렬돼 있으니 마지막이 남는다
-      var keys = Object.keys(byM).sort();
-      var mpts = keys.map(function (k, i) {
-        return { key: k, label: (+k.slice(5, 7)) + '월', v: byM[k].v, at: byM[k].d,
-                 x: keys.length === 1 ? 0.5 : i / (keys.length - 1), gapBefore: false };
-      });
-      return { pts: mpts, mode: mode, months: keys.length, missing: 0 };
-    }
-
     var lastN = dnum(today);
     var firstN;
-    if (mode === '1w') {
-      firstN = lastN - 6;                                    // 오늘 포함 7일
+    if (mode === 'week') {
+      firstN = lastN - 5;                                    // 5일 전 ~ 오늘
+    } else if (mode === 'month') {
+      firstN = dnum(today.slice(0, 8) + '01');               // 이번 달 1일 ~ 오늘
     } else {
       var started = (S.navHist || {}).started_at || src[0].d;
       firstN = Math.min(dnum(started), dnum(src[0].d));
@@ -1310,8 +1308,18 @@ details.more[open] > summary::before { content: '▾ '; }
                // 직전 기록과 하루 넘게 벌어졌으면 그 사이가 결측 구간이다.
                gapBefore: i > 0 ? (n - dnum(inR[i - 1].d)) > 1 : false };
     });
+    // 결측은 **첫 점과 끝 점 사이**의 빈 날만 센다.
+    //   창이 기록 시작보다 앞서면(예: '월' 은 8/1 부터인데 기록은 8/12 부터)
+    //   그 앞 구간은 '잃어버린 기록'이 아니라 아직 없던 기간이다. 둘을 합쳐
+    //   세면 "기록 없는 날 13일" 처럼 데이터가 유실된 것처럼 읽힌다.
+    var missing = 0, preStart = null;
+    if (pts.length >= 2) {
+      missing = (pts[pts.length - 1].n - pts[0].n + 1) - pts.length;
+    }
+    if (pts.length && pts[0].n > firstN) preStart = dstr(pts[0].n);
     return { pts: pts, mode: mode, firstN: firstN, lastN: lastN, span: span,
-             missing: (span + 1) - pts.length };
+             winFrom: dstr(firstN), winTo: dstr(lastN),
+             preStart: preStart, missing: missing };
   }
 
   function chartEmpty(msg, sub) {
@@ -1419,10 +1427,6 @@ details.more[open] > summary::before { content: '▾ '; }
     }
     if (pts.length === 1) {
       parts.push(lab(pts[0], 'middle'));
-    } else if (m.mode === 'month') {
-      pts.forEach(function (q, idx) {
-        parts.push(lab(q, idx === 0 ? 'start' : (idx === pts.length - 1 ? 'end' : 'middle')));
-      });
     } else {
       parts.push(lab(pts[0], 'start'));
       parts.push(lab(pts[pts.length - 1], 'end'));
@@ -1453,14 +1457,13 @@ details.more[open] > summary::before { content: '▾ '; }
     // ---- 결측 안내 — 왜 점이 비었는지 화면에서 말한다 ----
     var note = document.querySelector('.chart-note');
     if (note) {
-      if (m.mode === 'month') {
-        note.textContent = '기록 있는 달만 표시 — ' + m.months + '개월 (소급 생성 없음)';
-      } else if (m.missing > 0) {
-        note.textContent = '점 ' + pts.length + '개 · 기록 없는 날 ' + m.missing +
-                           '일은 점 없음 (그 구간 선은 파선)';
-      } else {
-        note.textContent = '점 ' + pts.length + '개 · 결측 없음';
-      }
+      // 창 범위를 먼저 밝힌다 — '월' 은 8/1 부터인데 점이 8/12 부터라 창이
+      //   비어 보이는 게 정상이고, 그 이유를 화면에서 말해야 한다.
+      var span = CHART_LABEL[m.mode] + ' ' + m.winFrom + ' ~ ' + m.winTo;
+      note.textContent = span + ' · 점 ' + pts.length + '개' +
+        (m.preStart ? (' · 기록은 ' + m.preStart + ' 부터') : '') +
+        (m.missing > 0 ? (' · 중간 결측 ' + m.missing + '일은 점 없음 (그 구간 선은 파선)')
+                       : ' · 중간 결측 없음');
     }
   }
 
@@ -1485,7 +1488,7 @@ details.more[open] > summary::before { content: '▾ '; }
       var sx = r.width / (+vb[2] || 1), sy = r.height / (+vb[3] || 1);
       showChartTip(+hit.getAttribute('cx') * sx + (r.left - wr.left),
                    +hit.getAttribute('cy') * sy + (r.top - wr.top),
-                   q.at + (svg._mode === 'month' ? ' (' + q.label + ')' : ''), q.v);
+                   q.at, q.v);
       return;
     }
     if (!(e.target.closest && e.target.closest('.chart-tip'))) hideChartTip();
@@ -2061,6 +2064,7 @@ details.more[open] > summary::before { content: '▾ '; }
   window.nexusRenderVersions = renderVersions;
 
   var VERSIONS = [
+    ['v16.7.1', '그래프 기간 탭 정정 — 주간(5일 전~오늘) · 월(이번 달 1일~오늘) · 전체, 세 탭 모두 일 단위 점'],
     ['v16.7.0', '자산 그래프 최종 — 기록일 점 + 파선 결측 표시, 탭 재정의(1주·월별·전체), 점 탭 툴팁'],
     ['v16.6.2', '매매 탭 결재 대기 뱃지 + 화면 버전 단일 출처화(SW 캐시 버전) · 이력 보충'],
     ['v16.6.1', 'v16.6 이식 부수 피해 복구 — 달력 7열·보유 타일 CSS 90줄 원복'],
@@ -2342,7 +2346,11 @@ details.more[open] > summary::before { content: '▾ '; }
       var cr = localStorage.getItem(CHART_KEY);
       // v16.7 — 탭 이름이 '1달'(1m) 에서 '월별'(month) 로 바뀌었다. 예전 값을
       //   그냥 버리면 '1달' 을 보고 있던 사람이 말없이 '전체' 로 튕긴다.
-      if (cr === '1m') { cr = 'month'; try { localStorage.setItem(CHART_KEY, cr); } catch (_) { } }
+      // v16.7 '1m'->'month', v16.7.1 '1w'->'week'. 예전 값을 그냥 버리면
+      //   그 탭을 보고 있던 사람이 말없이 '전체' 로 튕긴다.
+      if (cr === '1m') cr = 'month';
+      if (cr === '1w') cr = 'week';
+      if (cr) { try { localStorage.setItem(CHART_KEY, cr); } catch (_) { } }
       if (cr && CHART_RANGES.hasOwnProperty(cr)) S.chartRange = cr;
     } catch (_) { }
     renderTabs(); renderMenuEdit(); applyTheme();

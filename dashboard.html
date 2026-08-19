@@ -179,10 +179,6 @@ section[data-tab].active { display: block; }
 }
 .seg button:last-child { border-right: none; }
 .seg button[aria-pressed="true"] { background: var(--accent-fill); color: var(--accent); }
-.chart-wrap { position: relative; margin-top: 12px; }
-.chart-wrap svg { display: block; width: 100%; height: 168px; overflow: visible; }
-.chart-meta { display: flex; justify-content: space-between; margin-top: 6px; }
-.chart-empty { font-size: 12px; color: var(--fg-faint); text-align: center; padding: 46px 12px; line-height: 1.7; }
 
 /* ---------- 보유 리스트 ---------- */
 .hold { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line-soft); }
@@ -453,12 +449,18 @@ details.more[open] > summary::before { content: '▾ '; }
   #toast { bottom: 24px; }
   .gauges { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-card); }
 
-  /* 2. 홈 — 좌 7 : 우 5. 좌열 = 내 자산 → 그래프 → 달력, 우열 = 보유.
-        달력을 하단 분리에서 좌열로 끌어올려 그래프 아래 공백을 채운다. */
+  /* 2. 홈 — 좌 7 : 우 5. 좌열 = 내 자산 → 달력, 우열 = 보유.
+        v16.9 에서 그래프 카드를 뺐다. 좌열은 내 자산 바로 아래가 달력이다. */
   section[data-tab="home"] .night-line { margin-top: 0 !important; margin-bottom: var(--sp-card); }
   .two {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    /* v16.9 — 우열 '보유' 는 3행을 통째로 걸친다(20종 넘으면 2,000px 이 넘는다).
+       행 높이를 자동으로 두면 그 초과분이 세 행에 고루 퍼져서 좌열의 내 자산과
+       달력 사이가 수백 px 씩 벌어진다. 그래프 카드가 그 자리를 메우고 있었을
+       뿐이고, 빼고 나니 그대로 드러났다. 마지막 행만 1fr 로 두어 남는 높이를
+       달력 아래로 몰아준다 — 내 자산 바로 밑이 달력이 된다. */
+    grid-template-rows: min-content min-content 1fr;
     column-gap: var(--sp-card); row-gap: var(--sp-card);
     align-items: start;            /* 두 열 상단 정렬 */
     margin-top: 0 !important;
@@ -469,9 +471,6 @@ details.more[open] > summary::before { content: '▾ '; }
   .two > .home-cal-t{ grid-column: 1; grid-row: 2; margin: 0; align-self: end; }
   .two > .home-cal  { grid-column: 1; grid-row: 3; }
   .stack > * + * { margin-top: var(--sp-card); }
-
-  /* 5. 그래프 — 와이드에서 납작해 보이던 것 보정 (210 → 315, 1.5배) */
-  .chart-wrap svg { height: 315px; }
 
   /* 달력 칸은 정사각(aspect-ratio 1:1)이라 좌열이 넓어질수록 세로로 늘어난다.
      와이드에서는 높이를 고정해 '큰 빈 칸' 이 되지 않게 한다. */
@@ -543,19 +542,6 @@ details.more[open] > summary::before { content: '▾ '; }
             <span class="nav-krw" id="nav-krw"></span>
           </div>
         </div>
-
-        <!-- ② 자산 그래프 -->
-        <div class="card">
-          <div class="card-h"><div class="t">자산 그래프</div><div class="spacer"></div>
-            <div class="seg" id="chart-range">
-              <button type="button" data-range="1w" aria-pressed="false">1주</button>
-              <button type="button" data-range="1m" aria-pressed="false">1달</button>
-              <button type="button" data-range="all" aria-pressed="true">전체</button>
-            </div>
-          </div>
-          <div class="chart-wrap" id="chart-wrap"><svg id="chart" viewBox="0 0 600 168" preserveAspectRatio="none" role="img" aria-label="자산 추이"></svg></div>
-          <div class="chart-meta"><span class="faint num" id="chart-from">—</span><span class="faint num" id="chart-to">—</span></div>
-        </div>
       </div>
 
       <!-- ③ 보유 -->
@@ -572,8 +558,8 @@ details.more[open] > summary::before { content: '▾ '; }
 
       <!-- ④ 달력
            v16.1: DOM 상 .two 의 3·4번째 자식으로 들어왔다. 모바일에서 .two 는
-           그냥 블록이라 흐름 순서(내 자산 → 그래프 → 보유 → 달력)와 간격이
-           종전과 동일하다. ≥1024px 에서만 그리드 배치로 좌열에 합류시킨다. -->
+           그냥 블록이라 흐름 순서(내 자산 → 보유 → 달력)와 간격이 종전과
+           동일하다. ≥1024px 에서만 그리드 배치로 좌열에 합류시킨다. -->
       <div class="sec-t home-cal-t">달력</div>
       <div class="card home-cal">
         <div class="cal-head">
@@ -1069,8 +1055,8 @@ details.more[open] > summary::before { content: '▾ '; }
   }
 
   // ---------- 상태 ----------
-  var S = { snap: null, navHist: null, pending: null, history: null, journal: null,
-            night: null, calMonth: null, calSel: null, chartRange: 'all', weekOpen: {},
+  var S = { snap: null, pending: null, history: null, journal: null,
+            night: null, calMonth: null, calSel: null, weekOpen: {},
             dayOpenT: false, dayOpenA: false };   // v16.3 — 매매·결재 각각 독립 펼침 (항상 접힘으로 시작)
 
   // ==================================================================
@@ -1136,9 +1122,6 @@ details.more[open] > summary::before { content: '▾ '; }
       b.setAttribute('aria-selected', String(b.getAttribute('data-go') === id));
     });
     try { window.scrollTo(0, 0); } catch (e) {}
-    // v16.4 — 그래프는 컨테이너 실측 폭으로 그린다. 숨은 탭에서는 폭이 0 이라
-    //   홈으로 돌아온 시점에 다시 그려야 축·라벨이 제 폭으로 맞는다.
-    if (id === 'home' && typeof renderChart === 'function') renderChart();
   }
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('#tabs button[data-go]');
@@ -1164,7 +1147,7 @@ details.more[open] > summary::before { content: '▾ '; }
     });
     var note = $('theme-note');
     if (note) note.textContent = p === 'system' ? ('시스템 따름 · 현재 ' + (light ? '밝게' : '어둡게')) : (p === 'light' ? '밝게 고정' : '어둡게 고정');
-    if (S.snap) { renderHoldings(); renderChart(); }
+    if (S.snap) { renderHoldings(); }
   }
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('[data-theme-set]');
@@ -1206,101 +1189,6 @@ details.more[open] > summary::before { content: '▾ '; }
     var ts = (s.system || {}).timestamp;
     $('nav-asof').textContent = ts ? (isoDay(ts).slice(5) + ' ' + hhmm(ts)) : '—';
   }
-
-  // ==================================================================
-  // 홈 ② 자산 그래프 (인라인 SVG · 면 채움 + 현재점)
-  //
-  //   v16.6 (2026-08-17) — v16.5 증권사 스타일에서 **v16.0 방식으로 복원**.
-  //     제거: 일/주/월/연 4탭 · 우측 $눈금 · 십자선 · 매매 마커 · 손익 스트립.
-  //     복원: 면 채움 라인 + 현재값 점, 기간 1주 / 1달 / 전체.
-  //   데이터 수집 백엔드(real_nav_history · nav_intraday · 보충 잡)는 무접촉이다.
-  //   화면만 되돌린 것이라 기록은 그대로 쌓인다.
-  //
-  //   유지되는 규칙 (v16.4~16.5 에서 확인된 것):
-  //     · real_nav_history **실기록만** 쓴다. snapshot 파생 계열로 폴백하지 않는다
-  //       (그 계열은 일 증분이 매일 같은 값이라 자산 추이로 볼 수 없다).
-  //     · 소급 생성 금지 — 기록 시작 이전 구간은 그리지 않고 시작일을 밝힌다.
-  //
-  //   v16.6.1 (2026-08-17) — v16.6 이식이 그래프 블록을 넘어 CSS 를 덮었다.
-  //     그래프 CSS 바로 아래 붙어 있던 '보유 리스트'·'달력' 규칙 90줄이
-  //     같이 지워져 달력 그리드와 보유 타일이 무스타일로 무너졌다.
-  //     그래프는 이 파일 그대로 두고 CSS 두 블록만 v16.5 원문으로 되돌렸다.
-  //     이식은 **그래프 블록 한정** — 인접 블록을 함께 잘라내지 않는다.
-  // ==================================================================
-  var CHART_KEY = 'nexus.v16.chartRange';
-  var CHART_RANGES = { '1w': 7, '1m': 30, 'all': null };
-
-  function navEntries() {
-    var es = (S.navHist && Array.isArray(S.navHist.entries)) ? S.navHist.entries : [];
-    return es.map(function (e) { return { d: e.date, v: num(e.nav_usd) }; })
-             .filter(function (e) { return e.d && e.v !== null; })
-             .sort(function (a, b) { return a.d < b.d ? -1 : 1; });
-  }
-  function seriesForRange() {
-    var src = navEntries();
-    var days = CHART_RANGES[S.chartRange];
-    if (!days || src.length < 3) return src;
-    var cut = new Date(); cut.setDate(cut.getDate() - days);
-    var cutS = ymd(cut);
-    var f = src.filter(function (e) { return e.d >= cutS; });
-    return f.length >= 2 ? f : src.slice(-Math.max(2, Math.min(src.length, days)));
-  }
-  function chartEmpty(msg, sub) {
-    var svg = $('chart'); if (svg) svg.innerHTML = '';
-    var wrap = $('chart-wrap');
-    var old = wrap.querySelector('.chart-empty'); if (old) old.remove();
-    var el = document.createElement('div');
-    el.className = 'chart-empty';
-    el.innerHTML = esc(msg) + (sub ? '<br><span class="faint">' + esc(sub) + '</span>' : '');
-    wrap.appendChild(el);
-    $('chart-from').textContent = '—'; $('chart-to').textContent = '—';
-  }
-  function renderChart() {
-    var svg = $('chart'), wrap = $('chart-wrap'); if (!svg || !wrap) return;
-    Array.prototype.forEach.call(document.querySelectorAll('#chart-range button'), function (b) {
-      b.setAttribute('aria-pressed', String(b.getAttribute('data-range') === S.chartRange));
-    });
-    var ex = wrap.querySelector('.chart-empty'); if (ex) ex.remove();
-
-    var data = seriesForRange();
-    var startedAt = (S.navHist || {}).started_at || null;
-    if (data.length < 2) {
-      chartEmpty(startedAt ? ('기록 시작 ' + startedAt) : '자산 기록이 아직 없습니다',
-        startedAt ? ('이 기간에 그릴 기록이 ' + data.length + '개입니다 — 2개부터 그립니다')
-                  : '기록이 쌓이면 그려집니다 (소급 생성하지 않음)');
-      return;
-    }
-
-    var W = 600, H = 168, PT = 12, PB = 18, PL = 2, PR = 8;
-    var vals = data.map(function (e) { return e.v; });
-    var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
-    if (mx - mn < 1e-9) { mx = mn + 1; }
-    var pad = (mx - mn) * 0.12;
-    mn -= pad; mx += pad;
-    function X(i) { return PL + (W - PL - PR) * (data.length === 1 ? 0.5 : i / (data.length - 1)); }
-    function Y(v) { return PT + (H - PT - PB) * (1 - (v - mn) / (mx - mn)); }
-    var pts = data.map(function (e, i) { return X(i).toFixed(2) + ',' + Y(e.v).toFixed(2); });
-    var up = data[data.length - 1].v >= data[0].v;
-    var col = up ? 'var(--up)' : 'var(--down)';
-    var fill = up ? 'var(--up-fill)' : 'var(--down-fill)';
-    var area = 'M' + X(0).toFixed(2) + ',' + (H - PB) + ' L' + pts.join(' L') +
-               ' L' + X(data.length - 1).toFixed(2) + ',' + (H - PB) + ' Z';
-    var lastX = X(data.length - 1), lastY = Y(data[data.length - 1].v);
-    svg.innerHTML =
-      '<path d="' + area + '" fill="' + fill + '" stroke="none"/>' +
-      '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + col +
-      '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
-      '<circle cx="' + lastX.toFixed(2) + '" cy="' + lastY.toFixed(2) + '" r="3.5" fill="' + col + '"/>';
-    $('chart-from').textContent = data[0].d + ' · ' + usd(data[0].v, 0);
-    $('chart-to').textContent = data[data.length - 1].d + ' · ' + usd(data[data.length - 1].v, 0);
-  }
-  document.addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('#chart-range button[data-range]');
-    if (!b) return;
-    S.chartRange = b.getAttribute('data-range');
-    try { localStorage.setItem(CHART_KEY, S.chartRange); } catch (_) { }
-    renderChart();
-  });
 
   // ==================================================================
   // 홈 ③ 보유 — 활성 슬롯만
@@ -1872,6 +1760,7 @@ details.more[open] > summary::before { content: '▾ '; }
   window.nexusRenderVersions = renderVersions;
 
   var VERSIONS = [
+    ['v16.9.0', '홈 자산 그래프 카드 제거 — 내 자산 바로 아래 달력. 기록 수집(real_nav_history)은 계속'],
     ['v16.8.0', '자산 그래프를 v16.0 형태로 복원 — 면 채움 라인 + 현재값 점, 기간 1주/1달/전체 (v16.7 점 렌더·툴팁 철회)'],
     ['v16.6.2', '매매 탭 결재 대기 뱃지 + 화면 버전 단일 출처화(SW 캐시 버전) · 이력 보충'],
     ['v16.6.1', 'v16.6 이식 부수 피해 복구 — 달력 7열·보유 타일 CSS 90줄 원복'],
@@ -2109,9 +1998,6 @@ details.more[open] > summary::before { content: '▾ '; }
   function refresh() {
     var jobs = [
       api('/dashboard/api/snapshot').then(function (d) { S.snap = d; }, function (e) { console.warn('snapshot', e.message); }),
-      // v16.4 — days=400 은 라우터 상한(365)을 넘겨 **422 로 매번 실패**하고 있었다.
-      //   그래서 그래프가 계속 snapshot 폴백 계열을 그렸다. 상한에 맞춘다.
-      api('/nav/history?days=365').then(function (d) { S.navHist = d; }, function () { S.navHist = null; }),
       api('/executor/pending').then(function (d) { S.pending = d; }, function () { S.pending = null; }),
       // 달력이 과거 날짜까지 그리므로 넉넉히 받는다 (미러는 80건 상한 — 그만큼만 그려진다).
       api('/executor/history?limit=800').then(function (d) { S.history = d; }, function () { S.history = null; }),
@@ -2124,7 +2010,7 @@ details.more[open] > summary::before { content: '▾ '; }
       backend.connected = ok;
       setConn(ok, ok ? (isMirrorHost() ? '미러' : '연결됨') : '데이터 없음');
       if (ok) {
-        renderNav(); renderChart(); renderHoldings(); renderCal(); renderNight();
+        renderNav(); renderHoldings(); renderCal(); renderNight();
         renderPending(); renderWeek(); renderDefense(); renderSettings();
       } else {
         // 데이터를 못 받았으면 왜 비었는지 말한다 — '불러오는 중' 을 붙들고 있지 않는다.
@@ -2148,16 +2034,9 @@ details.more[open] > summary::before { content: '▾ '; }
     backend.url = storedUrl();
     var bi = $('backend-input');
     if (bi && backend.url) bi.value = backend.url;
-    // v16.4 — 기간 선택은 localStorage 로 유지한다.
-    try {
-      var cr = localStorage.getItem(CHART_KEY);
-      // v16.8 — v16.7 에서 잠깐 쓰던 키 이름을 되돌린다. 그냥 버리면 그 탭을
-      //   보고 있던 사람이 말없이 '전체' 로 튕긴다.
-      if (cr === 'month') cr = '1m';
-      if (cr === 'week') cr = '1w';
-      if (cr) { try { localStorage.setItem(CHART_KEY, cr); } catch (_) { } }
-      if (cr && CHART_RANGES.hasOwnProperty(cr)) S.chartRange = cr;
-    } catch (_) { }
+    // v16.9 — 그래프 카드를 뺐다. 예전 판이 남긴 기간 키만 한 번 지운다.
+    //   (읽는 코드가 더 없으므로 남겨 두면 영영 고아 값이 된다.)
+    try { localStorage.removeItem('nexus.v16.chartRange'); } catch (_) { }
     renderTabs(); renderMenuEdit(); applyTheme();
     go('home');
     refresh();

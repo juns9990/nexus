@@ -291,7 +291,11 @@
 // v16.8.0 (2026-08-19) — 자산 그래프를 v16.0 형태로 복원. 표시 계층만.
 //   면 채움 라인 + 현재값 점 하나, 기간 1주/1달/전체. v16.7 의 점 렌더·
 //   기간 창 재정의·결측 파선·툴팁은 전부 철회했다 (기준 = 4b20a1b).
-const CACHE_VERSION = 'v16.8.0';
+// v16.9.0 (2026-08-19) — 홈 자산 그래프 카드 제거. 표시 계층만.
+//   카드·기간 버튼·렌더 JS·전용 CSS·기간 localStorage 키까지 걷어냈다
+//   (고아 코드 0). 내 자산 바로 아래가 달력이다. 데이터 수집
+//   (real_nav_history · nav_intraday · 05:10 잡)은 무접촉 — 기록은 계속 쌓인다.
+const CACHE_VERSION = 'v16.9.0';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

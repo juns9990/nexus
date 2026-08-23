@@ -671,6 +671,7 @@ details.more[open] > summary::before { content: '▾ '; }
       <div class="srow"><div class="k">강신호 예비 슬롯</div><div class="v mono" id="set-reserve">—</div></div>
       <div class="srow"><div class="k">야간 자동 결재 (T3)</div><div class="v" id="set-night">—</div></div>
       <div class="srow"><div class="k">야간 한도</div><div class="v mono" id="set-night-lim">—</div></div>
+      <div class="srow"><div class="k">야간 스윕</div><div class="v mono" id="set-night-sweep">—</div></div>
       <div class="srow"><div class="k">개시</div><div class="v mono" id="set-started">—</div></div>
     </div>
 
@@ -1232,9 +1233,13 @@ details.more[open] > summary::before { content: '▾ '; }
     var on = !!n.enabled;
     $('night-dot').className = on ? 'dot-on' : 'dot-off';
     var used = num(n.budget_used_pct), rem = num(n.budget_remaining_pct);
+    // T3 (2026-08-23) — 창 안이면 '스윕 N회' 를 함께 보인다. 스윕 0회인데
+    // 창 안이라면 트리거가 죽은 것이므로 그 자체가 신호다.
+    var swept = (n.sweeps_tonight != null && n.in_window)
+      ? (' · 스윕 ' + n.sweeps_tonight + '회') : '';
     $('night-txt').textContent = on
       ? ('야간 자동 결재 작동 중 · ' + (n.window_kst || '') + ' KST' +
-         (n.in_window ? ' (지금 창 안)' : ' (창 밖 — 대기)') +
+         (n.in_window ? ' (지금 창 안)' : ' (창 밖 — 대기)') + swept +
          (n.approved_tonight ? ' · 오늘 밤 ' + n.approved_tonight + '건' : ''))
       : '야간 자동 결재 꺼짐 — 아침 결재로 넘어갑니다';
     $('night-lim').textContent = on
@@ -1760,6 +1765,7 @@ details.more[open] > summary::before { content: '▾ '; }
   window.nexusRenderVersions = renderVersions;
 
   var VERSIONS = [
+    ['v16.9.1', 'T3 야간 스윕 가시화 — 설정 야간 스윕 행 + 홈 한 줄 스윕 횟수, 한도 0.8/3.0 반영'],
     ['v16.9.0', '홈 자산 그래프 카드 제거 — 내 자산 바로 아래 달력. 기록 수집(real_nav_history)은 계속'],
     ['v16.8.0', '자산 그래프를 v16.0 형태로 복원 — 면 채움 라인 + 현재값 점, 기간 1주/1달/전체 (v16.7 점 렌더·툴팁 철회)'],
     ['v16.6.2', '매매 탭 결재 대기 뱃지 + 화면 버전 단일 출처화(SW 캐시 버전) · 이력 보충'],
@@ -1803,6 +1809,14 @@ details.more[open] > summary::before { content: '▾ '; }
       ? '—'
       : ('건당 ≤' + n.night_order_max_pct + '% · 야간 누적 ≤' + n.night_budget_pct + '%' +
          ' · 사용 ' + (num(n.budget_used_pct) === null ? '—' : num(n.budget_used_pct).toFixed(2)) + '%');
+    // T3 (2026-08-23) — 스윕이 돌고 있는가. 여기가 '중단'이면 자동 결재는
+    // 정책이 켜져 있어도 0건이 된다 (8/18 결함의 재발 감지선).
+    var sw = n.sweeper || {};
+    $('set-night-sweep').textContent = (typeof n.enabled !== 'boolean')
+      ? '—'
+      : ((sw.running ? '가동' : '중단') +
+         ' · ' + (n.sweep_interval_minutes != null ? n.sweep_interval_minutes : '—') + '분 주기' +
+         ' · 오늘 밤 ' + (n.sweeps_tonight != null ? n.sweeps_tonight : 0) + '회');
     $('set-started').textContent = sys.started_at || '—';
     $('ver-sys').textContent = sys.version || '—';
     renderVersions();

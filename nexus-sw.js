@@ -295,7 +295,9 @@
 //   카드·기간 버튼·렌더 JS·전용 CSS·기간 localStorage 키까지 걷어냈다
 //   (고아 코드 0). 내 자산 바로 아래가 달력이다. 데이터 수집
 //   (real_nav_history · nav_intraday · 05:10 잡)은 무접촉 — 기록은 계속 쌓인다.
-const CACHE_VERSION = 'v16.9.0';
+// v16.9.1 (2026-08-23) — T3 야간 스윕 가시화(설정 '야간 스윕' 행 + 홈 한 줄
+//                        스윕 횟수), 야간 한도 표기 0.8%/3.0%. 표시 계층만.
+const CACHE_VERSION = 'v16.9.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

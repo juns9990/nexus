@@ -297,7 +297,10 @@
 //   (real_nav_history · nav_intraday · 05:10 잡)은 무접촉 — 기록은 계속 쌓인다.
 // v16.9.1 (2026-08-23) — T3 야간 스윕 가시화(설정 '야간 스윕' 행 + 홈 한 줄
 //                        스윕 횟수), 야간 한도 표기 0.8%/3.0%. 표시 계층만.
-const CACHE_VERSION = 'v16.9.1';
+// v16.9.2 (2026-08-23) — 주문 상태 표기 '브로커 접수'. 표시 계층만.
+//   P0-A: PreSubmitted/Submitted 를 '반려' 로 읽히게 두면, 실제로는
+//   체결될 주문을 사람이 죽은 것으로 판단한다.
+const CACHE_VERSION = 'v16.9.2';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

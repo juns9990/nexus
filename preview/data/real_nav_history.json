@@ -1,0 +1,329 @@
+{
+ "started_at": "2026-08-12",
+ "entries": [
+  {
+   "date": "2026-08-12",
+   "nav_usd": 1010709.64,
+   "cash_usd": 962397.96,
+   "invested_usd": 47555.19,
+   "unrealized_pnl": 2089.82,
+   "positions_count": 8,
+   "recorded_at": "2026-08-11T20:10:04.491111+00:00"
+  },
+  {
+   "date": "2026-08-13",
+   "nav_usd": 1011223.13,
+   "cash_usd": 962397.96,
+   "invested_usd": 47985.84,
+   "unrealized_pnl": 2520.47,
+   "positions_count": 8,
+   "recorded_at": "2026-08-12T20:10:02.570128+00:00"
+  },
+  {
+   "date": "2026-08-14",
+   "nav_usd": 1011417.18,
+   "cash_usd": 962397.96,
+   "invested_usd": 48097.08,
+   "unrealized_pnl": 2631.71,
+   "positions_count": 8,
+   "recorded_at": "2026-08-13T20:10:05.110352+00:00"
+  },
+  {
+   "date": "2026-08-17",
+   "nav_usd": 1011404.17,
+   "cash_usd": 962397.96,
+   "invested_usd": 47918.45,
+   "unrealized_pnl": 2453.08,
+   "positions_count": 8,
+   "recorded_at": "2026-08-17T10:47:14.312483+00:00"
+  },
+  {
+   "date": "2026-08-18",
+   "nav_usd": 1011232.71,
+   "cash_usd": 962397.96,
+   "invested_usd": 47746.99,
+   "unrealized_pnl": 2281.62,
+   "positions_count": 8,
+   "recorded_at": "2026-08-17T20:10:05.001304+00:00"
+  },
+  {
+   "date": "2026-08-19",
+   "nav_usd": 1010556.22,
+   "cash_usd": 822880.95,
+   "invested_usd": 186339.08,
+   "unrealized_pnl": 995.88,
+   "positions_count": 23,
+   "recorded_at": "2026-08-18T20:10:02.604155+00:00"
+  },
+  {
+   "date": "2026-08-20",
+   "nav_usd": 1011535.85,
+   "cash_usd": 822880.95,
+   "invested_usd": 187235.9,
+   "unrealized_pnl": 1892.7,
+   "positions_count": 22,
+   "recorded_at": "2026-08-19T20:10:05.114324+00:00"
+  },
+  {
+   "date": "2026-08-21",
+   "nav_usd": 1010151.05,
+   "cash_usd": 822880.95,
+   "invested_usd": 185768.3,
+   "unrealized_pnl": 425.1,
+   "positions_count": 22,
+   "recorded_at": "2026-08-20T20:10:05.231831+00:00"
+  },
+  {
+   "date": "2026-08-23",
+   "nav_usd": 1012126.4,
+   "cash_usd": 822880.95,
+   "invested_usd": 187602.29,
+   "unrealized_pnl": 2259.09,
+   "positions_count": 22,
+   "recorded_at": "2026-08-23T03:55:45.027972+00:00"
+  },
+  {
+   "date": "2026-08-24",
+   "nav_usd": 1011738.48,
+   "cash_usd": 822936.39,
+   "invested_usd": 187158.93,
+   "unrealized_pnl": 1815.73,
+   "positions_count": 22,
+   "recorded_at": "2026-08-24T11:20:02.717119+00:00"
+  },
+  {
+   "date": "2026-08-25",
+   "nav_usd": 1011603.99,
+   "cash_usd": 846511.19,
+   "invested_usd": 163449.64,
+   "unrealized_pnl": -328.41,
+   "positions_count": 28,
+   "recorded_at": "2026-08-24T20:10:05.940334+00:00"
+  },
+  {
+   "date": "2026-08-26",
+   "nav_usd": 1011756.57,
+   "cash_usd": 841723.49,
+   "invested_usd": 168177.88,
+   "unrealized_pnl": -373.38,
+   "positions_count": 24,
+   "recorded_at": "2026-08-25T20:10:04.732952+00:00"
+  },
+  {
+   "date": "2026-08-27",
+   "nav_usd": 1011839.35,
+   "cash_usd": 833433.61,
+   "invested_usd": 176479.86,
+   "unrealized_pnl": -422.92,
+   "positions_count": 26,
+   "recorded_at": "2026-08-26T20:10:05.196011+00:00"
+  },
+  {
+   "date": "2026-08-28",
+   "nav_usd": 1011709.99,
+   "cash_usd": 833433.61,
+   "invested_usd": 176277.94,
+   "unrealized_pnl": -624.83,
+   "positions_count": 26,
+   "recorded_at": "2026-08-27T20:10:04.779688+00:00"
+  },
+  {
+   "date": "2026-08-29",
+   "nav_usd": 1011394.33,
+   "cash_usd": 833433.61,
+   "invested_usd": 175890.12,
+   "unrealized_pnl": -1012.66,
+   "positions_count": 26,
+   "recorded_at": "2026-08-28T20:10:04.704241+00:00"
+  },
+  {
+   "date": "2026-08-30",
+   "nav_usd": 1011556.58,
+   "cash_usd": 833433.61,
+   "invested_usd": 175980.95,
+   "unrealized_pnl": -921.83,
+   "positions_count": 26,
+   "recorded_at": "2026-08-29T23:34:21.149292+00:00"
+  },
+  {
+   "date": "2026-08-31",
+   "nav_usd": 1011556.71,
+   "cash_usd": 833433.61,
+   "invested_usd": 175981.08,
+   "unrealized_pnl": -921.7,
+   "positions_count": 26,
+   "recorded_at": "2026-08-31T03:21:59.045741+00:00"
+  },
+  {
+   "date": "2026-09-01",
+   "nav_usd": 1011555.33,
+   "cash_usd": 829697.2,
+   "invested_usd": 179716.11,
+   "unrealized_pnl": -923.07,
+   "positions_count": 27,
+   "recorded_at": "2026-08-31T20:10:06.017614+00:00"
+  },
+  {
+   "date": "2026-09-02",
+   "nav_usd": 1011501.14,
+   "cash_usd": 824688.4,
+   "invested_usd": 184456.57,
+   "unrealized_pnl": -1191.42,
+   "positions_count": 28,
+   "recorded_at": "2026-09-01T20:10:04.932655+00:00"
+  },
+  {
+   "date": "2026-09-03",
+   "nav_usd": 1013167.85,
+   "cash_usd": 824688.4,
+   "invested_usd": 186051.86,
+   "unrealized_pnl": 403.88,
+   "positions_count": 28,
+   "recorded_at": "2026-09-02T20:10:04.990568+00:00"
+  },
+  {
+   "date": "2026-09-04",
+   "nav_usd": 1013950.72,
+   "cash_usd": 825752.14,
+   "invested_usd": 188127.6,
+   "unrealized_pnl": 1115.65,
+   "positions_count": 28,
+   "recorded_at": "2026-09-03T20:10:03.661903+00:00"
+  },
+  {
+   "date": "2026-09-05",
+   "nav_usd": 1014487.69,
+   "cash_usd": 825740.99,
+   "invested_usd": 188604.95,
+   "unrealized_pnl": 1593.0,
+   "positions_count": 28,
+   "recorded_at": "2026-09-04T20:10:06.119431+00:00"
+  },
+  {
+   "date": "2026-09-06",
+   "nav_usd": 1014525.45,
+   "cash_usd": 825740.99,
+   "invested_usd": 188571.85,
+   "unrealized_pnl": 1559.9,
+   "positions_count": 28,
+   "recorded_at": "2026-09-06T04:24:07.621901+00:00"
+  },
+  {
+   "date": "2026-09-07",
+   "nav_usd": 1014591.05,
+   "cash_usd": 825806.59,
+   "invested_usd": 188571.85,
+   "unrealized_pnl": 1559.9,
+   "positions_count": 28,
+   "recorded_at": "2026-09-07T12:49:49.591348+00:00"
+  },
+  {
+   "date": "2026-09-08",
+   "nav_usd": 1014591.05,
+   "cash_usd": 825806.59,
+   "invested_usd": 188571.85,
+   "unrealized_pnl": 1559.9,
+   "positions_count": 28,
+   "recorded_at": "2026-09-07T20:10:05.270236+00:00"
+  },
+  {
+   "date": "2026-09-09",
+   "nav_usd": 1015293.0,
+   "cash_usd": 853189.53,
+   "invested_usd": 161890.87,
+   "unrealized_pnl": 1798.47,
+   "positions_count": 28,
+   "recorded_at": "2026-09-08T20:10:04.825725+00:00"
+  },
+  {
+   "date": "2026-09-10",
+   "nav_usd": 1015190.34,
+   "cash_usd": 853189.52,
+   "invested_usd": 161505.21,
+   "unrealized_pnl": 1412.81,
+   "positions_count": 23,
+   "recorded_at": "2026-09-09T20:10:05.550979+00:00"
+  },
+  {
+   "date": "2026-09-11",
+   "nav_usd": 1014039.28,
+   "cash_usd": 851037.94,
+   "invested_usd": 162434.98,
+   "unrealized_pnl": 218.35,
+   "positions_count": 24,
+   "recorded_at": "2026-09-10T20:10:02.751461+00:00"
+  },
+  {
+   "date": "2026-09-13",
+   "nav_usd": 1014901.09,
+   "cash_usd": 851037.94,
+   "invested_usd": 163150.17,
+   "unrealized_pnl": 933.53,
+   "positions_count": 24,
+   "recorded_at": "2026-09-12T23:02:20.277132+00:00"
+  },
+  {
+   "date": "2026-09-14",
+   "nav_usd": 1013062.07,
+   "cash_usd": 851037.94,
+   "invested_usd": 161311.15,
+   "unrealized_pnl": -905.48,
+   "positions_count": 24,
+   "recorded_at": "2026-09-14T09:40:07.182194+00:00"
+  },
+  {
+   "date": "2026-09-15",
+   "nav_usd": 1011297.02,
+   "cash_usd": 847860.38,
+   "invested_usd": 162723.66,
+   "unrealized_pnl": -2919.46,
+   "positions_count": 25,
+   "recorded_at": "2026-09-14T20:10:05.912178+00:00"
+  },
+  {
+   "date": "2026-09-16",
+   "nav_usd": 1011623.03,
+   "cash_usd": 847902.14,
+   "invested_usd": 162788.55,
+   "unrealized_pnl": -2853.85,
+   "positions_count": 25,
+   "recorded_at": "2026-09-15T20:10:05.954090+00:00"
+  },
+  {
+   "date": "2026-09-17",
+   "nav_usd": 1009112.5,
+   "cash_usd": 849943.86,
+   "invested_usd": 158163.18,
+   "unrealized_pnl": -5327.44,
+   "positions_count": 25,
+   "recorded_at": "2026-09-16T20:10:05.427370+00:00"
+  },
+  {
+   "date": "2026-09-18",
+   "nav_usd": 1011343.25,
+   "cash_usd": 849972.36,
+   "invested_usd": 160292.57,
+   "unrealized_pnl": -3224.9,
+   "positions_count": 25,
+   "recorded_at": "2026-09-17T20:10:06.082627+00:00"
+  },
+  {
+   "date": "2026-09-19",
+   "nav_usd": 1011949.74,
+   "cash_usd": 849972.36,
+   "invested_usd": 160826.21,
+   "unrealized_pnl": -2691.26,
+   "positions_count": 25,
+   "recorded_at": "2026-09-18T20:10:06.705009+00:00"
+  },
+  {
+   "date": "2026-09-21",
+   "nav_usd": 1013468.82,
+   "cash_usd": 849972.36,
+   "invested_usd": 162266.43,
+   "unrealized_pnl": -1251.04,
+   "positions_count": 25,
+   "recorded_at": "2026-09-21T12:18:11.493783+00:00"
+  }
+ ]
+}

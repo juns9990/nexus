@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vela 2.0 홈 — 미리보기 v0.2</title>
+<style>
+  :root{
+    --bg:#0b0e13; --surface:#141922; --surface-2:#1b2230; --line:#232c3b;
+    --text:#e8edf5; --muted:#8b97ab; --faint:#5d6779;
+    --accent:#4da3ff; --up:#2fd08a; --down:#ff6b6b; --warn:#f0b357;
+    --budget:#ff6b6b; --bench:#8b97ab;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,"Malgun Gothic",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 28px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+  /* ---------- 미리보기 배너 ---------- */
+  .banner{
+    background:linear-gradient(90deg,#1d2a3d,#16202e);
+    border-bottom:1px solid var(--line);
+    color:#cfe0f5; font-size:12.5px; letter-spacing:.01em;
+    padding:9px 16px; text-align:center;
+  }
+  .banner b{color:#fff;font-weight:600}
+
+  /* ---------- 헤더: 총자산(주인공) ---------- */
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 0 18px}
+  .total-label{color:var(--muted);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+  .total{font-size:clamp(34px,7vw,52px);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:6px 0 0;font-variant-numeric:tabular-nums}
+  .total-sub{margin-top:8px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .total-sub .delta{font-weight:600}
+  .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
+  .btn-manual{
+    flex:0 0 auto;background:var(--surface-2);border:1px solid var(--line);color:var(--faint);
+    border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;cursor:not-allowed;
+  }
+  .btn-manual small{display:block;font-weight:400;font-size:10.5px;color:var(--faint);margin-top:2px}
+
+  /* ---------- 본문 그리드: 차트가 주인공 ---------- */
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:16px;align-items:start}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+
+  .chart-card{padding:14px 14px 10px;display:flex;flex-direction:column}
+  .chart-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .chart-title{font-size:13px;color:var(--muted);font-weight:600}
+  .bench-toggle{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none}
+  .bench-toggle input{accent-color:var(--accent);margin:0}
+  .bench-toggle.disabled{opacity:.45;cursor:not-allowed}
+  .chart-box{position:relative;width:100%;height:56vh;min-height:360px}
+  .chart-box svg{display:block;width:100%;height:100%;overflow:visible;touch-action:pan-y}
+  .readout{
+    position:absolute;top:6px;left:8px;pointer-events:none;
+    background:rgba(11,14,19,.86);border:1px solid var(--line);border-radius:9px;
+    padding:7px 10px;font-size:12.5px;line-height:1.45;font-variant-numeric:tabular-nums;
+    opacity:0;transition:opacity .09s;white-space:nowrap;
+  }
+  .readout.on{opacity:1}
+  .readout .d{color:var(--muted);font-size:11.5px}
+  .readout .v{font-weight:700;font-size:14px}
+
+  .periods{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .periods button{
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:8px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .periods button[aria-pressed="true"]{background:var(--surface-2);border-color:#35507a;color:var(--text)}
+  .periods button:disabled{opacity:.35;cursor:not-allowed}
+
+  /* ---------- 우측 compact 패널 ---------- */
+  .panel{display:flex;flex-direction:column;gap:10px}
+  .kpi{padding:12px 13px}
+  .kpi-top{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:12px;font-weight:600}
+  .kpi-val{font-size:22px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .kpi-note{margin-top:3px;font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+  .meter{height:5px;border-radius:3px;background:var(--surface-2);margin-top:9px;overflow:hidden}
+  .meter i{display:block;height:100%;background:var(--budget);border-radius:3px}
+  .na{color:var(--faint);font-size:15px;font-weight:600}
+
+  /* ---------- 툴팁 ⓘ ---------- */
+  .info{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:15px;height:15px;border-radius:50%;border:1px solid var(--line);
+    color:var(--faint);font-size:10px;font-weight:700;cursor:pointer;
+    background:transparent;padding:0;line-height:1;flex:0 0 auto;
+  }
+  .info:hover,.info[aria-expanded="true"]{color:var(--text);border-color:#3d4a60}
+  .tip{
+    position:absolute;z-index:40;max-width:250px;
+    background:#0f141c;border:1px solid #2c3648;border-radius:10px;
+    padding:9px 11px;font-size:12px;line-height:1.55;color:#d7deea;
+    box-shadow:0 10px 26px rgba(0,0,0,.5);display:none;
+  }
+  .tip.on{display:block}
+
+  /* ---------- 슬리브 2카드 ---------- */
+  .sleeves{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .sleeve{padding:14px}
+  .sleeve h3{margin:0;font-size:12.5px;color:var(--muted);font-weight:600}
+  .sleeve .amt{font-size:21px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+  .sleeve .row{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+
+  /* ---------- 브리핑 ---------- */
+  .brief{margin-top:14px;padding:15px 16px}
+  .brief h3{margin:0 0 9px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .brief ul{margin:0;padding:0;list-style:none}
+  .brief li{position:relative;padding-left:15px;margin:7px 0;font-size:13.5px;line-height:1.65}
+  .brief li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .brief li.pending{color:var(--faint)}
+  .brief li.pending::before{background:var(--faint)}
+
+  /* ---------- 하단 ---------- */
+  .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+  .foot-l{font-size:12.5px;color:var(--muted);line-height:1.7}
+  .foot-l span{color:var(--faint)}
+  .ver{font-size:11.5px;color:var(--faint);white-space:nowrap}
+
+  .err{margin-top:14px;padding:14px 16px;border-radius:var(--r);border:1px solid #4a2a2a;background:#1d1416;color:#ffb4b4;font-size:13px;line-height:1.7;display:none}
+  .err.on{display:block}
+  .err code{background:rgba(255,255,255,.07);padding:1px 6px;border-radius:5px;font-size:12px}
+
+  /* ---------- 폰 ≤430px: 세로 재배치 (차트는 축소하지 않는다) ---------- */
+  @media (max-width:820px){
+    .grid{grid-template-columns:minmax(0,1fr)}
+    .panel{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  }
+  @media (max-width:430px){
+    .wrap{padding:0 14px}
+    .head{padding:20px 0 14px;gap:10px}
+    .chart-box{height:52vh;min-height:330px}   /* 세로에서도 주인공 유지 */
+    .panel{grid-template-columns:1fr}
+    .sleeves{grid-template-columns:1fr}
+    .periods button{flex:1 1 auto;text-align:center}
+    .foot{flex-direction:column;align-items:flex-start}
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">미리보기 — <b>v1 실데이터</b> (v2 전환 시 교체)</div>
+
+<div class="wrap">
+
+  <div class="head">
+    <div>
+      <div class="total-label">총자산</div>
+      <div class="total" id="total">—</div>
+      <div class="total-sub" id="today">—</div>
+    </div>
+    <button class="btn-manual" type="button" disabled>수동 주문<small>자리만 · 비활성</small></button>
+  </div>
+
+  <div class="grid">
+
+    <div class="card chart-card">
+      <div class="chart-head">
+        <div class="chart-title">전체 자산 추이</div>
+        <label class="bench-toggle disabled" id="benchWrap">
+          <input type="checkbox" id="benchToggle" disabled>
+          <span id="benchLabel">SPLG 벤치</span>
+        </label>
+      </div>
+      <div class="chart-box">
+        <svg id="chart" preserveAspectRatio="none" aria-label="전체 자산 추이 차트"></svg>
+        <div class="readout" id="readout"></div>
+      </div>
+      <div class="periods" id="periods">
+        <button type="button" data-p="1W">1W</button>
+        <button type="button" data-p="1M">1M</button>
+        <button type="button" data-p="3M">3M</button>
+        <button type="button" data-p="6M">6M</button>
+        <button type="button" data-p="YTD">YTD</button>
+        <button type="button" data-p="ALL" aria-pressed="true">전체</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="card kpi">
+        <div class="kpi-top">TWR <button class="info" type="button" data-tip="twr" aria-expanded="false" aria-label="TWR 설명">i</button></div>
+        <div class="kpi-val" id="kTwr">—</div>
+        <div class="kpi-note" id="kTwrNote">—</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-top">MDD <button class="info" type="button" data-tip="mdd" aria-expanded="false" aria-label="MDD 설명">i</button></div>
+        <div class="kpi-val" id="kMdd">—</div>
+        <div class="kpi-note" id="kMddNote">—</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-top">위험예산 <button class="info" type="button" data-tip="budget" aria-expanded="false" aria-label="위험예산 설명">i</button></div>
+        <div class="kpi-val" id="kBudget">—</div>
+        <div class="kpi-note" id="kBudgetNote">—</div>
+        <div class="meter"><i id="kBudgetBar" style="width:0"></i></div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-top">SPLG 비교 <button class="info" type="button" data-tip="splg" aria-expanded="false" aria-label="SPLG 비교 설명">i</button></div>
+        <div class="kpi-val na" id="kBench">—</div>
+        <div class="kpi-note" id="kBenchNote">—</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sleeves">
+    <div class="card sleeve">
+      <h3>전략 슬리브</h3>
+      <div class="amt" id="sStrategy">—</div>
+      <div class="row"><span>주식 비중</span><span id="sWeight">—</span></div>
+      <div class="row"><span>목표 · 밴드</span><span id="sBand">—</span></div>
+    </div>
+    <div class="card sleeve">
+      <h3>개인 슬리브</h3>
+      <div class="amt" id="sPersonal">—</div>
+      <div class="row"><span>상태</span><span id="sPersonalNote">—</span></div>
+      <div class="row"><span>전략 게이트</span><span>미적용</span></div>
+    </div>
+  </div>
+
+  <div class="card brief">
+    <h3>차트 브리핑</h3>
+    <ul id="brief"><li class="pending">데이터 로드 중…</li></ul>
+  </div>
+
+  <div class="foot">
+    <div class="foot-l">
+      마지막 리밸런싱 · <span id="fRebal">—</span><br>
+      다음 판단 · <span id="fNext">—</span>
+    </div>
+    <div class="ver">v2-preview v0.2</div>
+  </div>
+
+  <div class="err" id="err"></div>
+
+</div>
+
+<script>
+"use strict";
+
+/* ─────────────────────────────────────────────────────────────
+   규칙 상수 — docs/vela2_build_spec.md §2·§3·§4 (시장 데이터 아님)
+   화면에 나오는 "값"은 전부 로드한 실데이터에서 계산한다. 하드코딩 숫자 0.
+   ───────────────────────────────────────────────────────────── */
+const SPEC = {
+  RISK_BUDGET_DD: -0.20,   // §2 위험예산 −20%
+  EQUITY_TARGET : 0.63,    // §2 주식 총비중 목표 63%
+  BAND_PP       : 0.05,    // §3 절대 ±5%p → [58%, 68%]
+  BRAKE_AT      : 0.95,    // §4 선언 예산의 95% 도달 시 발동
+  BENCH         : "SPLG"   // §2 유니버스 (v1 데이터에 시계열 없음)
+};
+const BAND_LO = SPEC.EQUITY_TARGET - SPEC.BAND_PP;
+const BAND_HI = SPEC.EQUITY_TARGET + SPEC.BAND_PP;
+
+/* 툴팁 문구 4종 — 미리보기 v0.2 */
+const TIPS = {
+  twr: "시간가중수익률. 입출금 시점의 영향을 제거해 운용 성과만 본다. 선택한 기간의 시작일 대비 마지막일 기준이다.",
+  mdd: "최대 낙폭. 선택한 기간의 고점에서 저점까지 가장 크게 내려간 폭이다. 위험예산을 지켰는지 판정하는 기준이 된다.",
+  budget: "선언한 낙폭 예산 " + pct0(SPEC.RISK_BUDGET_DD) + " 대비 현재 낙폭이 얼마나 쓰였는지. 예산의 " + Math.round(SPEC.BRAKE_AT*100) + "% 에 닿으면 비상 브레이크가 한 번 발동한다.",
+  splg: "같은 기간 " + SPEC.BENCH + " 를 그냥 들고 있었을 때와의 차이. 이 시스템의 목표는 초과수익이 아니라 규칙 준수이므로, 크게 다르지 않으면 정상이다."
+};
+
+/* ── 포맷터 ── */
+function usd(v){ return "$" + Math.round(v).toLocaleString("en-US"); }
+function usdc(v){ return (v<0?"−":"+") + "$" + Math.abs(v).toLocaleString("en-US",{maximumFractionDigits:0}); }
+function pct(v,d){ d = (d===undefined?2:d); return (v>0?"+":v<0?"−":"") + Math.abs(v*100).toFixed(d) + "%"; }
+function pct0(v){ return (v<0?"−":"") + Math.abs(v*100).toFixed(0) + "%"; }
+function pctPlain(v,d){ d=(d===undefined?1:d); return (v*100).toFixed(d) + "%"; }
+function kdate(s){ const p=s.split("-"); return p[1].replace(/^0/,"") + "/" + p[2]; }
+
+/* ── 상태 ── */
+let NAV = [];      // [{date, nav_usd}]
+let REAL = [];     // [{date, nav_usd, cash_usd, invested_usd, ...}]
+let BENCH_SERIES = null;   // v1 데이터에 없음 → null 고정 (fail-closed)
+let period = "ALL";
+
+/* ─────────────── 데이터 로드 (읽기 전용, 서비스 무접촉) ─────────────── */
+async function loadJSON(path){
+  const res = await fetch(path, {cache:"no-store"});
+  if(!res.ok) throw new Error(path + " → HTTP " + res.status);
+  return res.json();
+}
+
+async function boot(){
+  try{
+    const [nav, real] = await Promise.all([
+      loadJSON("./data/nav_history.json"),
+      loadJSON("./data/real_nav_history.json")
+    ]);
+    NAV  = (nav.entries  || []).filter(e => e && e.date && typeof e.nav_usd === "number");
+    REAL = (real.entries || []).filter(e => e && e.date && typeof e.nav_usd === "number");
+    if(NAV.length < 2) throw new Error("nav_history 표본 부족 (n=" + NAV.length + ")");
+    NAV.sort((a,b)=>a.date<b.date?-1:1);
+    REAL.sort((a,b)=>a.date<b.date?-1:1);
+    render();
+  }catch(e){
+    const box = document.getElementById("err");
+    box.classList.add("on");
+    box.innerHTML = "데이터를 불러오지 못했습니다 — <b>" + String(e.message||e) + "</b><br>" +
+      "이 미리보기는 로컬 fetch 로 <code>./data/*.json</code> 을 읽습니다. " +
+      "<code>file://</code> 로 직접 열면 브라우저가 차단합니다. 폴더에서 " +
+      "<code>python -m http.server 8080</code> 실행 후 " +
+      "<code>http://localhost:8080/vela2_home_preview.html</code> 로 여십시오.";
+    document.getElementById("brief").innerHTML =
+      '<li class="pending">데이터 미로드 — 브리핑은 실데이터에서만 생성됩니다(fail-closed).</li>';
+  }
+}
+
+/* ─────────────── 기간 ─────────────── */
+function sliceByPeriod(rows, p){
+  if(!rows.length) return [];
+  const last = new Date(rows[rows.length-1].date + "T00:00:00Z");
+  let from;
+  if(p === "ALL") return rows.slice();
+  if(p === "YTD") from = new Date(Date.UTC(last.getUTCFullYear(),0,1));
+  else{
+    const days = {"1W":7,"1M":30,"3M":91,"6M":182}[p];
+    from = new Date(last.getTime() - days*864e5);
+  }
+  const iso = from.toISOString().slice(0,10);
+  return rows.filter(r => r.date >= iso);
+}
+
+/* ─────────────── 지표 ─────────────── */
+function twrOf(rows){
+  if(rows.length < 2) return null;
+  const a = rows[0].nav_usd, b = rows[rows.length-1].nav_usd;
+  if(!(a > 0)) return null;
+  return b/a - 1;
+}
+function mddOf(rows){
+  if(rows.length < 2) return null;
+  let peak = -Infinity, mdd = 0, pd = null, td = null, curPeakDate = null;
+  for(const r of rows){
+    if(r.nav_usd > peak){ peak = r.nav_usd; curPeakDate = r.date; }
+    const dd = r.nav_usd/peak - 1;
+    if(dd < mdd){ mdd = dd; pd = curPeakDate; td = r.date; }
+  }
+  return {mdd, peakDate:pd, troughDate:td};
+}
+function currentDD(rows){
+  if(rows.length < 2) return null;
+  let peak = -Infinity, peakDate = null;
+  for(const r of rows){ if(r.nav_usd > peak){ peak = r.nav_usd; peakDate = r.date; } }
+  const lastV = rows[rows.length-1].nav_usd;
+  return {dd: lastV/peak - 1, peak, peakDate};
+}
+function equityWeight(){
+  if(!REAL.length) return null;
+  const r = REAL[REAL.length-1];
+  if(!(r.nav_usd > 0) || typeof r.invested_usd !== "number") return null;
+  return {w: r.invested_usd/r.nav_usd, date: r.date, invested: r.invested_usd, cash: r.cash_usd, nav: r.nav_usd};
+}
+function bandState(w){
+  if(w === null) return null;
+  if(w < BAND_LO) return "BELOW";
+  if(w > BAND_HI) return "ABOVE";
+  return "INSIDE";
+}
+
+/* ─────────────── 렌더 ─────────────── */
+function render(){
+  const rows = sliceByPeriod(NAV, period);
+  renderHeader();
+  renderChart(rows);
+  renderKPI(rows);
+  renderSleeves();
+  renderBrief(rows);
+  renderFoot();
+}
+
+function renderHeader(){
+  const last = NAV[NAV.length-1], prev = NAV[NAV.length-2];
+  document.getElementById("total").textContent = usd(last.nav_usd);
+  const d = last.nav_usd - prev.nav_usd, dp = d/prev.nav_usd;
+  const cls = d > 0 ? "up" : d < 0 ? "down" : "flat";
+  document.getElementById("today").innerHTML =
+    '<span class="delta ' + cls + '">' + usdc(d) + " · " + pct(dp) + "</span>" +
+    ' <span style="color:var(--faint)">· ' + last.date + " 기준</span>";
+}
+
+/* 단일 풀스크린 차트 — 분해하지 않는다(§16) */
+function renderChart(rows){
+  const svg = document.getElementById("chart");
+  const box = svg.parentElement;
+  const W = box.clientWidth || 800, H = box.clientHeight || 400;
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.setAttribute("preserveAspectRatio", "none");
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  if(rows.length < 2) return;
+
+  const PAD = {t:14, r:58, b:24, l:10};
+  const iw = W - PAD.l - PAD.r, ih = H - PAD.t - PAD.b;
+
+  // 위험예산 기준선을 항상 품도록 y 범위를 잡는다
+  const dd = currentDD(NAV);
+  const budgetLine = dd ? dd.peak * (1 + SPEC.RISK_BUDGET_DD) : null;
+  const vals = rows.map(r => r.nav_usd);
+  let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+  const showBudget = budgetLine !== null && budgetLine > lo - (hi-lo)*3;
+  if(showBudget) lo = Math.min(lo, budgetLine);
+  const span = (hi - lo) || Math.max(1, hi*0.001);
+  lo -= span*0.10; hi += span*0.10;
+
+  const X = i => PAD.l + (rows.length===1 ? iw/2 : iw * i/(rows.length-1));
+  const Y = v => PAD.t + ih * (1 - (v - lo)/(hi - lo));
+
+  const NS = "http://www.w3.org/2000/svg";
+  const mk = (n,a) => { const e = document.createElementNS(NS,n); for(const k in a) e.setAttribute(k,a[k]); return e; };
+
+  // y 눈금 3선
+  for(let i=0;i<=2;i++){
+    const v = lo + (hi-lo)*(i/2), y = Y(v);
+    svg.appendChild(mk("line",{x1:PAD.l,x2:PAD.l+iw,y1:y,y2:y,stroke:"#1e2634","stroke-width":1}));
+    const t = mk("text",{x:PAD.l+iw+7,y:y+4,fill:"#5d6779","font-size":"11"});
+    t.textContent = "$" + Math.round(v).toLocaleString("en-US");
+    svg.appendChild(t);
+  }
+
+  // 위험예산 −20% 기준선
+  if(showBudget){
+    const y = Y(budgetLine);
+    svg.appendChild(mk("line",{x1:PAD.l,x2:PAD.l+iw,y1:y,y2:y,stroke:"var(--budget)","stroke-width":1.2,"stroke-dasharray":"6 5",opacity:.75}));
+    const t = mk("text",{x:PAD.l+4,y:y-6,fill:"var(--budget)","font-size":"10.5",opacity:.9});
+    t.textContent = "위험예산 " + pct0(SPEC.RISK_BUDGET_DD);
+    svg.appendChild(t);
+  }
+
+  // 벤치 점선 — 데이터 있을 때만 (v1 에는 없다)
+  const benchOn = document.getElementById("benchToggle").checked && BENCH_SERIES;
+  if(benchOn){
+    let dsb = "";
+    BENCH_SERIES.forEach((v,i) => { dsb += (i?"L":"M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); });
+    svg.appendChild(mk("path",{d:dsb,fill:"none",stroke:"var(--bench)","stroke-width":1.4,"stroke-dasharray":"5 4",opacity:.8}));
+  }
+
+  // NAV 라인 + 면적
+  let d = "", area = "";
+  rows.forEach((r,i) => {
+    const x = X(i), y = Y(r.nav_usd);
+    d += (i?"L":"M") + x.toFixed(1) + " " + y.toFixed(1);
+    area += (i?"L":"M") + x.toFixed(1) + " " + y.toFixed(1);
+  });
+  area += "L" + X(rows.length-1).toFixed(1) + " " + (PAD.t+ih) + "L" + X(0).toFixed(1) + " " + (PAD.t+ih) + "Z";
+
+  const grad = mk("linearGradient",{id:"g1",x1:"0",y1:"0",x2:"0",y2:"1"});
+  grad.appendChild(mk("stop",{offset:"0%","stop-color":"var(--accent)","stop-opacity":".22"}));
+  grad.appendChild(mk("stop",{offset:"100%","stop-color":"var(--accent)","stop-opacity":"0"}));
+  const defs = mk("defs",{}); defs.appendChild(grad); svg.appendChild(defs);
+  svg.appendChild(mk("path",{d:area,fill:"url(#g1)"}));
+  svg.appendChild(mk("path",{d:d,fill:"none",stroke:"var(--accent)","stroke-width":2,"stroke-linejoin":"round","stroke-linecap":"round"}));
+
+  // x 라벨 양끝
+  const t0 = mk("text",{x:PAD.l,y:H-6,fill:"#5d6779","font-size":"11"}); t0.textContent = rows[0].date;
+  const t1 = mk("text",{x:PAD.l+iw,y:H-6,fill:"#5d6779","font-size":"11","text-anchor":"end"}); t1.textContent = rows[rows.length-1].date;
+  svg.appendChild(t0); svg.appendChild(t1);
+
+  // crosshair
+  const cross = mk("line",{x1:0,x2:0,y1:PAD.t,y2:PAD.t+ih,stroke:"#46536b","stroke-width":1,opacity:"0"});
+  const dot = mk("circle",{r:4,fill:"var(--accent)",stroke:"var(--bg)","stroke-width":2,opacity:"0"});
+  svg.appendChild(cross); svg.appendChild(dot);
+
+  const readout = document.getElementById("readout");
+  function at(clientX){
+    const rect = svg.getBoundingClientRect();
+    const px = (clientX - rect.left) * (W / rect.width);
+    let i = Math.round((px - PAD.l) / (iw || 1) * (rows.length-1));
+    i = Math.max(0, Math.min(rows.length-1, i));
+    const r = rows[i], x = X(i), y = Y(r.nav_usd);
+    cross.setAttribute("x1",x); cross.setAttribute("x2",x); cross.setAttribute("opacity",".65");
+    dot.setAttribute("cx",x); dot.setAttribute("cy",y); dot.setAttribute("opacity","1");
+    const base = rows[0].nav_usd, ch = r.nav_usd/base - 1;
+    readout.innerHTML = '<div class="d">' + r.date + '</div><div class="v">' + usd(r.nav_usd) +
+      '</div><div class="d">기간 시작 대비 ' + pct(ch) + '</div>';
+    readout.classList.add("on");
+    const rw = readout.offsetWidth || 150;
+    readout.style.left = Math.max(4, Math.min(box.clientWidth - rw - 4, x*(box.clientWidth/W) - rw/2)) + "px";
+  }
+  function off(){ cross.setAttribute("opacity","0"); dot.setAttribute("opacity","0"); readout.classList.remove("on"); }
+  svg.onmousemove = e => at(e.clientX);
+  svg.onmouseleave = off;
+  svg.ontouchstart = e => { if(e.touches[0]) at(e.touches[0].clientX); };
+  svg.ontouchmove  = e => { if(e.touches[0]) at(e.touches[0].clientX); };
+  svg.ontouchend   = off;
+}
+
+function renderKPI(rows){
+  // TWR
+  const t = twrOf(rows);
+  const eT = document.getElementById("kTwr"), eTn = document.getElementById("kTwrNote");
+  if(t === null){ eT.textContent = "—"; eT.className = "kpi-val na"; eTn.textContent = "표본 부족"; }
+  else{
+    eT.textContent = pct(t);
+    eT.className = "kpi-val " + (t>0?"up":t<0?"down":"");
+    eTn.textContent = rows[0].date + " → " + rows[rows.length-1].date + " · " + rows.length + "일";
+  }
+  // MDD
+  const m = mddOf(rows);
+  const eM = document.getElementById("kMdd"), eMn = document.getElementById("kMddNote");
+  if(!m){ eM.textContent = "—"; eM.className="kpi-val na"; eMn.textContent = "표본 부족"; }
+  else{
+    eM.textContent = pct(m.mdd);
+    eM.className = "kpi-val " + (m.mdd<0?"down":"");
+    eMn.textContent = m.mdd < 0 ? (kdate(m.peakDate) + " → " + kdate(m.troughDate)) : "낙폭 없음";
+  }
+  // 위험예산 + 사용률 (전 구간 고점 기준)
+  const dd = currentDD(NAV);
+  const eB = document.getElementById("kBudget"), eBn = document.getElementById("kBudgetNote"), bar = document.getElementById("kBudgetBar");
+  if(!dd){ eB.textContent="—"; eB.className="kpi-val na"; eBn.textContent="표본 부족"; }
+  else{
+    const used = Math.min(1, Math.abs(dd.dd / SPEC.RISK_BUDGET_DD));
+    eB.textContent = pctPlain(used) + " 사용";
+    eB.className = "kpi-val";
+    eBn.textContent = "현재 낙폭 " + pct(dd.dd) + " / 예산 " + pct0(SPEC.RISK_BUDGET_DD);
+    bar.style.width = (used*100).toFixed(1) + "%";
+  }
+  // SPLG 비교 — 시계열 없음 → fail-closed
+  const eS = document.getElementById("kBench"), eSn = document.getElementById("kBenchNote");
+  if(BENCH_SERIES){ /* v2 전환 후 경로 */ }
+  else{
+    eS.textContent = "—"; eS.className = "kpi-val na";
+    eSn.textContent = "v1 데이터에 " + SPEC.BENCH + " 시계열 없음 · v2 전환 후 표시";
+    const wrap = document.getElementById("benchWrap");
+    wrap.classList.add("disabled");
+    document.getElementById("benchLabel").textContent = SPEC.BENCH + " 벤치 · 데이터 없음";
+  }
+}
+
+function renderSleeves(){
+  const ew = equityWeight();
+  const last = NAV[NAV.length-1];
+  document.getElementById("sStrategy").textContent = usd(last.nav_usd);
+  if(ew){
+    document.getElementById("sWeight").textContent =
+      pctPlain(ew.w) + " · " + ew.date + " (투자 " + usd(ew.invested) + " / 현금 " + usd(ew.cash) + ")";
+  }else{
+    document.getElementById("sWeight").textContent = "— · v2 전환 후 표시";
+  }
+  document.getElementById("sBand").textContent =
+    pctPlain(SPEC.EQUITY_TARGET,0) + " · [" + pctPlain(BAND_LO,0) + ", " + pctPlain(BAND_HI,0) + "]";
+  document.getElementById("sPersonal").textContent = "—";
+  document.getElementById("sPersonalNote").textContent = "v1 에 슬리브 분리 없음 · v2 전환 후 표시";
+}
+
+/* ── 차트 브리핑: 4문장 고정 템플릿 · 전부 실데이터 계산 · 계산 불가 시 미표시 ── */
+function renderBrief(rows){
+  const ul = document.getElementById("brief");
+  const out = [];
+
+  // ① 기간 성과 + 주식 비중 vs 밴드
+  const t = twrOf(rows), ew = equityWeight(), bs = ew ? bandState(ew.w) : null;
+  if(t !== null && ew && bs){
+    const word = bs === "INSIDE" ? "안에 있습니다"
+               : (bs === "BELOW" ? "아래로 벗어나 있습니다" : "위로 벗어나 있습니다");
+    out.push({ok:true, text:
+      "이 기간 자산은 " + pct(t) + " 변했고, 주식 비중은 " + ew.date + " 기준 " + pctPlain(ew.w) +
+      " 로 목표 " + pctPlain(SPEC.EQUITY_TARGET,0) + " 의 밴드 [" + pctPlain(BAND_LO,0) + ", " +
+      pctPlain(BAND_HI,0) + "] " + word + "."});
+  }else{
+    out.push({ok:false, text:"기간 성과·주식 비중 — v2 전환 후 표시"});
+  }
+
+  // ② 현재 낙폭 = 예산의 N% 사용 + 발동선까지 거리
+  const dd = currentDD(NAV);
+  if(dd){
+    const used = Math.abs(dd.dd / SPEC.RISK_BUDGET_DD);
+    const brakeDD = SPEC.RISK_BUDGET_DD * SPEC.BRAKE_AT;
+    const gap = Math.abs(brakeDD - dd.dd);
+    out.push({ok:true, text:
+      "현재 낙폭은 " + pct(dd.dd) + " 로 위험예산 " + pct0(SPEC.RISK_BUDGET_DD) + " 의 " +
+      pctPlain(used) + " 를 쓴 상태이며, 브레이크 발동선(" + Math.round(SPEC.BRAKE_AT*100) + "% · " +
+      pct(brakeDD,0) + ") 까지 " + (gap*100).toFixed(2) + "%p 남았습니다."});
+  }else{
+    out.push({ok:false, text:"위험예산 사용률 — v2 전환 후 표시"});
+  }
+
+  // ③ SPLG 대비 기간 차 — 시계열 없음 → fail-closed
+  if(BENCH_SERIES && t !== null){
+    // v2 전환 후 경로
+  }else{
+    out.push({ok:false, text:SPEC.BENCH + " 대비 기간 차 — v1 데이터에 벤치 시계열 없음 · v2 전환 후 표시"});
+  }
+
+  // ④ 다음 판단 예고
+  if(bs){
+    out.push({ok:true, text: bs === "INSIDE"
+      ? "비중이 밴드 안이므로 다음 판단은 “안 사는 날” 이 유력합니다."
+      : "비중이 밴드를 벗어나 있으므로 다음 판단은 목표 비중으로 되돌리는 리밸런싱이 유력합니다."});
+  }else{
+    out.push({ok:false, text:"다음 판단 예고 — v2 전환 후 표시"});
+  }
+
+  ul.innerHTML = out.map(o => '<li class="' + (o.ok ? "" : "pending") + '">' + o.text + "</li>").join("");
+}
+
+function renderFoot(){
+  // v1 에는 v2 규칙의 리밸런싱/판단 기록이 없다 → fail-closed
+  document.getElementById("fRebal").textContent = "v2 전환 후 표시";
+  const ew = equityWeight(), bs = ew ? bandState(ew.w) : null;
+  document.getElementById("fNext").textContent =
+    bs === "INSIDE" ? "안 사는 날 유력" : (bs ? "리밸런싱 유력 (밴드 이탈)" : "v2 전환 후 표시");
+}
+
+/* ─────────────── 인터랙션 ─────────────── */
+document.getElementById("periods").addEventListener("click", e => {
+  const b = e.target.closest("button[data-p]");
+  if(!b || b.disabled) return;
+  period = b.dataset.p;
+  [].forEach.call(document.querySelectorAll("#periods button"), x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  render();
+});
+document.getElementById("benchToggle").addEventListener("change", () => render());
+
+/* 툴팁 — hover + 탭 겸용, 바깥 탭 시 닫힘 */
+const tipEl = document.createElement("div");
+tipEl.className = "tip";
+document.body.appendChild(tipEl);
+let tipOwner = null;
+
+function showTip(btn){
+  tipEl.textContent = TIPS[btn.dataset.tip] || "";
+  tipEl.classList.add("on");
+  const r = btn.getBoundingClientRect();
+  const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+  let left = r.left + window.scrollX - w/2 + r.width/2;
+  left = Math.max(8, Math.min(window.innerWidth - w - 8, left));
+  let top = r.top + window.scrollY - h - 9;
+  if(top < window.scrollY + 4) top = r.bottom + window.scrollY + 9;
+  tipEl.style.left = left + "px";
+  tipEl.style.top = top + "px";
+  btn.setAttribute("aria-expanded","true");
+  tipOwner = btn;
+}
+function hideTip(){
+  tipEl.classList.remove("on");
+  if(tipOwner) tipOwner.setAttribute("aria-expanded","false");
+  tipOwner = null;
+}
+[].forEach.call(document.querySelectorAll(".info"), btn => {
+  btn.addEventListener("mouseenter", () => showTip(btn));
+  btn.addEventListener("mouseleave", () => { if(tipOwner === btn) hideTip(); });
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    if(tipOwner === btn) hideTip(); else showTip(btn);
+  });
+});
+document.addEventListener("click", () => { if(tipOwner) hideTip(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape") hideTip(); });
+
+let rt;
+window.addEventListener("resize", () => {
+  clearTimeout(rt);
+  rt = setTimeout(() => { if(NAV.length) renderChart(sliceByPeriod(NAV, period)); }, 140);
+});
+
+boot();
+</script>
+</body>
+</html>

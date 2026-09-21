@@ -523,6 +523,115 @@ details.more[open] > summary::before { content: '▾ '; }
 <main>
   <!-- ================= 홈 ================= -->
   <section data-tab="home" class="active">
+
+    <!-- ================= v16.10 — v2 홈 미리보기 (표시 계층만) =================
+         기존 v1 홈 요소는 **이동·삭제 없이 아래로 밀리기만** 한다.
+         iframe 은 상대경로다 — deploy(/nexus/) 와 정적 호스팅에서 그대로 열리고,
+         PC 백엔드(/dashboard/)는 화이트리스트 서빙이라 열리지 않으므로
+         깨진 프레임 대신 한 줄 안내로 대체한다(아래 onload 판정).
+         백엔드·로직은 건드리지 않는다. -->
+    <style>
+      .v2pv { border: 1px solid var(--line-soft); border-radius: 12px;
+              overflow: hidden; margin-bottom: var(--sp-card, 14px); }
+      .v2pv > summary { list-style: none; cursor: pointer; display: flex;
+              align-items: center; gap: 8px; padding: 11px 13px;
+              font-size: 13px; font-weight: 700; }
+      .v2pv > summary::-webkit-details-marker { display: none; }
+      .v2pv > summary .cv { margin-left: auto; font-size: 11px; font-weight: 600;
+              color: var(--fg-dim); font-family: var(--mono); }
+      .v2pv > summary .caret { font-size: 11px; color: var(--fg-dim); }
+      .v2pv[open] > summary .caret { transform: rotate(90deg); }
+      .v2pv .bd { border-top: 1px solid var(--line-soft); }
+      .v2pv iframe { display: block; width: 100%; border: 0; height: 900px;
+              background: transparent; }
+      .v2pv .miss { padding: 14px 13px; font-size: 12.5px; line-height: 1.7;
+              color: var(--fg-dim); }
+    </style>
+
+    <details class="v2pv" id="v2pv">
+      <summary>
+        <span class="caret">›</span>
+        <span>v2 홈 미리보기</span>
+        <span class="cv">v2-preview v0.2</span>
+      </summary>
+      <div class="bd">
+        <iframe id="v2pv-frame" src="preview/vela2_home_preview.html"
+                title="v2 홈 미리보기" loading="lazy" scrolling="no"></iframe>
+        <div class="miss" id="v2pv-miss" hidden></div>
+      </div>
+    </details>
+
+    <script>
+    (function () {
+      var KEY = 'nexus.v2preview.open';
+      var d = document.getElementById('v2pv');
+      var fr = document.getElementById('v2pv-frame');
+      var miss = document.getElementById('v2pv-miss');
+      if (!d || !fr) return;
+
+      // 접기 상태 — 기본 펼침. 저장된 값이 '0' 일 때만 접는다.
+      try { d.open = (localStorage.getItem(KEY) !== '0'); }
+      catch (e) { d.open = true; }
+      d.addEventListener('toggle', function () {
+        try { localStorage.setItem(KEY, d.open ? '1' : '0'); } catch (e) {}
+        if (d.open) fit();
+      });
+
+      // 높이 자동 — 같은 출처라 자식 문서 높이를 직접 읽는다.
+      //
+      // 되먹임 주의: 미리보기의 차트는 높이가 52vh/56vh 다. iframe 안에서 vh 는
+      //   **iframe 자신의 높이**로 풀리므로, 높이를 콘텐츠에 맞추면 콘텐츠가
+      //   다시 커진다. 실측(2026-09-21): 1회 맞춤 후 폰 356px · PC 165px 이
+      //   잘렸고, 수렴시키면 폰 3,168px(차트 1,640px)까지 부풀었다.
+      //
+      // 그래서 맞추기 전에 vh 를 px 로 고정한다. 고정값은 **독립 실행 시의
+      //   실측치 그대로**(폰 439px · PC 504px)라 차트가 줄지 않는다
+      //   (v2 §16 '차트 축소 금지' 준수). 미리보기 파일은 건드리지 않고,
+      //   부모가 같은 출처 자식에 스타일만 주입한다 — 표시 계층 처리다.
+      var PIN_PHONE = 439, PIN_WIDE = 504, PIN_BP = 820;
+      function fit() {
+        try {
+          var doc = fr.contentDocument;
+          if (!doc || !doc.body || !doc.head) return;
+          var px = (fr.clientWidth >= PIN_BP) ? PIN_WIDE : PIN_PHONE;
+          var st = doc.getElementById('v2pv-pin');
+          if (!st) {
+            st = doc.createElement('style');
+            st.id = 'v2pv-pin';
+            doc.head.appendChild(st);
+          }
+          st.textContent = '.chart-box{height:' + px + 'px !important;'
+                         + 'min-height:0 !important}';
+          var h = Math.max(doc.body.scrollHeight,
+                           doc.documentElement ? doc.documentElement.scrollHeight : 0);
+          if (h > 200) fr.style.height = h + 'px';
+        } catch (e) { /* 크로스오리진 등 — 900px 유지 */ }
+      }
+
+      // 로드 판정 — 미리보기 마크업이 실제로 들어왔는지 본다.
+      //   404 본문이 실려도 프레임은 load 를 쏘므로 내용으로 구분한다.
+      fr.addEventListener('load', function () {
+        var ok = false;
+        try {
+          var doc = fr.contentDocument;
+          ok = !!(doc && doc.getElementById('chart'));
+        } catch (e) { ok = true; }   // 읽을 수 없으면 판정 보류 — 그대로 둔다
+        if (ok) { fit(); setTimeout(fit, 400); return; }
+        fr.hidden = true;
+        miss.hidden = false;
+        miss.textContent =
+          '이 화면에서는 미리보기가 서빙되지 않습니다 (백엔드는 화이트리스트 자산만 제공). '
+          + '폰·배포 화면에서 보입니다 — preview/vela2_home_preview.html';
+      });
+
+      var t;
+      window.addEventListener('resize', function () {
+        clearTimeout(t); t = setTimeout(fit, 180);
+      });
+    })();
+    </script>
+    <!-- ================= /v16.10 ================= -->
+
     <!-- D-3 — 야간 자동 결재 상태 한 줄 -->
     <div class="night-line" id="night-line" hidden>
       <span class="dot-on" id="night-dot"></span>

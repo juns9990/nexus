@@ -300,7 +300,7 @@
 // v16.9.2 (2026-08-23) — 주문 상태 표기 '브로커 접수'. 표시 계층만.
 //   P0-A: PreSubmitted/Submitted 를 '반려' 로 읽히게 두면, 실제로는
 //   체결될 주문을 사람이 죽은 것으로 판단한다.
-const CACHE_VERSION = 'v16.10.0';
+const CACHE_VERSION = 'v16.10.1';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

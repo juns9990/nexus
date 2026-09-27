@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vela 2.0 홈 — 미리보기 v0.2</title>
+<title>Vela 2.0 홈 — 미리보기 v0.2.1</title>
 <style>
   :root{
     --bg:#0b0e13; --surface:#141922; --surface-2:#1b2230; --line:#232c3b;
@@ -30,6 +30,8 @@
     padding:9px 16px; text-align:center;
   }
   .banner b{color:#fff;font-weight:600}
+  /* v0.2.1 — 라이브가 아니면(정적 폴백) 배너 색부터 다르게 */
+  .banner.stale{background:linear-gradient(90deg,#3a2a12,#2b2010);color:#f5dfb8}
 
   /* ---------- 헤더: 총자산(주인공) ---------- */
   .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 0 18px}
@@ -144,7 +146,7 @@
 </head>
 <body>
 
-<div class="banner">미리보기 — <b>v1 실데이터</b> (v2 전환 시 교체)</div>
+<div class="banner" id="banner">미리보기 — 데이터 연결 중…</div>
 
 <div class="wrap">
 
@@ -232,7 +234,7 @@
       마지막 리밸런싱 · <span id="fRebal">—</span><br>
       다음 판단 · <span id="fNext">—</span>
     </div>
-    <div class="ver">v2-preview v0.2</div>
+    <div class="ver">v2-preview v0.2.1</div>
   </div>
 
   <div class="err" id="err"></div>
@@ -256,7 +258,7 @@ const SPEC = {
 const BAND_LO = SPEC.EQUITY_TARGET - SPEC.BAND_PP;
 const BAND_HI = SPEC.EQUITY_TARGET + SPEC.BAND_PP;
 
-/* 툴팁 문구 4종 — 미리보기 v0.2 */
+/* 툴팁 문구 4종 — 미리보기 v0.2 (v0.2.1 무변경) */
 const TIPS = {
   twr: "시간가중수익률. 입출금 시점의 영향을 제거해 운용 성과만 본다. 선택한 기간의 시작일 대비 마지막일 기준이다.",
   mdd: "최대 낙폭. 선택한 기간의 고점에서 저점까지 가장 크게 내려간 폭이다. 위험예산을 지켰는지 판정하는 기준이 된다.",
@@ -272,9 +274,15 @@ function pct0(v){ return (v<0?"−":"") + Math.abs(v*100).toFixed(0) + "%"; }
 function pctPlain(v,d){ d=(d===undefined?1:d); return (v*100).toFixed(d) + "%"; }
 function kdate(s){ const p=s.split("-"); return p[1].replace(/^0/,"") + "/" + p[2]; }
 
-/* ── 상태 ── */
-let NAV = [];      // [{date, nav_usd}]
-let REAL = [];     // [{date, nav_usd, cash_usd, invested_usd, ...}]
+/* ── 상태 ──
+   v0.2.1 — **단일 소스·USD 단일.** 종전엔 총자산을 nav_history(06:00 마감요약
+   계열, KRW 필드 동봉) 정적 복사본에서, 주식 비중을 real_nav_history 에서 읽어
+   한 화면에 기준일이 둘(9/19·9/21)이었고, 본체(라이브 스냅샷)와 금액이 달랐다.
+   이제 NAV·REAL 은 같은 배열(real_nav_history, USD)이고, 마지막 점은 부모
+   대시보드가 주입한 라이브 스냅샷 값으로 맞춘다. */
+let NAV = [];      // [{date, nav_usd, cash_usd, invested_usd}]  — REAL 과 동일 배열
+let REAL = [];
+let SOURCE = {mode:"loading", as_of:null, as_of_label:null, total_usd:null};
 let BENCH_SERIES = null;   // v1 데이터에 없음 → null 고정 (fail-closed)
 let period = "ALL";
 
@@ -285,32 +293,99 @@ async function loadJSON(path){
   return res.json();
 }
 
-async function boot(){
-  try{
-    const [nav, real] = await Promise.all([
-      loadJSON("./data/nav_history.json"),
-      loadJSON("./data/real_nav_history.json")
-    ]);
-    NAV  = (nav.entries  || []).filter(e => e && e.date && typeof e.nav_usd === "number");
-    REAL = (real.entries || []).filter(e => e && e.date && typeof e.nav_usd === "number");
-    if(NAV.length < 2) throw new Error("nav_history 표본 부족 (n=" + NAV.length + ")");
-    NAV.sort((a,b)=>a.date<b.date?-1:1);
-    REAL.sort((a,b)=>a.date<b.date?-1:1);
-    render();
-  }catch(e){
-    const box = document.getElementById("err");
-    box.classList.add("on");
-    box.innerHTML = "데이터를 불러오지 못했습니다 — <b>" + String(e.message||e) + "</b><br>" +
-      "이 미리보기는 로컬 fetch 로 <code>./data/*.json</code> 을 읽습니다. " +
-      "<code>file://</code> 로 직접 열면 브라우저가 차단합니다. 폴더에서 " +
-      "<code>python -m http.server 8080</code> 실행 후 " +
-      "<code>http://localhost:8080/vela2_home_preview.html</code> 로 여십시오.";
-    document.getElementById("brief").innerHTML =
-      '<li class="pending">데이터 미로드 — 브리핑은 실데이터에서만 생성됩니다(fail-closed).</li>';
+/* USD 숫자만 통과시킨다 — *_krw 등 다른 통화 필드는 읽지 않는다. */
+function cleanRows(entries){
+  return (entries || [])
+    .filter(e => e && e.date && typeof e.nav_usd === "number" && isFinite(e.nav_usd))
+    .map(e => ({date:String(e.date).slice(0,10), nav_usd:e.nav_usd,
+                cash_usd:(typeof e.cash_usd === "number" ? e.cash_usd : null),
+                invested_usd:(typeof e.invested_usd === "number" ? e.invested_usd : null)}))
+    .sort((a,b)=>a.date<b.date?-1:1);
+}
+
+function setBanner(live){
+  const b = document.getElementById("banner");
+  if(live){
+    b.className = "banner";
+    b.innerHTML = "미리보기 — <b>라이브</b> · 대시보드 스냅샷 " + SOURCE.as_of_label +
+                  " (USD · 실계좌 NAV 이력)";
+  }else{
+    b.className = "banner stale";
+    b.innerHTML = "기준일 스냅샷 (<b>" + (SOURCE.as_of || "—") + "</b>) — 라이브 아님";
   }
 }
 
-/* ─────────────── 기간 ─────────────── */
+/* 부모(같은 출처 대시보드)가 넣어 준 라이브 데이터 — 받으면 이것이 우선이다. */
+function applyLive(p){
+  if(!p || p.type !== "nexus-v2-data" || String(p.currency || "") !== "USD") return false;
+  const snap = p.snapshot || {};
+  if(typeof snap.nav_usd !== "number" || !snap.as_of) return false;
+  const rows = cleanRows((p.history || {}).entries);
+  const day = String(snap.as_of_day || snap.as_of).slice(0,10);
+  const live = {date:day, nav_usd:snap.nav_usd, cash_usd:snap.cash_usd, invested_usd:snap.invested_usd};
+  const i = rows.findIndex(r => r.date === day);
+  if(i >= 0) rows[i] = live; else rows.push(live);
+  rows.sort((a,b)=>a.date<b.date?-1:1);
+  if(rows.length < 2) return false;
+  NAV = REAL = rows;
+  SOURCE = {mode:"live", as_of:String(snap.as_of), as_of_label:snap.as_of_label || String(snap.as_of),
+            total_usd:snap.nav_usd};
+  return true;
+}
+
+async function loadStatic(){
+  // 폴백 — 정적 복사본 중 real_nav_history(USD)만 쓴다. nav_history.json(KRW 동봉)은 읽지 않는다.
+  const real = await loadJSON("./data/real_nav_history.json");
+  const rows = cleanRows(real.entries);
+  if(rows.length < 2) throw new Error("real_nav_history 표본 부족 (n=" + rows.length + ")");
+  NAV = REAL = rows;
+  const last = rows[rows.length-1];
+  SOURCE = {mode:"static", as_of:last.date, as_of_label:last.date, total_usd:last.nav_usd};
+}
+
+function report(){
+  // 부모에게 "내가 그린 총자산·기준시각" 을 돌려준다 — 본체와 같은 값인지 부모가 단언한다.
+  if(window.parent === window) return;
+  try{
+    window.parent.postMessage({type:"nexus-v2-rendered", mode:SOURCE.mode,
+      total_usd:SOURCE.total_usd, as_of:SOURCE.as_of}, location.origin);
+  }catch(e){}
+}
+
+function showError(e){
+  const box = document.getElementById("err");
+  box.classList.add("on");
+  box.innerHTML = "데이터를 불러오지 못했습니다 — <b>" + String(e.message||e) + "</b><br>" +
+    "대시보드 안에서는 부모가 라이브 데이터를 넣어 줍니다. 단독으로 열면 " +
+    "<code>./data/real_nav_history.json</code> 을 읽으며, <code>file://</code> 로 열면 브라우저가 차단합니다.";
+  document.getElementById("brief").innerHTML =
+    '<li class="pending">데이터 미로드 — 브리핑은 실데이터에서만 생성됩니다(fail-closed).</li>';
+}
+
+const INJECT_WAIT_MS = 3000;
+async function boot(){
+  const embedded = window.parent !== window;
+  window.addEventListener("message", ev => {
+    if(ev.origin !== location.origin || ev.source !== window.parent) return;
+    if(applyLive(ev.data)){
+      document.getElementById("err").classList.remove("on");
+      setBanner(true); render(); report();
+    }
+  });
+  if(embedded){
+    try{ window.parent.postMessage({type:"nexus-v2-ready"}, location.origin); }catch(e){}
+    await new Promise(r => setTimeout(r, INJECT_WAIT_MS));
+    if(SOURCE.mode === "live") return;            // 이미 주입받아 그렸다
+  }
+  try{
+    await loadStatic();
+    if(SOURCE.mode === "live") return;            // 대기 중 주입이 먼저 왔다
+    setBanner(false); render(); report();
+  }catch(e){
+    if(SOURCE.mode !== "live") showError(e);
+  }
+}
+
 function sliceByPeriod(rows, p){
   if(!rows.length) return [];
   const last = new Date(rows[rows.length-1].date + "T00:00:00Z");
@@ -376,11 +451,14 @@ function render(){
 function renderHeader(){
   const last = NAV[NAV.length-1], prev = NAV[NAV.length-2];
   document.getElementById("total").textContent = usd(last.nav_usd);
+  document.getElementById("total").dataset.usd = String(last.nav_usd);
   const d = last.nav_usd - prev.nav_usd, dp = d/prev.nav_usd;
   const cls = d > 0 ? "up" : d < 0 ? "down" : "flat";
   document.getElementById("today").innerHTML =
     '<span class="delta ' + cls + '">' + usdc(d) + " · " + pct(dp) + "</span>" +
-    ' <span style="color:var(--faint)">· ' + last.date + " 기준</span>";
+    ' <span style="color:var(--faint)">· ' +
+    (SOURCE.mode === "live" ? SOURCE.as_of_label + " 라이브" : last.date + " 기준 · 라이브 아님") +
+    "</span>";
 }
 
 /* 단일 풀스크린 차트 — 분해하지 않는다(§16) */

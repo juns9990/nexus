@@ -539,6 +539,9 @@ details.more[open] > summary::before { content: '▾ '; }
       .v2pv > summary::-webkit-details-marker { display: none; }
       .v2pv > summary .cv { margin-left: auto; font-size: 11px; font-weight: 600;
               color: var(--fg-dim); font-family: var(--mono); }
+      .v2pv > summary .cv + .cv { margin-left: 8px; }
+      .v2pv > summary .cv.ok { color: var(--up, #3fb68b); }
+      .v2pv > summary .cv.bad { color: var(--down, #e5484d); }
       .v2pv > summary .caret { font-size: 11px; color: var(--fg-dim); }
       .v2pv[open] > summary .caret { transform: rotate(90deg); }
       .v2pv .bd { border-top: 1px solid var(--line-soft); }
@@ -552,7 +555,8 @@ details.more[open] > summary::before { content: '▾ '; }
       <summary>
         <span class="caret">›</span>
         <span>v2 홈 미리보기</span>
-        <span class="cv">v2-preview v0.2</span>
+        <span class="cv" id="v2pv-match" title="본체 총자산과 미리보기 총자산 대조">—</span>
+        <span class="cv">v2-preview v0.2.1</span>
       </summary>
       <div class="bd">
         <iframe id="v2pv-frame" src="preview/vela2_home_preview.html"
@@ -1116,6 +1120,8 @@ details.more[open] > summary::before { content: '▾ '; }
     _mirrorCache[path] = fs.read(path).then(function (d) {
       if (d && d.mirror_pushed_at_utc) {
         window.__mirrorAt = String(d.mirror_pushed_at_utc).slice(5, 16).replace('T', ' ');
+        // v16.10.2 — 미러 스냅샷엔 system.timestamp 가 없다. 기준시각은 푸시 시각(원본 ISO).
+        if (path === 'nexus_mirror/positions') window.__mirrorPushedAtUtc = String(d.mirror_pushed_at_utc);
         window.__mirrorState = (Date.now() - Date.parse(d.mirror_pushed_at_utc) > 30 * 60000) ? 'stale' : 'ok';
       } else { window.__mirrorState = 'ok'; }
       setTimeout(function () { delete _mirrorCache[path]; }, 300000);
@@ -1296,9 +1302,78 @@ details.more[open] > summary::before { content: '▾ '; }
       el.className = 'pill ' + tone(pnl) + ' lg';
       el.textContent = signUsd(pnl) + (pct === null ? '' : ('  ' + signPct(pct)));
     }
-    var ts = (s.system || {}).timestamp;
-    $('nav-asof').textContent = ts ? (isoDay(ts).slice(5) + ' ' + hhmm(ts)) : '—';
+    var ts = snapAsOf(s);
+    $('nav-asof').textContent = ts ? asOfLabel(ts) : '—';
   }
+
+  // v16.10.2 — 총자산 기준시각 단일 출처. PC 는 스냅샷 system.timestamp(로컬 KST),
+  //   폰(미러)은 미러 푸시 시각. 본체와 v2 미리보기가 **같은 값**을 쓴다.
+  function snapAsOf(s) {
+    var ts = ((s || {}).system || {}).timestamp;
+    if (ts) return String(ts);
+    return window.__mirrorPushedAtUtc ? String(window.__mirrorPushedAtUtc) : null;
+  }
+  function kstDay(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return isoDay(iso);
+    try { return d.toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }); }
+    catch (e) { return isoDay(iso); }
+  }
+  function asOfLabel(iso) { return kstDay(iso).slice(5) + ' ' + hhmm(iso); }
+
+  // ==================================================================
+  // v16.10.2 — v2 미리보기 라이브 주입 (표시 계층만)
+  //   미리보기가 정적 복사본(preview/data, 9/19·9/21)을 읽어 본체와 다른
+  //   총자산을 보였다. 부모가 이미 받은 라이브 스냅샷 + 실계좌 NAV 이력
+  //   (real_nav_history, USD) 을 **같은 출처** iframe 에 postMessage 로 넣는다.
+  //   KRW 필드는 싣지 않는다(USD 단일). 미리보기가 그린 총자산·기준시각을
+  //   되돌려 보내면 본체 값과 대조해 요약줄에 일치/불일치를 표시한다.
+  // ==================================================================
+  function v2Payload() {
+    var s = S.snap || {}, nv = s.nav || {}, pf = s.portfolio || {};
+    var navUsd = num(nv.value_usd), ts = snapAsOf(s);
+    var h = S.navh && Array.isArray(S.navh.entries) ? S.navh.entries : null;
+    if (navUsd === null || !ts || !h || h.length < 1) return null;
+    if (nv.currency && String(nv.currency).toUpperCase() !== 'USD') return null;
+    var entries = h.map(function (e) {
+      return { date: String(e.date), nav_usd: num(e.nav_usd),
+               cash_usd: num(e.cash_usd), invested_usd: num(e.invested_usd) };
+    }).filter(function (e) { return e.date && e.nav_usd !== null; });
+    return {
+      type: 'nexus-v2-data', v: 1, currency: 'USD',
+      snapshot: { nav_usd: navUsd, cash_usd: num(pf.cash_usd), invested_usd: num(pf.invested_usd),
+                  as_of: ts, as_of_day: kstDay(ts), as_of_label: asOfLabel(ts) },
+      history: { source: 'real_nav_history (/nav/history)', entries: entries }
+    };
+  }
+  function pushV2() {
+    var fr = document.getElementById('v2pv-frame');
+    var p = v2Payload();
+    if (!fr || !fr.contentWindow || !p) return false;
+    try { fr.contentWindow.postMessage(p, location.origin); return true; }
+    catch (e) { return false; }
+  }
+  window.addEventListener('message', function (ev) {
+    var fr = document.getElementById('v2pv-frame');
+    if (!fr || ev.source !== fr.contentWindow || ev.origin !== location.origin) return;
+    var m = ev.data || {};
+    if (m.type === 'nexus-v2-ready') { pushV2(); return; }
+    if (m.type !== 'nexus-v2-rendered') return;
+    // 단언 — 본체 총자산·기준시각과 미리보기가 그린 값이 같은가.
+    var el = document.getElementById('v2pv-match'), p = v2Payload();
+    var mine = p ? p.snapshot : null;
+    var ok = !!(mine && m.mode === 'live'
+                && Math.round(num(m.total_usd) * 100) === Math.round(mine.nav_usd * 100)
+                && String(m.as_of) === String(mine.as_of));
+    window.__v2Match = { ok: ok, mode: m.mode, preview_total: m.total_usd, preview_as_of: m.as_of,
+                         main_total: mine ? mine.nav_usd : null, main_as_of: mine ? mine.as_of : null };
+    if (el) {
+      el.className = 'cv ' + (ok ? 'ok' : 'bad');
+      el.textContent = ok ? ('본체 일치 · ' + usd(mine.nav_usd, 2) + ' · ' + mine.as_of_label)
+                          : (m.mode === 'live' ? '⚠ 본체와 불일치' : '⚠ 라이브 아님 (' + (m.as_of || '—') + ')');
+    }
+    if (!ok) console.warn('v2 미리보기 금액 불일치', window.__v2Match);
+  });
 
   // ==================================================================
   // 홈 ③ 보유 — 활성 슬롯만
@@ -1874,6 +1949,7 @@ details.more[open] > summary::before { content: '▾ '; }
   window.nexusRenderVersions = renderVersions;
 
   var VERSIONS = [
+    ['v16.10.2', 'v2 미리보기 금액 = 본체 라이브 스냅샷 — 정적 복사본 대신 주입(USD 단일) · 일치 배지 · 미리보기 v0.2.1'],
     ['v16.9.2', '주문 상태 “브로커 접수” 표기 — 브로커 대기 주문을 반려로 읽지 않도록 (P0-A)'],
     ['v16.9.1', 'T3 야간 스윕 가시화 — 설정 야간 스윕 행 + 홈 한 줄 스윕 횟수, 한도 0.8/3.0 반영'],
     ['v16.9.0', '홈 자산 그래프 카드 제거 — 내 자산 바로 아래 달력. 기록 수집(real_nav_history)은 계속'],
@@ -2129,6 +2205,10 @@ details.more[open] > summary::before { content: '▾ '; }
       // D-3 (8주차) — T3 야간 자동 결재 상태. 미러엔 없으므로 실패해도 조용히 넘긴다.
       api('/executor/night-auto').then(function (d) { S.night = d; }, function () { S.night = null; })
     ];
+    // v16.10.2 — v2 미리보기 주입용 실계좌 NAV 이력 (USD). 본체 렌더를 기다리게 하지 않도록
+    //   Promise.all 밖에서 따로 받는다. 실패하면 미리보기가 정적 폴백(라이브 아님 배너).
+    api('/nav/history?days=365').then(function (d) { S.navh = d; pushV2(); },
+                                      function () { S.navh = null; });
     return Promise.all(jobs).then(function () {
       var ok = !!S.snap;
       backend.connected = ok;
@@ -2136,6 +2216,7 @@ details.more[open] > summary::before { content: '▾ '; }
       if (ok) {
         renderNav(); renderHoldings(); renderCal(); renderNight();
         renderPending(); renderWeek(); renderDefense(); renderSettings();
+        pushV2();
       } else {
         // 데이터를 못 받았으면 왜 비었는지 말한다 — '불러오는 중' 을 붙들고 있지 않는다.
         var why = isMirrorHost()

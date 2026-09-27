@@ -300,7 +300,10 @@
 // v16.9.2 (2026-08-23) — 주문 상태 표기 '브로커 접수'. 표시 계층만.
 //   P0-A: PreSubmitted/Submitted 를 '반려' 로 읽히게 두면, 실제로는
 //   체결될 주문을 사람이 죽은 것으로 판단한다.
-const CACHE_VERSION = 'v16.10.1';
+// v16.10.2 (2026-09-27) — v2 미리보기 금액 불일치 수정. 표시 계층만.
+//   미리보기가 정적 복사본(preview/data, 9/19)을 읽어 본체와 총자산이 달랐다.
+//   부모가 라이브 스냅샷 + 실계좌 NAV 이력(USD)을 postMessage 로 주입, 미리보기 v0.2.1.
+const CACHE_VERSION = 'v16.10.2';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.

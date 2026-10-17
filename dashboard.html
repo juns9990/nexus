@@ -170,6 +170,33 @@ section[data-tab].active { display: block; }
 }
 .nav-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .nav-krw { font-family: var(--mono); font-size: 12px; color: var(--fg-dim); }
+/* v16.11.0 — 기간 손익 4종 (일일·주간·월간·연간 YTD). 한 줄 4칸, 폰 폭에서도 유지. */
+.ppnl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.ppnl-c {
+  min-width: 0; padding: 8px 8px 7px; border-radius: 8px; background: var(--card-2);
+  border: 1px solid var(--line-soft); cursor: default;
+}
+.ppnl-c .k { font-size: 11px; font-weight: 600; color: var(--fg-dim); }
+.ppnl-c .a, .ppnl-c .p {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 700;
+  line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ppnl-c .a { font-size: 12px; margin-top: 3px; }
+.ppnl-c .p { font-size: 11px; }
+.ppnl-c .a.up, .ppnl-c .p.up { color: var(--up); }
+.ppnl-c .a.down, .ppnl-c .p.down { color: var(--down); }
+.ppnl-c .a.flat, .ppnl-c .p.flat { color: var(--flat); }
+.ppnl-c .na { font-size: 11px; font-weight: 600; color: var(--warn); line-height: 1.3; margin-top: 3px; overflow-wrap: anywhere; }
+.ppnl-c .b { font-size: 10px; color: var(--fg-faint); margin-top: 4px; line-height: 1.3; overflow-wrap: anywhere; }
+/* 폰 폭(<560px) — 칸이 70px 안팎이라 센트까지 넣으면 잘린다. 달러 단위 표기 + '기준:' 접두어 생략.
+   센트 값은 툴팁(title)과 data-usd 에 그대로 있다. */
+.ppnl-c .full, .ppnl-c .bp { display: none; }
+@media (min-width: 560px) {
+  .ppnl-c .a { font-size: 13px; }
+  .ppnl-c .p { font-size: 12px; }
+  .ppnl-c .full, .ppnl-c .bp { display: inline; }
+  .ppnl-c .short { display: none; }
+}
 
 /* ---------- 그래프 ---------- */
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -653,6 +680,14 @@ details.more[open] > summary::before { content: '▾ '; }
           <div class="nav-sub">
             <span class="pill flat lg" id="nav-pnl">—</span>
             <span class="nav-krw" id="nav-krw"></span>
+          </div>
+          <!-- v16.11.0 — 기간 손익 4종 (표시 계층만). 출처 real_nav_history(USD) 의
+               ET 거래일 마감 NAV. 기준 NAV 가 없거나 데이터가 낡으면 숫자를 만들지 않는다. -->
+          <div class="ppnl" id="ppnl" aria-label="기간 손익">
+            <div class="ppnl-c" data-period="d"><div class="k">일일</div><div class="na">—</div></div>
+            <div class="ppnl-c" data-period="w"><div class="k">주간</div><div class="na">—</div></div>
+            <div class="ppnl-c" data-period="m"><div class="k">월간</div><div class="na">—</div></div>
+            <div class="ppnl-c" data-period="y"><div class="k">연간</div><div class="na">—</div></div>
           </div>
         </div>
       </div>
@@ -1276,6 +1311,184 @@ details.more[open] > summary::before { content: '▾ '; }
       if (themePref() === 'system') applyTheme();
     });
   } catch (e) {}
+
+  /* PERIOD_PNL_BEGIN — v16.11.0 기간 손익 계산 (순수 함수, DOM 무접촉).
+     tests/test_v1611_period_pnl.py 가 이 블록을 잘라 node 로 실행해 검증한다.
+
+     기준점 = ET 거래일 마감 NAV. real_nav_history 의 `date` 는 KST 기록일이라
+     그대로 쓰지 않고 `recorded_at` 으로 "어느 거래일 마감 뒤의 값인가" 를 판정한다:
+       recorded_at(ET) 이 거래일 X 의 마감 이후 ~ 다음 거래일 개장(09:30) 이전이면 X 마감값.
+       같은 X 에 여러 건이면 가장 이른 기록(마감에 가장 가까운 값).
+       장중 기록·recorded_at 없는 행은 마감값이 아니다(추정·보간 금지).
+     휴장일 표 = app/market_calendar.py (NYSE_HOLIDAYS · EARLY_CLOSE_DAYS) 사본 — 테스트가 일치를 검사.
+     손익 = NAV 변화 − 외부 입금 + 외부 출금 (flows: 입금 +, 출금 −). 수익률 = 기간 TWR. */
+  var PeriodPnl = (function () {
+    var HOL = {};
+    ['2026-01-01','2026-01-19','2026-02-16','2026-04-03','2026-05-25','2026-06-19','2026-07-03','2026-09-07','2026-11-26','2026-12-25','2027-01-01','2027-01-18','2027-02-15','2027-03-26','2027-05-31','2027-06-18','2027-07-05','2027-09-06','2027-11-25','2027-12-24','2028-01-17','2028-02-21','2028-04-14','2028-05-29','2028-06-19','2028-07-04','2028-09-04','2028-11-23','2028-12-25']
+      .forEach(function (d) { HOL[d] = 1; });
+    var EARLY = {};
+    ['2026-11-27','2026-12-24','2027-11-26','2028-07-03','2028-11-24'].forEach(function (d) { EARLY[d] = 1; });
+    var OPEN_MIN = 9 * 60 + 30;
+    var FMT = null;
+
+    function etParts(ms) {
+      if (!FMT) FMT = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York',
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+      var o = {};
+      FMT.formatToParts(new Date(ms)).forEach(function (p) { o[p.type] = p.value; });
+      var hh = Number(o.hour) % 24;
+      return { ymd: o.year + '-' + o.month + '-' + o.day, mins: hh * 60 + Number(o.minute) };
+    }
+    function dow(ymd) { var p = ymd.split('-'); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])).getUTCDay(); }
+    function addDays(ymd, n) {
+      var p = ymd.split('-'); var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2] + n));
+      return d.toISOString().slice(0, 10);
+    }
+    function isTradingDay(ymd) { var w = dow(ymd); return w !== 0 && w !== 6 && !HOL[ymd]; }
+    function closeMin(ymd) { return EARLY[ymd] ? 13 * 60 : 16 * 60; }
+    function prevTradingDay(ymd) { var d = addDays(ymd, -1); while (!isTradingDay(d)) d = addDays(d, -1); return d; }
+    function nextTradingDay(ymd) { var d = addDays(ymd, 1); while (!isTradingDay(d)) d = addDays(d, 1); return d; }
+
+    // recorded_at → 그 값이 대표하는 거래일 마감 (해당 없으면 null)
+    function closeDayOf(ms) {
+      var p = etParts(ms);
+      var x = (isTradingDay(p.ymd) && p.mins >= closeMin(p.ymd)) ? p.ymd : prevTradingDay(p.ymd);
+      var nx = nextTradingDay(x);
+      var ok = (p.ymd < nx) || (p.ymd === nx && p.mins < OPEN_MIN);
+      return ok ? x : null;
+    }
+    function closes(entries) {
+      var out = {};
+      (entries || []).forEach(function (e) {
+        var ms = Date.parse(e && e.recorded_at);
+        var nav = Number(e && e.nav_usd);
+        if (!isFinite(ms) || !isFinite(nav) || nav <= 0) return;
+        var x = closeDayOf(ms);
+        if (!x) return;
+        if (!out[x] || ms < out[x].ms) out[x] = { ymd: x, nav: nav, ms: ms, date: String(e.date) };
+      });
+      return out;
+    }
+    function state(nowMs) {
+      var p = etParts(nowMs), td = isTradingDay(p.ymd);
+      var inSession = td && p.mins >= OPEN_MIN && p.mins < closeMin(p.ymd);
+      var lastClosed = (td && p.mins >= closeMin(p.ymd)) ? p.ymd : prevTradingDay(p.ymd);
+      return { inSession: inSession, today: p.ymd, lastClosed: lastClosed };
+    }
+    function baseDays(st) {
+      var R = st.inSession ? st.today : st.lastClosed;
+      var monday = addDays(R, -((dow(R) + 6) % 7));
+      return {
+        d: st.inSession ? prevTradingDay(st.today) : prevTradingDay(st.lastClosed),
+        w: prevTradingDay(monday),
+        m: prevTradingDay(R.slice(0, 8) + '01'),
+        y: prevTradingDay(R.slice(0, 4) + '-01-01')
+      };
+    }
+    function cents(x) { return Math.round(x * 100) / 100; }
+
+    // opts: { entries, liveNav, liveAsOfMs, nowMs, flows:[{ms, amount}], staleMin }
+    function compute(opts) {
+      var nowMs = opts.nowMs, st = state(nowMs);
+      var cl = closes(opts.entries), flows = opts.flows || [];
+      var staleMs = (opts.staleMin || 15) * 60000;
+      var end;
+      if (st.inSession) {
+        var lv = Number(opts.liveNav), la = Number(opts.liveAsOfMs);
+        if (!isFinite(lv) || lv <= 0 || !isFinite(la) || nowMs - la > staleMs)
+          end = { error: 'stale', kind: 'live', asOfMs: isFinite(la) ? la : null };
+        else end = { kind: 'live', nav: lv, ms: la, ymd: st.today };
+      } else {
+        var c = cl[st.lastClosed];
+        if (!c) {
+          var ks = Object.keys(cl).sort();
+          end = { error: 'stale', kind: 'close', want: st.lastClosed, lastYmd: ks.length ? ks[ks.length - 1] : null };
+        } else end = { kind: 'close', nav: c.nav, ms: c.ms, ymd: c.ymd };
+      }
+      var bd = baseDays(st), cards = {};
+      ['d', 'w', 'm', 'y'].forEach(function (k) {
+        var b = cl[bd[k]];
+        if (end.error) { cards[k] = { ok: false, error: 'stale', baseYmd: bd[k] }; return; }
+        if (!b) { cards[k] = { ok: false, error: 'no_base', baseYmd: bd[k] }; return; }
+        // TWR — 기준 마감 → (구간 내 마감들) → 끝점. 하위 구간마다 외부 흐름을 끝에서 뺀다.
+        var pts = Object.keys(cl).filter(function (y) { return y > b.ymd && y <= end.ymd && cl[y].ms < end.ms; })
+          .sort().map(function (y) { return cl[y]; });
+        pts.push({ nav: end.nav, ms: end.ms });
+        var g = 1, prev = b, net = 0;
+        pts.forEach(function (p) {
+          var f = 0;
+          flows.forEach(function (fl) { if (fl.ms > prev.ms && fl.ms <= p.ms) f += Number(fl.amount) || 0; });
+          net += f;
+          g *= (p.nav - f) / prev.nav;
+          prev = p;
+        });
+        cards[k] = { ok: true, baseYmd: b.ymd, baseNav: b.nav, endNav: end.nav,
+                     pnl: cents(end.nav - b.nav - net), flowsNet: cents(net), twrPct: (g - 1) * 100 };
+      });
+      return { state: st, end: end, cards: cards, bases: bd };
+    }
+    return { compute: compute, closes: closes, state: state, baseDays: baseDays,
+             isTradingDay: isTradingDay, closeDayOf: closeDayOf, HOLIDAYS: Object.keys(HOL), EARLY: Object.keys(EARLY) };
+  })();
+  /* PERIOD_PNL_END */
+
+  // v16.11.0 — 기간 손익 카드 렌더. 외부 입출금 기록 위치가 없다(paper, 입출금 0) →
+  //   flows 는 빈 목록으로 **명시**해 넘긴다. 기록이 생기면 여기에 연결한다.
+  var PPNL_FLOWS = [];
+  var PPNL_FLOWS_NOTE = '외부 입출금 0 — 입출금 기록 없음(paper)';
+  function md(ymd) { return String(ymd || '').slice(5).replace('-', '/'); }
+  function signUsd2(n) {
+    return (n > 0 ? '+' : (n < 0 ? '−' : '')) + '$' +
+      Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function renderPeriodPnl() {
+    var box = $('ppnl'); if (!box) return;
+    var s = S.snap || {}, nv = s.nav || {};
+    var h = S.navh && Array.isArray(S.navh.entries) ? S.navh.entries : null;
+    var asOf = snapAsOf(s);
+    var r = PeriodPnl.compute({
+      entries: h || [], liveNav: num(nv.value_usd),
+      liveAsOfMs: asOf ? Date.parse(asOf) : NaN, nowMs: Date.now(),
+      flows: PPNL_FLOWS, staleMin: 15
+    });
+    window.__periodPnl = r;
+    var endLbl = r.end.error ? null
+      : (r.end.kind === 'live' ? ('실시간 ' + hhmm(new Date(r.end.ms).toISOString())) : (md(r.end.ymd) + ' 마감'));
+    var labels = { d: '일일', w: '주간', m: '월간', y: '연간' };
+    Array.prototype.forEach.call(box.querySelectorAll('.ppnl-c'), function (el) {
+      var k = el.getAttribute('data-period'), c = r.cards[k];
+      var head = '<div class="k">' + labels[k] + (k === 'y' ? ' <span class="faint">YTD</span>' : '') + '</div>';
+      var tip = 'Account NAV(브로커 NetLiquidation, USD · real_nav_history) 기준';
+      if (!h) {
+        el.innerHTML = head + '<div class="na">데이터 미확보</div><div class="b">이력 없음</div>';
+        el.title = tip + ' · NAV 이력을 받지 못함'; el.removeAttribute('data-usd'); return;
+      }
+      if (!c.ok && c.error === 'stale') {
+        var at = r.end.kind === 'live'
+          ? (r.end.asOfMs ? ('기준 ' + asOfLabel(new Date(r.end.asOfMs).toISOString())) : '기준시각 없음')
+          : (r.end.lastYmd ? ('마지막 ' + md(r.end.lastYmd) + ' 마감') : '마감 기록 없음');
+        el.innerHTML = head + '<div class="na">데이터 미확보</div><div class="b">' + esc(at) + '</div>';
+        el.title = tip + ' · ' + (r.end.kind === 'live' ? '실시간 NAV 가 낡음' : (md(r.end.want) + ' 마감 기록 없음'));
+        el.removeAttribute('data-usd'); return;
+      }
+      if (!c.ok) {
+        el.innerHTML = head + '<div class="na">기준 NAV 없음</div><div class="b">' + md(c.baseYmd) + ' 마감 기록 없음</div>';
+        el.title = tip + ' · 기준 ' + c.baseYmd + ' 마감 NAV 가 기록에 없다(추정하지 않음)';
+        el.removeAttribute('data-usd'); return;
+      }
+      var t = tone(c.pnl);
+      el.innerHTML = head +
+        '<div class="a num ' + t + '"><span class="full">' + esc(signUsd2(c.pnl)) + '</span>' +
+        '<span class="short">' + esc(signUsd(c.pnl)) + '</span></div>' +
+        '<div class="p num ' + tone(c.twrPct) + '">' + esc(signPct(c.twrPct)) + '</div>' +
+        '<div class="b"><span class="bp">기준: </span>' + esc(endLbl) + '</div>';
+      el.setAttribute('data-usd', c.pnl.toFixed(2));
+      el.setAttribute('data-twr', c.twrPct.toFixed(6));
+      el.setAttribute('data-base', c.baseYmd);
+      el.title = tip + ' · ' + md(c.baseYmd) + ' 마감 ' + usd(c.baseNav, 2) + ' → ' + endLbl + ' ' +
+        usd(c.endNav, 2) + ' · ' + PPNL_FLOWS_NOTE + ' · 수익률 = 기간 TWR';
+    });
+  }
 
   // ==================================================================
   // 홈 ① 내 자산
@@ -1949,6 +2162,7 @@ details.more[open] > summary::before { content: '▾ '; }
   window.nexusRenderVersions = renderVersions;
 
   var VERSIONS = [
+    ['v16.11.0', '홈 내 자산 아래 기간 손익 4종(일일·주간·월간·연간 YTD) — ET 마감 NAV 기준·기간 TWR, 기준 NAV 없음/데이터 미확보 표기'],
     ['v16.10.2', 'v2 미리보기 금액 = 본체 라이브 스냅샷 — 정적 복사본 대신 주입(USD 단일) · 일치 배지 · 미리보기 v0.2.1'],
     ['v16.9.2', '주문 상태 “브로커 접수” 표기 — 브로커 대기 주문을 반려로 읽지 않도록 (P0-A)'],
     ['v16.9.1', 'T3 야간 스윕 가시화 — 설정 야간 스윕 행 + 홈 한 줄 스윕 횟수, 한도 0.8/3.0 반영'],
@@ -2207,14 +2421,14 @@ details.more[open] > summary::before { content: '▾ '; }
     ];
     // v16.10.2 — v2 미리보기 주입용 실계좌 NAV 이력 (USD). 본체 렌더를 기다리게 하지 않도록
     //   Promise.all 밖에서 따로 받는다. 실패하면 미리보기가 정적 폴백(라이브 아님 배너).
-    api('/nav/history?days=365').then(function (d) { S.navh = d; pushV2(); },
-                                      function () { S.navh = null; });
+    api('/nav/history?days=365').then(function (d) { S.navh = d; pushV2(); renderPeriodPnl(); },
+                                      function () { S.navh = null; renderPeriodPnl(); });
     return Promise.all(jobs).then(function () {
       var ok = !!S.snap;
       backend.connected = ok;
       setConn(ok, ok ? (isMirrorHost() ? '미러' : '연결됨') : '데이터 없음');
       if (ok) {
-        renderNav(); renderHoldings(); renderCal(); renderNight();
+        renderNav(); renderPeriodPnl(); renderHoldings(); renderCal(); renderNight();
         renderPending(); renderWeek(); renderDefense(); renderSettings();
         pushV2();
       } else {

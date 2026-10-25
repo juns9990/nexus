@@ -305,7 +305,8 @@
 //   부모가 라이브 스냅샷 + 실계좌 NAV 이력(USD)을 postMessage 로 주입, 미리보기 v0.2.1.
 // v16.11.0 (2026-10-18) — 홈 기간 손익 카드 4종(일일·주간·월간·연간 YTD). 표시 계층만.
 // v16.11.1 (2026-10-18) — 백엔드 일정 전환(ET 마감 기준). 화면은 버전 이력 1줄만.
-const CACHE_VERSION = 'v16.11.1';
+// v16.11.2 (2026-10-25) — 마감 후 작업 압축(PC 종료 06:30 KST). 화면은 버전 이력 1줄만.
+const CACHE_VERSION = 'v16.11.2';
 const CACHE_NAME = 'nexus-cache-' + CACHE_VERSION;
 
 // 셸 — PC Stop 시 networkFirstHtml 폴백의 유일한 통로. 반드시 캐시되어야 함.
